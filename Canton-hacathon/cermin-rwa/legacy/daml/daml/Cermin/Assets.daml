@@ -1,0 +1,194 @@
+module Cermin.Assets where
+
+import DA.Optional (isNone, isSome)
+
+-- | TreasuryToken: a mock tokenized Treasury holding, modeled after the
+-- CIP-56 / Splice token standard (a simplified faithful subset).
+--
+-- Who sees what and why: signed by the `issuer` (who minted it) and the
+-- `owner` (who holds it) — an ordinary bearer holding, visible only to the
+-- two parties to it. It carries NO observers by default: other borrowers,
+-- the pool, and the guard agent must never see a borrower's token merely
+-- because it exists. The only disclosure is `lockedBy`: when the owner
+-- locks the token (e.g. to pledge it as loan collateral), the party named
+-- in `lockedBy` is added as an observer via recreate, so it can verify the
+-- lock exists — nothing more about the owner's other holdings leaks.
+template TreasuryToken
+  with
+    issuer : Party
+    owner : Party
+    instrumentId : Text
+    faceValue : Decimal
+    couponRateBps : Int
+    maturity : Date
+    lockedBy : Optional Party
+  where
+    signatory issuer, owner
+    observer case lockedBy of
+      None -> []
+      Some lockHolder -> [lockHolder]
+
+    ensure faceValue > 0.0 && couponRateBps >= 0
+
+    -- | Propose transferring ownership to `newOwner`. Blocked while locked:
+    -- a token pledged as collateral cannot be moved out from under the lock
+    -- holder. Propose/accept keeps the new owner from being bound without
+    -- their consent.
+    choice Transfer : ContractId TreasuryTokenTransferProposal
+      with
+        newOwner : Party
+      controller owner
+      do
+        assertMsg "locked tokens cannot transfer" (isNone lockedBy)
+        create TreasuryTokenTransferProposal with
+          issuer
+          owner
+          proposedOwner = newOwner
+          instrumentId
+          faceValue
+          couponRateBps
+          maturity
+
+    -- | Owner locks the token in favour of `lockHolder` (e.g. the pool
+    -- operator, once this token is pledged as loan collateral). Recreates
+    -- the contract so `lockHolder` becomes an observer of this holding only.
+    choice Lock : ContractId TreasuryToken
+      with
+        lockHolder : Party
+      controller owner
+      do
+        assertMsg "token is already locked" (isNone lockedBy)
+        create this with lockedBy = Some lockHolder
+
+    -- | Owner unlocks a previously-locked token, dropping the lock holder's
+    -- visibility and re-enabling Transfer.
+    choice Unlock : ContractId TreasuryToken
+      controller owner
+      do
+        assertMsg "token is not locked" (isSome lockedBy)
+        create this with lockedBy = None
+
+-- | Propose/accept leg of a TreasuryToken transfer. Visible to the current
+-- owner (proposer) and the proposed new owner only — nobody else needs to
+-- see a pending transfer of a private holding.
+template TreasuryTokenTransferProposal
+  with
+    issuer : Party
+    owner : Party
+    proposedOwner : Party
+    instrumentId : Text
+    faceValue : Decimal
+    couponRateBps : Int
+    maturity : Date
+  where
+    signatory issuer, owner
+    observer proposedOwner
+
+    choice Accept : ContractId TreasuryToken
+      controller proposedOwner
+      do
+        create TreasuryToken with
+          issuer
+          owner = proposedOwner
+          instrumentId
+          faceValue
+          couponRateBps
+          maturity
+          lockedBy = None
+
+    choice Reject : ()
+      controller proposedOwner
+      do
+        pure ()
+
+    choice Withdraw : ()
+      controller owner
+      do
+        pure ()
+
+-- | StableCoin: mock mUSD cash leg used to borrow, repay, and fund the
+-- Shadow Vault.
+--
+-- Who sees what and why: signed by `issuer` and `owner` only, no observers.
+-- Cash balances are the most sensitive data in this system (they reveal
+-- Shadow Vault funding capacity) so a StableCoin holding is never
+-- disclosed to any third party — not the pool, not the guard agent, nobody
+-- but the two parties to the holding itself.
+template StableCoin
+  with
+    issuer : Party
+    owner : Party
+    amount : Decimal
+  where
+    signatory issuer, owner
+    ensure amount > 0.0
+
+    -- | Propose transferring this cash holding to `newOwner`. Named
+    -- `TransferCoin` (rather than `Transfer`) only because Daml choice
+    -- names must be unique within a module and this module also declares
+    -- TreasuryToken.Transfer.
+    choice TransferCoin : ContractId StableCoinTransferProposal
+      with
+        newOwner : Party
+      controller owner
+      do
+        create StableCoinTransferProposal with
+          issuer
+          owner
+          proposedOwner = newOwner
+          amount
+
+    -- | Split off `splitAmount` into a new holding, keeping the remainder
+    -- in a second holding. Both returned, in (split, remainder) order.
+    choice Split : (ContractId StableCoin, ContractId StableCoin)
+      with
+        splitAmount : Decimal
+      controller owner
+      do
+        assertMsg "split amount must be between 0 and the current balance" (splitAmount > 0.0 && splitAmount < amount)
+        splitCid <- create this with amount = splitAmount
+        remainderCid <- create this with amount = amount - splitAmount
+        pure (splitCid, remainderCid)
+
+    -- | Merge another holding of the same issuer/owner into this one.
+    choice Merge : ContractId StableCoin
+      with
+        otherCid : ContractId StableCoin
+      controller owner
+      do
+        other <- fetch otherCid
+        assertMsg "can only merge holdings with the same issuer and owner" (other.issuer == issuer && other.owner == owner)
+        archive otherCid
+        create this with amount = amount + other.amount
+
+-- | Propose/accept leg of a StableCoin transfer. Visible to the current
+-- owner (proposer) and the proposed new owner only. Choices are suffixed
+-- `Coin` to avoid colliding with TreasuryTokenTransferProposal's
+-- identically-shaped Accept/Reject/Withdraw in the same module.
+template StableCoinTransferProposal
+  with
+    issuer : Party
+    owner : Party
+    proposedOwner : Party
+    amount : Decimal
+  where
+    signatory issuer, owner
+    observer proposedOwner
+
+    choice AcceptCoin : ContractId StableCoin
+      controller proposedOwner
+      do
+        create StableCoin with
+          issuer
+          owner = proposedOwner
+          amount
+
+    choice RejectCoin : ()
+      controller proposedOwner
+      do
+        pure ()
+
+    choice WithdrawCoin : ()
+      controller owner
+      do
+        pure ()

@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.daml/
+dist/
+*.dar
+.DS_Store
+.superpowers/
+log/
+.dev/
+.claude/worktrees/

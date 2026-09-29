@@ -1,0 +1,198 @@
+module Cermin.Guard where
+
+import Cermin.Credit
+import Cermin.Oracle
+
+-- | GuardPolicy: the borrower's private rules for when and how much the
+-- Guard Agent may auto-repay.
+--
+-- Who sees what and why: signed by `borrower` (only the borrower sets their
+-- own trigger) with `guardAgent` as the ONLY observer — the agent must read
+-- the thresholds to act, but the pool and every other borrower must never
+-- see a borrower's risk settings. There is no pool observer, by design.
+template GuardPolicy
+  with
+    borrower : Party
+    guardAgent : Party
+    triggerRatioBps : Int
+    targetRatioBps : Int
+    maxRepayPerEvent : Decimal
+    couponSweep : Bool
+  where
+    signatory borrower
+    observer guardAgent
+
+    ensure triggerRatioBps > 0
+        && targetRatioBps >= triggerRatioBps
+        && maxRepayPerEvent > 0.0
+
+-- | RescueEvent: an immutable record of one auto-repay, feeding the
+-- borrower's private activity feed.
+--
+-- Who sees what and why: signed by `guardAgent` and `borrower` (both created
+-- it, via GuardRepay's authorities) with NO observers — the pool must never
+-- see that a rescue happened, only that the loan is healthy. This is the
+-- privacy payoff: intervention is invisible to the counterparty.
+template RescueEvent
+  with
+    guardAgent : Party
+    borrower : Party
+    loanId : Text
+    description : Text
+    amount : Decimal
+    healthBefore : Int
+    healthAfter : Int
+    at : Time
+  where
+    signatory guardAgent, borrower
+
+-- | Result of a GuardRepay: the reduced-balance vault, the reduced-debt
+-- loan, and the RescueEvent recording the intervention.
+data GuardRepayResult = GuardRepayResult
+  with
+    vault : ContractId ShadowVault
+    loan : ContractId Loan
+    rescue : ContractId RescueEvent
+  deriving (Eq, Show)
+
+-- | ShadowVault: the borrower's private reserve of "shadow money" that
+-- repays the loan automatically when the Health Ratio breaches the trigger.
+--
+-- Who sees what and why: signed by `borrower` ALONE, with `guardAgent` as
+-- the ONLY observer. This single-signatory design IS the delegation: the
+-- borrower unilaterally creates the vault and names the Guard Agent as its
+-- delegate. The pool and other borrowers can never see it. Because the vault
+-- is signed by the borrower, GuardRepay (controlled by the Guard Agent)
+-- carries the borrower's authority inside its body — enough to drive
+-- Loan.ApplyRepayment — WITHOUT the Guard Agent ever holding borrower
+-- authority anywhere else.
+--
+-- THE DELEGATION IS PROVABLY NARROW: the Guard Agent can move vault money
+-- only through GuardRepay, and GuardRepay refuses unless it has fetched the
+-- live PriceFeed/Loan/GuardPolicy and checked on-ledger that the Health Ratio
+-- is genuinely below the borrower's Guard Trigger. Narrowness is enforced by
+-- these assertions, not by agent goodwill: a healthy loan cannot be touched.
+--
+-- `balance` is a Decimal reserve (money as Decimal per global-constraints.md);
+-- the cash-side abstraction is documented in the Task 2 report.
+template ShadowVault
+  with
+    borrower : Party
+    guardAgent : Party
+    balance : Decimal
+  where
+    signatory borrower
+    observer guardAgent
+
+    ensure balance >= 0.0
+
+    -- | Borrower adds to their private reserve.
+    choice TopUp : ContractId ShadowVault
+      with
+        amount : Decimal
+      controller borrower
+      do
+        assertMsg "top-up must be positive" (amount > 0.0)
+        create this with balance = balance + amount
+
+    -- | Borrower withdraws from their private reserve.
+    choice Withdraw : ContractId ShadowVault
+      with
+        amount : Decimal
+      controller borrower
+      do
+        assertMsg "withdrawal must be positive" (amount > 0.0)
+        assertMsg "cannot withdraw more than the balance" (amount <= balance)
+        create this with balance = balance - amount
+
+    -- | The Guard Agent's ONLY power over vault money. Fetches the live
+    -- PriceFeed, Loan and GuardPolicy by cid, recomputes the Health Ratio
+    -- on-ledger, and REFUSES (assertion failure) unless it is genuinely below
+    -- the borrower's Guard Trigger. Repays min(amount-to-reach-target,
+    -- maxRepayPerEvent, balance) via Loan.ApplyRepayment — using the
+    -- borrower authority this choice carries from the vault's signatory —
+    -- then recreates the vault with the reduced balance and records a
+    -- RescueEvent. Consuming: one vault contract in, one out.
+    choice GuardRepay : GuardRepayResult
+      with
+        priceFeedCid : ContractId PriceFeed
+        loanCid : ContractId Loan
+        policyCid : ContractId GuardPolicy
+      controller guardAgent
+      do
+        policy <- fetch policyCid
+        loan <- fetch loanCid
+        feed <- fetch priceFeedCid
+        -- all three artefacts must concern THIS borrower's single loan,
+        -- guarded by THIS guard agent.
+        assertMsg "policy belongs to a different borrower" (policy.borrower == borrower)
+        assertMsg "loan belongs to a different borrower" (loan.borrower == borrower)
+        assertMsg "guard agent mismatch on policy" (policy.guardAgent == guardAgent)
+        assertMsg "guard agent mismatch on loan" (loan.guardAgent == guardAgent)
+        assertMsg "price feed is for a different instrument" (feed.instrumentId == loan.collateralInstrumentId)
+
+        let healthBefore = healthRatioBps loan.collateralAmount feed.price loan.outstanding
+        -- THE NARROW GATE: no rescue on a healthy loan.
+        assertMsg "Health Ratio is at/above the Guard Trigger; auto-repay refused"
+          (healthBefore < policy.triggerRatioBps)
+
+        let needed = amountToReachTarget loan.collateralAmount feed.price loan.outstanding policy.targetRatioBps
+        let repayAmount = min needed (min policy.maxRepayPerEvent balance)
+        assertMsg "nothing to repay (vault empty or target already met)" (repayAmount > 0.0)
+
+        now <- getTime
+        newLoanCid <- exercise loanCid ApplyRepayment with repayAmount
+        let newOutstanding = loan.outstanding - repayAmount
+        let healthAfter = healthRatioBps loan.collateralAmount feed.price newOutstanding
+
+        rescueCid <- create RescueEvent with
+          guardAgent
+          borrower
+          loanId = loan.loanId
+          description = "Auto-repay from Shadow Vault restored the Health Ratio"
+          amount = repayAmount
+          healthBefore
+          healthAfter
+          at = now
+
+        newVaultCid <- create this with balance = balance - repayAmount
+        pure GuardRepayResult with vault = newVaultCid, loan = newLoanCid, rescue = rescueCid
+
+    -- | When the vault cannot fully restore the Health Ratio, the Guard Agent
+    -- opens a 72h GracePeriod (the only signal the pool receives). Requires
+    -- the trigger to be breached AND the balance to be insufficient to reach
+    -- target — so grace is never opened on a healthy loan, nor when a plain
+    -- GuardRepay would have sufficed. Non-consuming: the vault (and whatever
+    -- reserve remains) is left intact.
+    nonconsuming choice StartGracePeriod : ContractId GracePeriod
+      with
+        priceFeedCid : ContractId PriceFeed
+        loanCid : ContractId Loan
+        policyCid : ContractId GuardPolicy
+      controller guardAgent
+      do
+        policy <- fetch policyCid
+        loan <- fetch loanCid
+        feed <- fetch priceFeedCid
+        assertMsg "policy belongs to a different borrower" (policy.borrower == borrower)
+        assertMsg "loan belongs to a different borrower" (loan.borrower == borrower)
+        assertMsg "guard agent mismatch on policy" (policy.guardAgent == guardAgent)
+        assertMsg "guard agent mismatch on loan" (loan.guardAgent == guardAgent)
+        assertMsg "price feed is for a different instrument" (feed.instrumentId == loan.collateralInstrumentId)
+
+        let healthNow = healthRatioBps loan.collateralAmount feed.price loan.outstanding
+        assertMsg "Health Ratio is at/above the Guard Trigger; no grace needed"
+          (healthNow < policy.triggerRatioBps)
+
+        let needed = amountToReachTarget loan.collateralAmount feed.price loan.outstanding policy.targetRatioBps
+        assertMsg "vault balance is sufficient; run GuardRepay instead of opening grace"
+          (balance < needed)
+
+        now <- getTime
+        create GracePeriod with
+          borrower
+          guardAgent
+          poolOperator = loan.poolOperator
+          loanId = loan.loanId
+          startedAt = now
+          expiresAt = graceWindow now

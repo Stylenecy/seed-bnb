@@ -1,0 +1,170 @@
+module Cermin.Tests.AssetTests where
+
+import Daml.Script
+import DA.Assert ((===))
+import DA.Date (Month(Jan), date)
+import Cermin.Assets
+import Cermin.Oracle
+
+-- | Shared party allocation for the tests below. Mirrors the demo party
+-- layout (Cermin.Scripts.Setup) without depending on it, so each test
+-- starts from a clean ledger.
+allocateTestParties : Script (Party, Party, Party, Party, Party)
+allocateTestParties = script do
+  issuer <- allocatePartyByHint (PartyIdHint "Issuer")
+  borrower <- allocatePartyByHint (PartyIdHint "Borrower")
+  poolOperator <- allocatePartyByHint (PartyIdHint "PoolOperator")
+  guardAgent <- allocatePartyByHint (PartyIdHint "GuardAgent")
+  oracle <- allocatePartyByHint (PartyIdHint "Oracle")
+  pure (issuer, borrower, poolOperator, guardAgent, oracle)
+
+mkTreasuryToken : Party -> Party -> Optional Party -> TreasuryToken
+mkTreasuryToken issuer owner lockedBy = TreasuryToken with
+  issuer
+  owner
+  instrumentId = "mUST-2030"
+  faceValue = 10000.0
+  couponRateBps = 450
+  maturity = date 2030 Jan 1
+  lockedBy
+
+-- | Mint -> transfer happy path for TreasuryToken: issuer+owner mint,
+-- owner proposes a transfer, new owner accepts, ownership and face value
+-- carry over unchanged.
+test_treasuryTokenMintTransferHappyPath : Script ()
+test_treasuryTokenMintTransferHappyPath = script do
+  (issuer, borrower, poolOperator, _, _) <- allocateTestParties
+
+  tokenCid <- submitMulti [issuer, borrower] [] do
+    createCmd (mkTreasuryToken issuer borrower None)
+
+  proposalCid <- submit borrower do
+    exerciseCmd tokenCid Transfer with newOwner = poolOperator
+
+  newTokenCid <- submit poolOperator do
+    exerciseCmd proposalCid Accept
+
+  Some newToken <- queryContractId poolOperator newTokenCid
+  newToken.owner === poolOperator
+  newToken.faceValue === 10000.0
+  newToken.lockedBy === None
+
+-- | Locked tokens cannot transfer: Lock adds the lock holder as observer
+-- and blocks Transfer; Unlock restores transferability.
+test_lockedTokenCannotTransfer : Script ()
+test_lockedTokenCannotTransfer = script do
+  (issuer, borrower, poolOperator, _, _) <- allocateTestParties
+
+  tokenCid <- submitMulti [issuer, borrower] [] do
+    createCmd (mkTreasuryToken issuer borrower None)
+
+  lockedCid <- submit borrower do
+    exerciseCmd tokenCid Lock with lockHolder = poolOperator
+
+  -- lock holder can now see the token (it was disclosed via the lock).
+  Some lockedToken <- queryContractId poolOperator lockedCid
+  lockedToken.lockedBy === Some poolOperator
+
+  -- locked token cannot be transferred.
+  submitMustFail borrower do
+    exerciseCmd lockedCid Transfer with newOwner = poolOperator
+
+  -- unlocking restores transferability.
+  unlockedCid <- submit borrower do
+    exerciseCmd lockedCid Unlock
+
+  proposalCid <- submit borrower do
+    exerciseCmd unlockedCid Transfer with newOwner = poolOperator
+
+  newTokenCid <- submit poolOperator do
+    exerciseCmd proposalCid Accept
+
+  Some newToken <- queryContractId poolOperator newTokenCid
+  newToken.owner === poolOperator
+
+-- | Non-subscribers cannot see the PriceFeed: only oracle + subscribers
+-- (borrower, guardAgent, poolOperator) have visibility; an unrelated party
+-- sees nothing.
+test_nonSubscriberCannotSeePriceFeed : Script ()
+test_nonSubscriberCannotSeePriceFeed = script do
+  (_, borrower, poolOperator, guardAgent, oracle) <- allocateTestParties
+  outsider <- allocatePartyByHint (PartyIdHint "Outsider")
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  Some _ <- queryContractId borrower feedCid
+  Some _ <- queryContractId guardAgent feedCid
+  Some _ <- queryContractId poolOperator feedCid
+  Some _ <- queryContractId oracle feedCid
+
+  outsiderView <- queryContractId outsider feedCid
+  outsiderView === None
+
+-- | UpdatePrice works: oracle-controlled, consuming archive+recreate,
+-- rejects non-positive prices, and the new price is visible to subscribers.
+test_priceUpdateWorks : Script ()
+test_priceUpdateWorks = script do
+  (_, borrower, poolOperator, guardAgent, oracle) <- allocateTestParties
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  -- only the oracle can update the price.
+  submitMustFail borrower do
+    exerciseCmd feedCid UpdatePrice with newPrice = 0.76
+
+  -- rescue-scenario price drop from the demo numbers: 1.00 -> 0.76.
+  updatedCid <- submit oracle do
+    exerciseCmd feedCid UpdatePrice with newPrice = 0.76
+
+  Some updated <- queryContractId borrower updatedCid
+  updated.price === 0.76
+
+  -- non-positive prices are rejected.
+  submitMustFail oracle do
+    exerciseCmd updatedCid UpdatePrice with newPrice = 0.0
+
+-- | StableCoin lifecycle: mint, propose/accept transfer, split, merge.
+-- Covers the "Split/Merge minimal" requirement and confirms cash holdings
+-- stay strictly two-party (issuer, owner) throughout.
+test_stableCoinLifecycle : Script ()
+test_stableCoinLifecycle = script do
+  (issuer, borrower, poolOperator, _, _) <- allocateTestParties
+
+  coinCid <- submitMulti [issuer, borrower] [] do
+    createCmd StableCoin with
+      issuer
+      owner = borrower
+      amount = 1500.0
+
+  -- transfer: propose then accept.
+  proposalCid <- submit borrower do
+    exerciseCmd coinCid TransferCoin with newOwner = poolOperator
+  transferredCid <- submit poolOperator do
+    exerciseCmd proposalCid AcceptCoin
+  Some transferred <- queryContractId poolOperator transferredCid
+  transferred.owner === poolOperator
+  transferred.amount === 1500.0
+
+  -- split into 900 / 600.
+  (splitCid, remainderCid) <- submit poolOperator do
+    exerciseCmd transferredCid Split with splitAmount = 900.0
+  Some splitCoin <- queryContractId poolOperator splitCid
+  Some remainderCoin <- queryContractId poolOperator remainderCid
+  splitCoin.amount === 900.0
+  remainderCoin.amount === 600.0
+
+  -- merge back into one holding of 1500.
+  mergedCid <- submit poolOperator do
+    exerciseCmd splitCid Merge with otherCid = remainderCid
+  Some merged <- queryContractId poolOperator mergedCid
+  merged.amount === 1500.0

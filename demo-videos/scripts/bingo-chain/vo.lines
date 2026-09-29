@@ -1,0 +1,18 @@
+# bingo-chain voice-over: scripts/_vo/gen.py bingo-chain
+# id | rate | pitch | text   (claims from celo-pos/Bingo-chain/VERIFY-BNB.md + celo-reads.json:
+# Celo mainnet proxy live; real BSC testnet deploy + one live 2-player WBNB game; 95/95 forge tests)
+voice = en-GB-RyanNeural
+hook    | +12% | +2Hz | Online bingo? You're trusting the house.
+house   | +14% | +1Hz | Every number is drawn where you can't see it.
+multi   | +14% | +2Hz | Proven on Celo, now on BNB Chain.
+celo    | +20% | +0Hz | Nearly five hundred arenas on Celo mainnet, almost nine thousand calls.
+seal    | +16% | +1Hz | Seal your board. Only its hash goes on-chain.
+verify  | +22% | +0Hz | The contract replays every call, then pays.
+app     | +30% | +1Hz | The real app, on BSC testnet.
+split   | +16% | +3Hz | They split the pot!
+game    | +14% | +0Hz | Then a full two-player game, played live.
+receipts| +14% | +1Hz | Thirteen for thirteen.
+secs    | +14% | +1Hz | Create to settle in thirty-five seconds.
+fee     | +14% | +0Hz | One percent fee to the treasury.
+tests   | +30% | +2Hz | Ninety-five tests pass!
+outro   | +4%  | +1Hz | Bingo Chain. No house. Just the chain.

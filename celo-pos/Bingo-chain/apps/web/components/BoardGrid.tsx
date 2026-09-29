@@ -1,0 +1,113 @@
+"use client";
+
+import { useId } from "react";
+import { motion } from "motion/react";
+import { cn } from "../lib/utils";
+import { LINES, completedLineIndices } from "../lib/board";
+
+// Cell center in a 0..100 viewBox (5 columns), used to strike completed lines.
+const center = (cell: number) => ({ x: (cell % 5) * 20 + 10, y: Math.floor(cell / 5) * 20 + 10 });
+
+/// Renders a 5×5 board. Called cells are gold; the most recently called pulses.
+/// Each completed row/column/diagonal gets a neon strike that skips a hole over
+/// every number (an SVG mask) so the digits stay readable.
+///
+/// Pass `onCall` to make the board its own call pad: every uncalled number is a
+/// button, so the player calls by tapping it straight on their own board, with
+/// no separate number grid. `disabled` greys the taps off-turn while still
+/// showing progress. Without `onCall` the board is read-only (results, replays).
+export function BoardGrid({
+  board,
+  called,
+  lastCalled,
+  onCall,
+  disabled,
+}: {
+  board: number[];
+  called?: Set<number>;
+  lastCalled?: number;
+  onCall?: (n: number) => void;
+  disabled?: boolean;
+}) {
+  const struck = called ? completedLineIndices(board, called) : [];
+  const maskId = `bm-${useId().replace(/:/g, "")}`;
+
+  return (
+    <div className="relative">
+      <div className="grid grid-cols-5 gap-1.5">
+        {board.map((n, i) => {
+          const marked = called?.has(n);
+          const isLast = marked && n === lastCalled;
+          const callable = !!onCall && !marked && !disabled;
+          const className = cn(
+            "relative flex aspect-square items-center justify-center rounded-lg font-mono text-sm font-bold transition-colors",
+            marked
+              ? "bg-gold-sheen text-primary-foreground shadow-glow"
+              : "border border-white/[0.06] bg-card/60 text-muted-foreground",
+            callable && "cursor-pointer hover:border-gold-400/40 hover:text-gold-300",
+          );
+          const inner = (
+            <>
+              {isLast && (
+                <motion.span
+                  className="pointer-events-none absolute inset-0 rounded-lg ring-2 ring-gold-300"
+                  initial={{ opacity: 0.8, scale: 0.9 }}
+                  animate={{ opacity: 0, scale: 1.45 }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                />
+              )}
+              {n}
+            </>
+          );
+          return onCall ? (
+            <motion.button
+              key={i}
+              type="button"
+              disabled={!callable}
+              onClick={() => onCall(n)}
+              whileTap={callable ? { scale: 0.92 } : undefined}
+              aria-label={marked ? `${n}, already called` : `Call ${n}`}
+              className={className}
+            >
+              {inner}
+            </motion.button>
+          ) : (
+            <div key={i} className={className}>
+              {inner}
+            </div>
+          );
+        })}
+      </div>
+
+      {struck.length > 0 && (
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+        >
+          <defs>
+            <mask id={maskId}>
+              <rect width="100" height="100" fill="white" />
+              {board.map((_, i) => {
+                const c = center(i);
+                return <circle key={i} cx={c.x} cy={c.y} r="6.5" fill="black" />;
+              })}
+            </mask>
+          </defs>
+          <g mask={`url(#${maskId})`}>
+            {struck.map((li) => {
+              const a = center(LINES[li][0]);
+              const b = center(LINES[li][4]);
+              return (
+                <g key={li}>
+                  <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="hsl(var(--primary))" strokeWidth={6} strokeLinecap="round" opacity={0.2} />
+                  <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="hsl(var(--primary))" strokeWidth={3} strokeLinecap="round" opacity={0.95} />
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,70 @@
+# ---- secrets (never commit) ----
+.env
+.env.*
+!.env.example
+!.env*.example
+!.env.example.*
+*.key
+*.pem
+*.p12
+*.keystore
+keystore/
+keystores/
+.secrets/
+.deployer-wallet*
+.wallet-test-strategies*
+.env.workers
+**/.local/
+*mnemonic*
+*secret*.json
+id_rsa*
+
+# ---- deps / build output ----
+node_modules/
+.next/
+.turbo/
+.vercel/
+dist/
+build/
+out/
+cache/
+target/
+coverage/
+*.tsbuildinfo
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# foundry deps (reinstall with `forge install`)
+**/contracts/lib/
+**/Contracts/lib/
+flowrol/flowroll-contract/lib/
+iusd-payment/packages/contracts/foundry/lib/
+
+# ---- large / local-only ----
+*.mp4
+!Canton-hacathon/cermin-rwa/video/public/video/*.mp4
+*.mov
+*.y4m
+*.log
+*.sqlite
+*.sqlite-*
+*.db
+demo-videos/out/
+.DS_Store
+
+# agent worktrees / local claude state
+**/.claude/worktrees/
+**/.claude/settings.local.json
+
+# bot wallet lists (contain mnemonics)
+iusd-payment/packages/api/bots.json
+iusd-payment/packages/api/bots-test.json
+**/bots*.json
+# headless browser profiles from capture scripts
+**/.chrome-profile*/
+**/chrome-profile*/
+**/.puppeteer*/
+**/user-data-dir*/

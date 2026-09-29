@@ -1,0 +1,259 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------
+ * Cermin design tokens — "quiet private bank": deep ink surfaces, warm
+ * parchment text, a muted gold accent, and calm status colors instead
+ * of stoplight red/green. No neon, no gradients-on-white.
+ *
+ * Semantic theming (Task 9): every color below is named for its ROLE
+ * (surface/foreground/accent/status), not its raw hue, so the same
+ * class (e.g. `bg-surface-raised`, `text-foreground`) can carry a
+ * different value per theme without any component change. The values
+ * declared here in `@theme` are the DARK theme — and are byte-for-byte
+ * identical to the original palette the user loves. The `[data-theme=
+ * 'light']` block below is the only place light-theme values live.
+ *
+ * `hairline`/`hairline-strong`, `gold`/`gold-soft`, and the status
+ * families (`sage`/`amber`/`terracotta`, each with a `-dim` variant)
+ * keep their original brand-hue names on purpose — they're proper
+ * nouns for this palette, not raw-value aliases, so they don't need
+ * renaming to stay semantic; only their light-theme values differ.
+ * ------------------------------------------------------------------- */
+@theme {
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Surfaces, darkest (page) to most elevated (active/hover fills). */
+  --color-surface-app: #0a0c10;
+  --color-surface-raised: #171a21;
+  --color-surface-sunken: #1c1f27;
+  --color-surface-overlay: #262a34;
+  --color-surface-overlay-strong: #343945;
+
+  --color-hairline: rgba(243, 237, 226, 0.08);
+  --color-hairline-strong: rgba(243, 237, 226, 0.14);
+
+  /* Foreground (text) — primary/muted/faint. */
+  --color-foreground: #f3ede2;
+  --color-foreground-muted: #c9c2b4;
+  --color-foreground-faint: #8b8778;
+
+  /* Brand accent (gold) — used for both fills (buttons, progress) and
+     text/links, plus the text color used ON TOP of a solid accent fill. */
+  --color-gold: #c9a869;
+  --color-gold-soft: #e4cf9d;
+  --color-on-gold: #0a0c10;
+
+  /* Status families — each pairs a saturated "main" (text/dot/ring/thumb)
+     with a muted "-dim" (quiet background fill behind a badge/track). */
+  --color-sage: #8fc39b;
+  --color-sage-dim: #3c4a3f;
+
+  --color-amber: #dba75c;
+  --color-amber-dim: #4a3f2b;
+
+  --color-terracotta: #d68a6c;
+  --color-terracotta-dim: #4a352d;
+
+  /* Comic ink line — the outline + hard offset shadow color for the comic kit
+     (InkCard frame, ComicTag stroke). On the DARK theme this is a parchment
+     line (like the video's ink-on-ink panels: a light frame reads as a comic
+     border on the dark surfaces), on the LIGHT theme it's true dark ink. Both
+     are non-text decoration; body text keeps its own AA-checked tokens. */
+  --color-ink-line: rgba(243, 237, 226, 0.82);
+
+  --shadow-card: 0 1px 0 rgba(243, 237, 226, 0.04) inset, 0 20px 40px -24px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------------------------------------------------------------------
+ * Light theme — same hue families, remapped to light surfaces. NOT a
+ * naive inversion: neutrals become a warm paper/ink pairing (matching
+ * the parchment/gold palette's warmth) and the gold/sage/amber/
+ * terracotta hues are deepened only as much as needed for WCAG AA
+ * contrast on light surfaces (body text >=4.5:1, secondary >=3:1 — see
+ * .superpowers/sdd/task-9-report.md for the full contrast table).
+ * Applied via `<html data-theme="light">`, set pre-paint by the inline
+ * script in index.html (no flash of the wrong theme).
+ * ------------------------------------------------------------------- */
+:root[data-theme='light'] {
+  --color-surface-app: #f5efe2;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #efe8d8;
+  --color-surface-overlay: #e4dcc6;
+  --color-surface-overlay-strong: #d8ceb2;
+
+  --color-hairline: rgba(28, 26, 21, 0.1);
+  --color-hairline-strong: rgba(28, 26, 21, 0.18);
+
+  --color-foreground: #201d17;
+  --color-foreground-muted: #4d4738;
+  --color-foreground-faint: #746c58;
+
+  --color-gold: #8f6a29;
+  --color-gold-soft: #7d5518;
+  --color-on-gold: #ffffff;
+
+  --color-sage: #2f7a4c;
+  --color-sage-dim: #dcefe1;
+
+  --color-amber: #8f5f13;
+  --color-amber-dim: #f6e8cf;
+
+  --color-terracotta: #b1472b;
+  --color-terracotta-dim: #f7e0d6;
+
+  /* Light theme: the comic ink line is true dark ink (never white — global
+     constraint 7), the classic dark comic outline on warm paper. */
+  --color-ink-line: #201d17;
+
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 16px 32px -20px rgba(40, 32, 16, 0.16);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    /* `clip` (not `hidden`) so a comic tilt/burst never triggers horizontal
+     * scroll, WITHOUT creating a scroll container that would break the
+     * dashboard's `position: sticky` notes card. */
+    overflow-x: clip;
+    background-color: var(--color-surface-app);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Range slider thumbs, sized up for touch (>=28px visible, 44px tall hit
+   * box via the input's own height) instead of the ~16px browser default.
+   * `--thumb-color` defaults to gold (the Borrow flow's slider); Simulate's
+   * price slider keeps its existing `accent-terracotta` class, reused here
+   * as the selector that swaps the thumb color — no markup changes needed. */
+  input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2.75rem;
+    background: transparent;
+    cursor: pointer;
+    --thumb-color: var(--color-gold);
+  }
+  input[type='range'].accent-terracotta {
+    --thumb-color: var(--color-terracotta);
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--color-hairline-strong);
+  }
+  input[type='range']::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--color-hairline-strong);
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -12px;
+    height: 1.75rem;
+    width: 1.75rem;
+    border-radius: 9999px;
+    background: var(--thumb-color);
+    border: 3px solid var(--color-surface-raised);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  input[type='range']::-moz-range-thumb {
+    height: 1.75rem;
+    width: 1.75rem;
+    border-radius: 9999px;
+    background: var(--thumb-color);
+    border: 3px solid var(--color-surface-raised);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@layer utilities {
+  /* A faint gold glow top-left plus a near-black base — depth without noise.
+   * (`.font-display` and `.tabular-nums` don't need manual definitions:
+   * Tailwind v4 derives the former from the `--font-display` theme key and
+   * ships the latter as a built-in font-variant-numeric utility.) */
+  .bg-cermin-atmosphere {
+    background-color: var(--color-surface-app);
+    background-image:
+      radial-gradient(60% 50% at 12% 0%, var(--atmosphere-gold), transparent 60%),
+      radial-gradient(50% 40% at 100% 10%, var(--atmosphere-sage), transparent 60%);
+  }
+}
+
+/* Gentle idle bob for the comic Mascot. Defined here (not inline) so the
+ * arbitrary `animate-[cermin-bob_...]` utility resolves it. The Mascot also
+ * refuses to apply this in JS under reduced motion, and the global
+ * reduced-motion rule below neutralizes it as a belt-and-suspenders. */
+@keyframes cermin-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* One-shot comic "pop": a burst/stamp punches in on load, then settles at its
+ * resting state (opacity 1 / scale 1 — the base style below the animation, so
+ * the element stays visible after the animation ends and under reduced motion,
+ * where the global rule neutralizes it and it simply appears). Used behind the
+ * Landing hero's status stamp via `motion-safe:animate-[cermin-pop-in_...]`. */
+@keyframes cermin-pop-in {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+:root {
+  --atmosphere-gold: rgba(201, 168, 105, 0.1);
+  --atmosphere-sage: rgba(143, 195, 155, 0.06);
+}
+
+:root[data-theme='light'] {
+  --atmosphere-gold: rgba(143, 106, 41, 0.12);
+  --atmosphere-sage: rgba(47, 122, 76, 0.07);
+}
+
+/* Respect the OS-level motion preference for any animation/transition —
+ * existing framer-motion durations are untouched (pre-Task 9), but this
+ * covers every new transition this task adds (nav active-state, theme
+ * toggle, bottom-nav) and any future one. The theme switch itself never
+ * animates: it's an instant CSS-variable swap, not a transitioned layout. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

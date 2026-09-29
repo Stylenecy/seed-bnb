@@ -1,0 +1,36 @@
+{
+  "network": "bsc-testnet",
+  "chainId": 97,
+  "version": "1.3.0",
+  "status": "DEPLOYED",
+  "contracts": {
+    "BingoChainProxy": "0x501125227641B73061B1EDAf1a60CbF56701d110",
+    "BingoChainImplementation": "0x6Bc43092780Ab107c8E4976d8E39733Ae01508Cb"
+  },
+  "deployBlock": 132984340,
+  "txs": {
+    "implementation": "0xe6c9b297715f784f067c44b2868a96457668931dea0ae5a19e5f06ab5156789b",
+    "proxy": "0xc0703ad1c66f405330f93bf5a60b519a875e2d7f107c84490980f33d3d124635"
+  },
+  "init": {
+    "owner": "0x3F46b654035aA92738FE4dC7dc9538Ca9bA07CEA",
+    "treasury": "0x3F46b654035aA92738FE4dC7dc9538Ca9bA07CEA",
+    "protocolFeeBps": 100
+  },
+  "tokens": {
+    "WBNB": {
+      "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+      "minStake": "1000000000000000",
+      "allowed": true
+    },
+    "LANCE": {
+      "address": "0x56a647A62C68BF7228Cb0b876a937a7331a41bf9",
+      "minStake": "10000000000000000000",
+      "allowed": true
+    },
+    "USDT": "not deployed on testnet (no MockERC20 in this repo)"
+  },
+  "explorer": "https://testnet.bscscan.com",
+  "verified": false,
+  "notes": "Deployed 2026-09-25 with script/Deploy.s.sol --rpc-url bsc_testnet. Not verified on BscScan (no ETHERSCAN_API_KEY). Celo mainnet (celo-mainnet.json) remains the live production deployment."
+}

@@ -1,0 +1,240 @@
+module Cermin.Tests.GuardTests where
+
+import Daml.Script
+import DA.Assert ((===))
+import DA.Time (hours)
+import Cermin.Oracle
+import Cermin.Credit
+import Cermin.Guard
+import Cermin.Tests.CreditTests (Parties(..), originateDemoLoan)
+
+-- | A fully wired rescue scene: an originated demo loan, a live PriceFeed at
+-- 1.00, a private GuardPolicy and a funded ShadowVault. Parameterised by the
+-- vault balance and the policy knobs so each test can exercise a different
+-- cap.
+data GuardScene = GuardScene
+  with
+    parties : Parties
+    loan : ContractId Loan
+    feed : ContractId PriceFeed
+    policy : ContractId GuardPolicy
+    vault : ContractId ShadowVault
+
+setupGuardScene : Decimal -> Int -> Int -> Decimal -> Script GuardScene
+setupGuardScene vaultBalance triggerBps targetBps maxRepayPerEvent = do
+  (ps@Parties{..}, loanCid) <- originateDemoLoan
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  policyCid <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = triggerBps
+      targetRatioBps = targetBps
+      maxRepayPerEvent
+      couponSweep = False
+
+  vaultCid <- submit borrower do
+    createCmd ShadowVault with
+      borrower
+      guardAgent
+      balance = vaultBalance
+
+  pure GuardScene with parties = ps, loan = loanCid, feed = feedCid, policy = policyCid, vault = vaultCid
+
+-- | Oracle publishes a new price, returning the recreated feed cid.
+dropPrice : Party -> ContractId PriceFeed -> Decimal -> Script (ContractId PriceFeed)
+dropPrice oracle feedCid newPrice =
+  submit oracle do exerciseCmd feedCid UpdatePrice with newPrice
+
+-- | The headline demo rescue. Vault 1,500; trigger 130%; target 145%; cap
+-- 2,000. Price 1.00 -> 0.76 drops the Health Ratio to 12667 bps (< 13000),
+-- GuardRepay pays ~759 mUSD, outstanding falls to ~5,241 and the ratio is
+-- restored to ~14500 bps (>= target). A RescueEvent records before/after.
+test_guardRepayRestoresHealth : Script ()
+test_guardRepayRestoresHealth = script do
+  scene <- setupGuardScene 1500.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+
+  feedCid <- dropPrice oracle scene.feed 0.76
+
+  result <- submit guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+  Some loan <- queryContractId borrower result.loan
+  assert (loan.outstanding > 5241.0 && loan.outstanding < 5242.0)
+
+  Some vault <- queryContractId borrower result.vault
+  assert (vault.balance > 741.0 && vault.balance < 742.0)
+
+  Some rescue <- queryContractId borrower result.rescue
+  rescue.healthBefore === 12667
+  assert (rescue.healthAfter >= 14500)
+  assert (rescue.amount > 758.0 && rescue.amount < 759.0)
+  rescue.loanId === "loan-1"
+
+-- | GuardRepay REFUSED on a healthy loan: at price 1.00 the ratio is 16667
+-- bps, above the 13000 trigger, so the on-ledger gate rejects the call. This
+-- is the crux — the delegation cannot fire without a real breach.
+test_guardRepayRefusedWhenHealthy : Script ()
+test_guardRepayRefusedWhenHealthy = script do
+  scene <- setupGuardScene 1500.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+
+  submitMustFail guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = scene.feed
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+-- | Repay is capped by maxRepayPerEvent (500) even though ~759 is needed.
+test_guardRepayCappedByMaxRepayPerEvent : Script ()
+test_guardRepayCappedByMaxRepayPerEvent = script do
+  scene <- setupGuardScene 1500.0 13000 14500 500.0
+  let Parties{..} = scene.parties
+
+  feedCid <- dropPrice oracle scene.feed 0.76
+  result <- submit guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+  Some rescue <- queryContractId borrower result.rescue
+  rescue.amount === 500.0
+  Some loan <- queryContractId borrower result.loan
+  loan.outstanding === 5500.0
+  Some vault <- queryContractId borrower result.vault
+  vault.balance === 1000.0
+
+-- | Repay is capped by the vault balance (300) when the reserve is thin.
+test_guardRepayCappedByBalance : Script ()
+test_guardRepayCappedByBalance = script do
+  scene <- setupGuardScene 300.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+
+  feedCid <- dropPrice oracle scene.feed 0.76
+  result <- submit guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+  Some rescue <- queryContractId borrower result.rescue
+  rescue.amount === 300.0
+  Some loan <- queryContractId borrower result.loan
+  loan.outstanding === 5700.0
+  Some vault <- queryContractId borrower result.vault
+  vault.balance === 0.0
+
+-- | Borrower manages their own reserve: TopUp and Withdraw.
+test_vaultTopUpWithdraw : Script ()
+test_vaultTopUpWithdraw = script do
+  scene <- setupGuardScene 1500.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+
+  toppedCid <- submit borrower do exerciseCmd scene.vault TopUp with amount = 500.0
+  Some topped <- queryContractId borrower toppedCid
+  topped.balance === 2000.0
+
+  drawnCid <- submit borrower do exerciseCmd toppedCid Withdraw with amount = 800.0
+  Some drawn <- queryContractId borrower drawnCid
+  drawn.balance === 1200.0
+
+  submitMustFail borrower do exerciseCmd drawnCid Withdraw with amount = 99999.0
+
+-- | The failure path: an empty vault cannot rescue, so the Guard Agent opens
+-- a 72h GracePeriod (which the pool CAN see). LastResortDefault is refused
+-- until the grace expires, then succeeds. This is the ONE test that exercises
+-- the last-resort path; the happy demo never reaches it.
+test_emptyVaultGraceAndLastResortDefault : Script ()
+test_emptyVaultGraceAndLastResortDefault = script do
+  scene <- setupGuardScene 0.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+
+  feedCid <- dropPrice oracle scene.feed 0.76
+
+  -- an empty vault has nothing to repay.
+  submitMustFail guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+  -- Guard Agent opens grace; the pool learns of it.
+  graceCid <- submit guardAgent do
+    exerciseCmd scene.vault StartGracePeriod with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+  Some grace <- queryContractId poolOperator graceCid
+  grace.loanId === "loan-1"
+
+  -- cannot default before the grace window closes.
+  submitMustFail poolOperator do
+    exerciseCmd scene.loan LastResortDefault with gracePeriodCid = graceCid
+
+  -- after 72h the last resort is available.
+  passTime (hours 73)
+  submit poolOperator do
+    exerciseCmd scene.loan LastResortDefault with gracePeriodCid = graceCid
+
+-- | PRIVACY: the pool operator and any other borrower can never see a
+-- borrower's ShadowVault or GuardPolicy; only the borrower and Guard Agent can.
+test_poolCannotSeeVaultOrPolicy : Script ()
+test_poolCannotSeeVaultOrPolicy = script do
+  scene <- setupGuardScene 1500.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+  borrower2 <- allocatePartyByHint (PartyIdHint "Borrower2")
+
+  -- owner and delegate can see both.
+  Some _ <- queryContractId borrower scene.vault
+  Some _ <- queryContractId guardAgent scene.vault
+  Some _ <- queryContractId borrower scene.policy
+  Some _ <- queryContractId guardAgent scene.policy
+
+  -- the pool operator sees neither.
+  poolVault <- queryContractId poolOperator scene.vault
+  poolVault === None
+  poolPolicy <- queryContractId poolOperator scene.policy
+  poolPolicy === None
+
+  -- a second, unrelated borrower sees nothing.
+  b2Vault <- queryContractId borrower2 scene.vault
+  b2Vault === None
+  b2Policy <- queryContractId borrower2 scene.policy
+  b2Policy === None
+
+-- | PRIVACY: a RescueEvent is visible only to the borrower and Guard Agent —
+-- the pool never learns an intervention happened, only that the loan is well.
+test_poolCannotSeeRescueEvent : Script ()
+test_poolCannotSeeRescueEvent = script do
+  scene <- setupGuardScene 1500.0 13000 14500 2000.0
+  let Parties{..} = scene.parties
+  borrower2 <- allocatePartyByHint (PartyIdHint "Borrower2")
+
+  feedCid <- dropPrice oracle scene.feed 0.76
+  result <- submit guardAgent do
+    exerciseCmd scene.vault GuardRepay with
+      priceFeedCid = feedCid
+      loanCid = scene.loan
+      policyCid = scene.policy
+
+  -- borrower and Guard Agent see the event.
+  Some _ <- queryContractId borrower result.rescue
+  Some _ <- queryContractId guardAgent result.rescue
+
+  -- pool operator and a second borrower do not.
+  poolView <- queryContractId poolOperator result.rescue
+  poolView === None
+  b2View <- queryContractId borrower2 result.rescue
+  b2View === None

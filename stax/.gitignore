@@ -1,0 +1,54 @@
+# Stax — repo root ignore (web/ and contracts/ also have their own)
+
+# dependencies
+**/node_modules/
+
+# secrets — NEVER commit real env. The .env.example templates ARE committed.
+.env
+.env.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# next.js / build output
+**/.next/
+**/out/
+**/build/
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# hardhat / solidity build artifacts
+**/artifacts/
+**/cache/
+**/typechain-types/
+**/coverage/
+**/coverage.json
+
+# internal planning notes — not for the public repo
+tasks/
+
+# personal / submission + marketing helper docs — local only.
+# Contain the owner's email and private notes; never commit.
+# (BRAND.md, SPEC.md, PRODUCT-BRIEF.md, demo.gif stay tracked — they're public.)
+docs/BUIDL_*
+docs/X_WEEK_PLAN.md
+
+# pitch deck + assets built for demo day — local only, never committed.
+docs/pitch-deck.html
+docs/pitch-deck-notes.md
+docs/Stax-pitch-deck.pptx
+docs/teleprompter/
+# partner logos added only for the deck (the app uses bnb.svg + backed.svg).
+web/public/brand/partners/mantle.svg
+web/public/brand/partners/fluxion.svg
+web/public/brand/partners/fluxion-white.svg
+
+# demo / marketing video project — kept local only, never committed
+video/
+
+# os / editor / misc
+.DS_Store
+Thumbs.db
+*.pem
+*.log
+**/.vercel

@@ -1,0 +1,23 @@
+{
+  "chainId": 97,
+  "network": "bsc-testnet",
+  "deployedAt": "2026-09-25",
+  "deployer": "0xE85f64383Fd58ddC0b7eC64EF1557317B91Ac0B1",
+  "explorer": "https://testnet.bscscan.com",
+  "contracts": {
+    "tWBNB": "0xe3768ca9E91B43F9f96f1A5d37848e2568023923",
+    "tUSDT": "0x3Ba7BFdFe0D3a5435665839e4F8F57Fd874Cb6d4",
+    "EquinoxRegistry": "0x3295b8931F72D98D426334f8266aDC0a7c661537",
+    "PriceOracle": "0xcC4041A339686d812aFB0d8697ce2EBeEaC5e95d",
+    "EquinoxVaults": "0x5735380DD9Fa22f2c6f5B5e34A6Cb0619CA90B32",
+    "NativePoolDebt": "0xEbC610e820f6997bF8BC53C596B6fB00799E2d49",
+    "NativePoolCollateral": "0x647A40014401B65c23518D9d11772a0530d49549",
+    "ShadowPool": "0x3D8bC76c19257E5f56b21Bfcc08f01845c193C89"
+  },
+  "roles": {
+    "admin": "0xE85f64383Fd58ddC0b7eC64EF1557317B91Ac0B1",
+    "agent": "0xE85f64383Fd58ddC0b7eC64EF1557317B91Ac0B1",
+    "oracleKeeper": "0xE85f64383Fd58ddC0b7eC64EF1557317B91Ac0B1"
+  },
+  "broadcast": "contracts/broadcast/Deploy.s.sol/97/run-latest.json"
+}

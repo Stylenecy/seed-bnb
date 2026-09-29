@@ -1,0 +1,23 @@
+Scanning 0xF977814e90dA44bFA03b6295A0616a897441aceC across 11 chains...
+
+  CHAIN                  BALANCE             TXS    TYPE  USDC        USDT          FDUSD      DAI  STATUS
+  -----                  -------             ---    ----  ----        ----          -----      ---  ------
+  BNB Smart Chain        7198702.731736 BNB  11249  EOA   $100000000  $100000003    $27515628  -    ✓
+  opBNB                  58526.220999 BNB    42     EOA   -           -             -          -    ✓
+  Ethereum               439595.913402 ETH   20629  EOA   $142.24     $16000000000  -          -    ✓
+  Base                   30002.599789 ETH    444    EOA   $15115      -             -          -    ✓
+  Optimism               99.999613 ETH       282    EOA   $0.00       $77000000     -          -    ✓
+  Arbitrum               10067.280314 ETH    710    EOA   $0.05       $10000000     -          -    ✓
+  Mantle                 4.000000 MNT        0      EOA   -           -             -          -    ✓
+  Scroll                 -                   -      -     -           -             -          -    ✗ err
+  Linea                  0.000989 ETH        10     EOA   -           -             -          -    ✓
+  zkSync Era             0.587972 ETH        84     EOA   -           -             -          -    ✓
+  BSC Testnet (testnet)  6.087116 tBNB       0      EOA   -           -             -          -    ✓
+
+  Summary:
+  Active on 10/11 chains | Multi-chain: Yes
+  Total native: 7737005.421930 (sum of ETH/BNB/MNT units, not price-normalised) | Total txs: 33450
+  Stablecoins:  USDT: $16187000003.16  USDC: $100015257.34  FDUSD: $27515627.73
+  Has contracts: No | Has stablecoins: Yes | Scan: 10549ms
+
+/Users/kiel/Documents/Hacathon/seed-bnb-indo/Tessera/tessera scan-chain   0.08s user 0.07s system 1% cpu 10.559 total

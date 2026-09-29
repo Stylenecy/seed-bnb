@@ -1,0 +1,17 @@
+# lance-hub voice-over — scripts/_vo/gen.py lance-hub
+# id | rate | pitch | text   (claims from celo-pos/lance-hub/VERIFY-BNB.md + on-screen data:
+# LANCE = internal ecosystem credit / shared pool, not listed on any exchange; BSC testnet,
+# test amounts; smoke flow sent with cast; 13/13 forge tests. The Bingo screen is the /create
+# form only: no LANCE-staked game was played, so none is claimed. No price / returns language.)
+voice = en-GB-RyanNeural
+hook     | +10% | +0Hz | You earn in one app, and play in another.
+silo     | +12% | -1Hz | But each app keeps its own balance.
+intro    | +10% | -1Hz | LanceHub is one shared pool behind both.
+celo     | +12% | -1Hz | On Celo mainnet, fifty-six hundred LANCE, all backed by the pool.
+deposit  | +12% | -1Hz | Deposit into the pool, and LANCE is minted.
+redeem   | +12% | -1Hz | Redeem it back any time, for a one percent fee.
+bingo    | +12% | -1Hz | BingoChain's BSC build lists LANCE as a stake token.
+proof    | +20% | -1Hz | Live on BSC testnet. Each step sent with cast, in test amounts.
+tests    | +12% | +0Hz | Thirteen of thirteen forge tests pass.
+outro    | +0%  | -2Hz | LanceHub. One shared pool for the ecosystem.
+credit   | +10% | -2Hz | An internal ecosystem credit, not listed on any exchange. Test amounts only.

@@ -1,0 +1,20 @@
+# stax voice-over — scripts/_vo/gen.py stax
+# id | rate | pitch | text      (claims from stax/VERIFY-BNB.md: real BSC testnet deploy, mock AAPLx/TSLAx, $20 smoke run)
+voice = en-GB-RyanNeural
+hook    | +8%  | +0Hz | You want Apple and Tesla. You have twenty dollars.
+risk    | +20% | -1Hz | Which ones? How much? And who checks the risk?
+intro   | +10% | -1Hz | Meet Stax, and Vera, its A.I. investing agent.
+bnb     | +6%  | +1Hz | Now on BNB Chain.
+say     | +10% | +0Hz | Tell Vera a goal and an amount.
+plan    | +12% | -1Hz | She picks the mix, and signs it with a risk score.
+gate    | +22% | -1Hz | Too risky? A verifier contract reverts it.
+swap    | +12% | -1Hz | The executor swaps on PancakeSwap.
+app     | +8%  | -1Hz | This is the real Stax app. One button.
+picks   | +12% | -1Hz | Vera turns the goal into a plan, with reasons.
+fee     | +14% | +0Hz | The fee is up front: a quarter of a percent.
+vera    | +12% | -1Hz | Vera is a registered ERC eighty-oh-four agent. Only her key signs plans.
+proof   | +12% | -1Hz | Real contracts on BSC testnet, with mock Apple and Tesla pools.
+smoke   | +10% | -1Hz | Then a real twenty-dollar run.
+blocked | +24% | -1Hz | And a too-risky plan? Reverted.
+stats   | +10% | +0Hz | Twenty dollars, two stocks, five cents in fees.
+outro   | +6%  | -2Hz | Stax. Say it. Vera invests it.

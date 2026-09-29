@@ -1,0 +1,19 @@
+# drift voice-over — scripts/_vo/gen.py drift
+# id | rate | pitch | text   (claims from seed-bnb-indo/drift/VERIFY-BNB.md: real BSC testnet deploy,
+# cast smoke flow + engine writes, not verified on BscScan; the web capture had the Bybit link stubbed)
+voice = en-GB-RyanNeural
+hook     | +10% | +0Hz | Your bot reads the chart. It can't read the macro.
+intro    | +8%  | -1Hz | DRIFT is a trading agent that knows the market regime.
+bnb      | +10% | -1Hz | And its risk guard lives on BNB Chain.
+regime   | +16% | -1Hz | It turns Bitcoin's volatility and trend into a regime, on-chain.
+veto     | +16% | -1Hz | Risk-off blocks longs. Too deep a loss halts the bot.
+cockpit  | +12% | -1Hz | The real web cockpit: live markets and out-of-sample research.
+stub     | +16% | -1Hz | The guard is live. The Bybit link is stubbed here.
+live     | +12% | -1Hz | On testnet, risk-off vetoes the long.
+limit    | +14% | -1Hz | Past the twenty percent limit, the bot halts.
+agent    | +14% | -1Hz | Only the agent can steer it.
+forced   | +12% | +0Hz | Someone forced risk-on.
+engine   | +12% | -1Hz | The engine put it back, on its own.
+txs      | +12% | -1Hz | Eight live transactions, every receipt status one.
+gas      | +25% | -1Hz | Seven of seven tests, and gas under a ten-thousandth of a test BNB.
+outro    | -2%  | -2Hz | The guard has the last word.

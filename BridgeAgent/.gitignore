@@ -1,0 +1,35 @@
+# Local-only docs (mirrors hackathon brief; not redistributed)
+/docs
+
+# Secrets
+.env
+.env.local
+**/.env
+!**/.env.example
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/*/dry-run/
+contracts/lib/
+# Keep contracts/broadcast/<chain>/run-latest.json in repo as deployment provenance.
+
+# Node / Next.js (web/ companion comes later)
+node_modules/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/

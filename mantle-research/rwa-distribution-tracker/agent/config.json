@@ -1,0 +1,29 @@
+{
+  "chain_id": 56,
+  "explorer_api_key_env": "ETHERSCAN_API_KEY",
+  "dashboard_url": "TODO: publish the BNB Chain Dune dashboard and paste its URL here",
+  "tokens": {},
+  "tokens_example": {
+    "SYMBOL": {
+      "address": "TODO: BEP-20 RWA token address from bscscan.com",
+      "issuer_wallet": "TODO: issuer/deployer wallet of that token"
+    }
+  },
+  "thresholds": {
+    "holders_target": 500,
+    "top1_pct_target": 75.0,
+    "alert_on_top1_drop_pts": 1.0,
+    "alert_on_holder_jump": 25
+  },
+  "dune": {
+    "enabled": false,
+    "query_ids": {
+      "concentration": null
+    },
+    "max_divergence_pts": 2.0,
+    "note": "Re-publish dune/q2_concentration_current.sql on Dune for BNB Chain, put its id here and set enabled=true. Sync-check needs DUNE_API_KEY."
+  },
+  "webhook_env_var": "ALERT_WEBHOOK_URL",
+  "state_file": "state.json",
+  "reports_dir": "reports"
+}

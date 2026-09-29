@@ -1,0 +1,243 @@
+// Per-token paper daemon orchestrator. Spawns one `bacend paper start`
+// child process per onboarded tokenId; tracks PIDs; supports graceful
+// stop. The child inherits the operator's wallet via env so its
+// LiveCertificate.update() calls are signed by the ZA operator.
+
+import { spawn, type ChildProcess } from 'node:child_process';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { dirname, resolve as resolvePath } from 'node:path';
+import { log } from '../log.js';
+import { onboardConfig } from './config.js';
+
+export interface DaemonSpec {
+  tokenId: bigint;
+  agentSource: string;
+  genesisHash: string;
+  symbol: string;
+  interval: string;
+  market: 'spot' | 'perp';
+  barsPerEpoch: number;
+  initialBalance: number;
+  leverage: number;
+  feeBps: number;
+  slippageBps: number;
+}
+
+export interface ActiveDaemon {
+  tokenId: bigint;
+  pid: number;
+  agentPath: string;
+  startedAt: number;
+}
+
+const active = new Map<string, ActiveDaemon & { child: ChildProcess }>();
+
+function key(tokenId: bigint): string {
+  return tokenId.toString();
+}
+
+/**
+ * Deterministically map a tokenId to one of the operator wallets in the pool.
+ * Using modulo keeps the assignment stable across restarts (same token always
+ * gets the same wallet) — important so the same on-chain nonce sequence
+ * continues after a Railway redeploy.
+ *
+ * Falls back to a single-wallet pool when OPERATOR_KEYS_POOL is unset.
+ */
+function pickOperatorKey(tokenId: bigint): { key: string; index: number } {
+  const pool = onboardConfig.operatorKeyPool;
+  const idx = Number(tokenId % BigInt(pool.length));
+  return { key: pool[idx]!, index: idx };
+}
+
+async function writeAgentSource(tokenId: bigint, source: string): Promise<string> {
+  const filePath = resolvePath(onboardConfig.agentDir, `agent-${tokenId.toString()}.ts`);
+  await mkdir(dirname(filePath), { recursive: true });
+  await writeFile(filePath, source, { mode: 0o600 });
+  return filePath;
+}
+
+export function isActive(tokenId: bigint): boolean {
+  return active.has(key(tokenId));
+}
+
+export function listActive(): ActiveDaemon[] {
+  return Array.from(active.values()).map(({ tokenId, pid, agentPath, startedAt }) => ({
+    tokenId,
+    pid,
+    agentPath,
+    startedAt,
+  }));
+}
+
+const MAX_DAEMONS = Number(process.env.ONBOARD_MAX_DAEMONS ?? '16');
+
+export async function startDaemon(spec: DaemonSpec): Promise<ActiveDaemon> {
+  const k = key(spec.tokenId);
+  if (active.has(k)) {
+    throw new Error(`tokenId ${k} already has an active daemon (pid=${active.get(k)!.pid})`);
+  }
+  // Cap concurrent daemons so onboarding can't fork-bomb the host (M4).
+  if (active.size >= MAX_DAEMONS) {
+    throw new Error(`daemon capacity reached (${active.size}/${MAX_DAEMONS}); cannot start tokenId ${k}`);
+  }
+
+  const agentPath = await writeAgentSource(spec.tokenId, spec.agentSource);
+  const walletAssign = pickOperatorKey(spec.tokenId);
+  log.info('onboard.spawn.start', {
+    tokenId: k,
+    agentPath,
+    operatorIndex: walletAssign.index,
+    poolSize: onboardConfig.operatorKeyPool.length,
+  });
+
+  // Strip every secret the untrusted owner agent must never see before handing
+  // env to the child. The agent is imported in-process by the paper runner, so
+  // it can still read the SINGLE assigned operator key set below — that residual
+  // only closes with the sandbox (M4) / TEE (v1.0). It must NEVER receive the
+  // whole operator key pool or any other service's credentials.
+  const childEnv: NodeJS.ProcessEnv = { ...process.env };
+  for (const secret of [
+    'OPERATOR_KEYS_POOL',
+    'OPERATOR_PRIVATE_KEY', // re-set per-token below
+    'ORACLE_PRIVATE_KEY',
+    'ONBOARD_AUTH_TOKEN',
+    'ORACLE_AUTH_TOKEN',
+    'PRIVATE_KEY',
+  ]) {
+    delete childEnv[secret];
+  }
+  // Defense-in-depth: drop anything that looks like a key/secret/token.
+  for (const name of Object.keys(childEnv)) {
+    if (/(_KEY$|KEYS_|SECRET|_TOKEN$|MNEMONIC|PASSWORD)/i.test(name)) delete childEnv[name];
+  }
+
+  const child = spawn(
+    'npx',
+    ['tsx', 'src/index.ts', 'paper', 'start'],
+    {
+      env: {
+        ...childEnv,
+        // Cap the child V8 heap so a runaway/malicious agent can't exhaust host
+        // memory (M4). Full CPU/sandbox isolation lands with the TEE (v1.0).
+        NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --max-old-space-size=${Number(process.env.ONBOARD_DAEMON_MAX_MB ?? '512')}`.trim(),
+        PAPER_TOKEN_ID: k,
+        PAPER_AGENT_MODULE: agentPath,
+        PAPER_GENESIS_HASH: spec.genesisHash,
+        PAPER_SYMBOL: spec.symbol,
+        PAPER_INTERVAL: spec.interval,
+        PAPER_MARKET: spec.market,
+        PAPER_BARS_PER_EPOCH: String(spec.barsPerEpoch),
+        PAPER_INITIAL_BALANCE: String(spec.initialBalance),
+        PAPER_LEVERAGE: String(spec.leverage),
+        PAPER_FEE_BPS: String(spec.feeBps),
+        PAPER_SLIPPAGE_BPS: String(spec.slippageBps),
+        PAPER_DRY_RUN: 'false',
+        // Place snapshots under the persistent Railway volume mount
+        // (`/app/data/onboard` → `onboard-volume`). Without this they live
+        // on the ephemeral container disk and reset on every redeploy,
+        // which the runner papers over via `readChainSeed()` but at the
+        // cost of resetting `liveMetrics` until the next epoch fold-in.
+        PAPER_SNAPSHOT_PATH: resolvePath(onboardConfig.agentDir, '..', 'paper', `snapshot-${k}.json`),
+        // Deterministic per-token wallet from the operator pool. Each child
+        // process runs with its own OPERATOR_PRIVATE_KEY so the 5 daemons
+        // don't fight over a single wallet's nonce when committing 1 tx/s.
+        OPERATOR_PRIVATE_KEY: walletAssign.key,
+        // Force REST polling instead of WebSocket. From Railway Singapore the
+        // perp WS connects but `kline.x === true` events were not arriving
+        // reliably in earlier trials — REST pulls the latest closed candle
+        // every 30s from `fapi.binance.com` (or spot equivalent) which is
+        // observably reliable across the same region.
+        PAPER_BINANCE_MODE: process.env.PAPER_BINANCE_MODE ?? 'rest',
+        // PAPER_BACKFILL_DAYS intentionally NOT forwarded — the runner uses
+        // it as an XOR switch (backfill-only OR live-only), so setting it
+        // here would replay N days of candles, commit N epochs on chain,
+        // then exit before going live. Live commits start cold (PaperEngine
+        // pushes equity every bar regardless of PAPER_WARMUP=26, so the
+        // chain commits still flow; agent decisions just stay flat for the
+        // first 26 bars).
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    },
+  );
+
+  child.stdout?.on('data', (chunk: Buffer) => {
+    process.stdout.write(`[paper:${k}] ${chunk.toString()}`);
+  });
+  child.stderr?.on('data', (chunk: Buffer) => {
+    process.stderr.write(`[paper:${k}:err] ${chunk.toString()}`);
+  });
+  child.on('exit', (code, sig) => {
+    log.info('onboard.spawn.exit', { tokenId: k, code, sig });
+    active.delete(k);
+  });
+
+  if (!child.pid) {
+    throw new Error(`failed to spawn paper child for tokenId ${k}`);
+  }
+
+  const record: ActiveDaemon & { child: ChildProcess } = {
+    tokenId: spec.tokenId,
+    pid: child.pid,
+    agentPath,
+    startedAt: Date.now(),
+    child,
+  };
+  active.set(k, record);
+  log.info('onboard.spawn.ready', { tokenId: k, pid: child.pid });
+  return { tokenId: spec.tokenId, pid: child.pid, agentPath, startedAt: record.startedAt };
+}
+
+export async function stopDaemon(tokenId: bigint, opts?: { graceMs?: number; deleteAgent?: boolean }): Promise<boolean> {
+  const k = key(tokenId);
+  const record = active.get(k);
+  if (!record) return false;
+
+  log.info('onboard.stop.requested', { tokenId: k, pid: record.pid });
+  record.child.kill('SIGTERM');
+
+  const grace = opts?.graceMs ?? 5_000;
+  await new Promise<void>((resolveSleep) => {
+    const t = setTimeout(() => {
+      if (active.has(k)) {
+        try {
+          record.child.kill('SIGKILL');
+        } catch {
+          /* already gone */
+        }
+      }
+      resolveSleep();
+    }, grace);
+    record.child.once('exit', () => {
+      clearTimeout(t);
+      resolveSleep();
+    });
+  });
+
+  active.delete(k);
+  if (opts?.deleteAgent !== false) {
+    try {
+      await rm(record.agentPath, { force: true });
+    } catch (err: unknown) {
+      log.warn('onboard.stop.agent-cleanup-failed', { tokenId: k, err: String(err) });
+    }
+  }
+  return true;
+}
+
+/** Gracefully shut down every child on SIGTERM/SIGINT. */
+export function installShutdownHandlers(): void {
+  let shuttingDown = false;
+  const handler = async (signal: NodeJS.Signals): Promise<void> => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    log.info('onboard.shutdown.begin', { signal, activeCount: active.size });
+    await Promise.all(
+      Array.from(active.keys()).map((k) => stopDaemon(BigInt(k), { graceMs: 3_000, deleteAgent: false })),
+    );
+    log.info('onboard.shutdown.complete', {});
+    process.exit(0);
+  };
+  process.on('SIGTERM', handler);
+  process.on('SIGINT', handler);
+}

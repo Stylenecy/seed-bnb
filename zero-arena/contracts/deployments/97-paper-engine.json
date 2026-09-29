@@ -1,0 +1,9 @@
+{
+  "chainId": 97,
+  "paperEngine": {
+    "LiveCertificate": "0xc013bf70429B079D076e36D966A16F382b9c7e46",
+    "Season": "0xA50314e3d9Abd8f35134a91Fe117a18e06461a55",
+    "operator": "0x38C0152976ff5B392A6CDcF5Afe3BDDE1B6653a5",
+    "deployBlock": 132984394
+  }
+}

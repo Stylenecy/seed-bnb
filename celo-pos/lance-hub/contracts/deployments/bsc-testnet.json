@@ -1,0 +1,33 @@
+{
+  "network": "bsc-testnet",
+  "chainId": 97,
+  "version": "1.0.0",
+  "contracts": {
+    "LanceHubProxy": "0x56a647A62C68BF7228Cb0b876a937a7331a41bf9",
+    "LanceHubImplementation": "0x278d0FbaD0C63335aa05163edA7abd673F2f4a41"
+  },
+  "token": {
+    "name": "Lance",
+    "symbol": "LANCE",
+    "decimals": 18
+  },
+  "asset": {
+    "WBNB": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
+  },
+  "init": {
+    "owner": "0x3F46b654035aA92738FE4dC7dc9538Ca9bA07CEA",
+    "redeemFeeBps": 100
+  },
+  "seed": {
+    "amountWBNB": "0.002",
+    "lanceMinted": "2"
+  },
+  "deployBlock": 132984102,
+  "txs": {
+    "implementation": "0xa25aacf76fa30697937d636681de6d95b6b196d942e288cf73a226990c955828",
+    "proxy": "0x6d2b11b8486655b12fd751d329bba9b1d7ba377212853dfcdc2e6893cc560ff9"
+  },
+  "explorer": "https://testnet.bscscan.com",
+  "verified": false,
+  "notes": "Deployed 2026-09-25 with script/DeployBsc.s.sol --rpc-url bsc_testnet. Not verified on BscScan (no ETHERSCAN_API_KEY available). Celo mainnet deployment is in celo-mainnet.json."
+}

@@ -1,0 +1,21 @@
+Scanning 0x10ED43C718714eb63d5aA57B78B54704E256024E across 11 chains...
+
+  CHAIN                  BALANCE        TXS  TYPE      USDC  USDT  FDUSD  DAI  STATUS
+  -----                  -------        ---  ----      ----  ----  -----  ---  ------
+  BNB Smart Chain        0.000000 BNB   1    Contract  -     -     -      -    ✓
+  opBNB                  0.921995 BNB   0    EOA       -     -     -      -    ✓
+  Ethereum               0.000000 ETH   1    Contract  -     -     -      -    ✓
+  Base                   0.739547 ETH   0    EOA       -     -     -      -    ✓
+  Optimism               0.070960 ETH   0    EOA       -     -     -      -    ✓
+  Arbitrum               1.616282 ETH   0    EOA       -     -     -      -    ✓
+  Mantle                 0.011441 MNT   0    EOA       -     -     -      -    ✓
+  Scroll                 0              0    -         -     -     -      -    inactive
+  Linea                  0.025432 ETH   0    EOA       -     -     -      -    ✓
+  zkSync Era             0.010851 ETH   0    EOA       -     -     -      -    ✓
+  BSC Testnet (testnet)  0.000000 tBNB  1    Contract  -     -     -      -    ✓
+
+  Summary:
+  Active on 10/11 chains | Multi-chain: Yes
+  Total native: 3.396507 (sum of ETH/BNB/MNT units, not price-normalised) | Total txs: 3
+  Has contracts: Yes | Has stablecoins: No | Scan: 3033ms
+

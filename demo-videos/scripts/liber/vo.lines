@@ -1,0 +1,23 @@
+# liber voice-over — scripts/_vo/gen.py liber
+# id | rate | pitch | text   (claims from stellar-apac/VERIFY-BNB.md: real BSC testnet MockUSDC,
+# smoke txs sent with cast (the 5 USDC top-up was NOT sent from the UI), backend 202/201 gate,
+# 42 + 29 + 3 = 74 tests). QRIS is spoken "kris"; BEP-20 spelled "B-E-P twenty".
+voice = en-GB-RyanNeural
+hook     | +8%  | +0Hz | You get paid in USDC.
+qris     | +12% | +0Hz | But the café only takes kris, in rupiah.
+intro    | +12% | -1Hz | Meet Liber: pay kris straight from USDC.
+bnb      | +10% | +1Hz | Now on BNB Chain.
+activate | +12% | -1Hz | Your keys stay on your phone.
+scan     | +12% | -1Hz | Scan any kris for a live USDC quote.
+topup    | +14% | -1Hz | One transfer tops up your Kolo card.
+app      | +10% | -1Hz | The real app, on BSC testnet.
+gate     | +14% | -1Hz | It activates once the wallet holds point zero zero one BNB.
+cast     | +14% | -1Hz | This top-up was sent with cast, to a stand-in Kolo address.
+nobnb    | +12% | -1Hz | No gas yet? Two-oh-two.
+funded   | +12% | -1Hz | Funded? Two-oh-one.
+balance  | +12% | -1Hz | And the balance is read straight from the contract.
+proof    | +12% | -1Hz | Test USDC, live on BSC testnet.
+smoke    | +12% | -1Hz | The faucet and transfer ran on-chain, via cast.
+trust    | +12% | +0Hz | Zero trustlines. It's just a B-E-P twenty.
+tests    | +12% | +0Hz | Seventy-four tests pass.
+outro    | -2%  | -2Hz | Liber. Scan kris, pay from USDC.

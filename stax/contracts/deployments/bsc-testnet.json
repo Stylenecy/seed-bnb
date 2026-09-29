@@ -1,0 +1,64 @@
+{
+  "chainId": 97,
+  "network": "bscTestnet",
+  "deployedAt": "2026-09-25",
+  "deployer": "0xE2D654a82893c5F97A40332D0f0ACb6Ad34318b5",
+  "agentSigner": "0x71a909625BA8B0c67BA16a9B620De41FB2488D95",
+  "treasury": "0xeAAedEae0d96f2155062c8B47832af87A5d4797A",
+  "deployBlock": 132984398,
+  "contracts": {
+    "MockUSDC": {
+      "address": "0x83f2dd5155dfe7d8eaa3d390c21fe89e2f1968bb",
+      "tx": "0x420fd9ab048bc5dd20c1d5ac6077e9c91834fe93949ea29ade5e6e92699371ac"
+    },
+    "InferenceVerifier": {
+      "address": "0x674031d24b0b7874f1b9b278b98ebfebbdaa96ec",
+      "tx": "0xedc9abfaec5fb8f9bedf8813ee1e81d0a4843bb0986fa8a434a4df970a1a5c88"
+    },
+    "IdentityRegistry": {
+      "address": "0x5dd8fcb6a206b9f24847fbbc925e642b836555ea",
+      "tx": "0xb5f89789e2cbb28c8ccd83a64c237d65f5d79a129771059e8c2bef2802f0d933",
+      "staxAgentId": 1,
+      "registerTx": "0x15103c12cec56c9869a451e177f60dfee51b0243ef447d8b72b0e5966c83d34c"
+    },
+    "StaxExecutor": {
+      "address": "0x8d684d9efcd779e69c29901292bd88266d5d2bdf",
+      "tx": "0xbf054a35c4752c836562699544c01e95f6de16fe2cf17b77f7d0d14e5e112f29",
+      "setRouterTx": "0xce4e1bda20dd4aef532dc3e72b0d43e146c416ff194984b718dafd21edc5e658",
+      "setAssetsTx": "0x4d09ad73596757b451a0ff251f68521011df7ca0c09f359a6146ade87771b964"
+    }
+  },
+  "dex": {
+    "pancakeV3SwapRouter": "0x1b81D678ffb9C0263b24A97847620C99d213eB14",
+    "pancakeV3Factory": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+    "nonfungiblePositionManager": "0x427bF5b37357632377eCbEC9de3626C71A5396c1"
+  },
+  "mockAssets": {
+    "AAPLx": {
+      "address": "0xfc66023ef47b05bfd192cda3619e4f34db882258",
+      "tx": "0x88e85823dac3cf02afacf96aebc4d66a76289e2efd76fca86dceb0eafec4a836",
+      "pool": "0x3649748053A842c65A0f0Fdb9F932f5A542b13b4",
+      "feeTier": 2500,
+      "initPriceUsd": 230,
+      "poolTx": "0x2c86d220830bbeca1961b642f187bb925680504a9886be8fb9f6bf035ed714bd",
+      "liquidityTx": "0x91f106bc9f8185b9c613055c9e5feb214c51570565febbf90f1cd708e20d11f2",
+      "liquidity": "~50 AAPLx + ~11.5k mUSDC full range"
+    },
+    "TSLAx": {
+      "address": "0x1affa0ee05549c777772a100cb32877dd1390b9e",
+      "tx": "0x74c19bf49bcf34580cefbf70270da92e9af8b6a27d9db3e4e34ce7d16b0bdc7e",
+      "pool": "0x77ebB0FAFb1BE749C5055E9bB81EaD2210BFa582",
+      "feeTier": 2500,
+      "initPriceUsd": 250,
+      "poolTx": "0xe013d8f7d1394f102dbf6f4e5529296cc8c39fcc8e4a1130a735b2928749d2c7",
+      "liquidityTx": "0xbe1f2790e2337b1bfe252444d1cd5aefddbfabac43a6f18e2e9ca1ec910387ff",
+      "liquidity": "~50 TSLAx + ~12.5k mUSDC full range"
+    }
+  },
+  "erc8004": {
+    "identityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+    "veraAgentId": "97:2473",
+    "registerTx": "0xe9b4271eb5553cd8a0801769663afa198238265a59189ece9f1f347836794957",
+    "owner": "0x71a909625BA8B0c67BA16a9B620De41FB2488D95"
+  }
+}

@@ -1,0 +1,250 @@
+[
+  {"timestamp": "2026-01-01", "quotes": [
+    {"symbol": "FET", "price": 1.25, "volume_24h": 85000000, "market_cap": 1050000000},
+    {"symbol": "AGIX", "price": 0.82, "volume_24h": 62000000, "market_cap": 820000000},
+    {"symbol": "OCEAN", "price": 0.95, "volume_24h": 45000000, "market_cap": 610000000},
+    {"symbol": "TAO", "price": 420.00, "volume_24h": 38000000, "market_cap": 2900000000},
+    {"symbol": "RNDR", "price": 7.50, "volume_24h": 120000000, "market_cap": 2800000000},
+    {"symbol": "HNT", "price": 6.80, "volume_24h": 28000000, "market_cap": 1100000000}
+  ]},
+  {"timestamp": "2026-01-04", "quotes": [
+    {"symbol": "FET", "price": 1.35, "volume_24h": 95000000, "market_cap": 1134000000},
+    {"symbol": "AGIX", "price": 0.88, "volume_24h": 70000000, "market_cap": 880000000},
+    {"symbol": "OCEAN", "price": 1.02, "volume_24h": 52000000, "market_cap": 653000000},
+    {"symbol": "TAO", "price": 445.00, "volume_24h": 42000000, "market_cap": 3072000000},
+    {"symbol": "RNDR", "price": 7.80, "volume_24h": 125000000, "market_cap": 2912000000},
+    {"symbol": "HNT", "price": 7.10, "volume_24h": 30000000, "market_cap": 1149000000}
+  ]},
+  {"timestamp": "2026-01-07", "quotes": [
+    {"symbol": "FET", "price": 1.48, "volume_24h": 110000000, "market_cap": 1243000000},
+    {"symbol": "AGIX", "price": 0.95, "volume_24h": 78000000, "market_cap": 950000000},
+    {"symbol": "OCEAN", "price": 1.10, "volume_24h": 58000000, "market_cap": 704000000},
+    {"symbol": "TAO", "price": 470.00, "volume_24h": 48000000, "market_cap": 3244000000},
+    {"symbol": "RNDR", "price": 8.10, "volume_24h": 130000000, "market_cap": 3024000000},
+    {"symbol": "HNT", "price": 7.35, "volume_24h": 32000000, "market_cap": 1190000000}
+  ]},
+  {"timestamp": "2026-01-10", "quotes": [
+    {"symbol": "FET", "price": 1.52, "volume_24h": 105000000, "market_cap": 1277000000},
+    {"symbol": "AGIX", "price": 0.98, "volume_24h": 75000000, "market_cap": 980000000},
+    {"symbol": "OCEAN", "price": 1.08, "volume_24h": 55000000, "market_cap": 691000000},
+    {"symbol": "TAO", "price": 462.00, "volume_24h": 45000000, "market_cap": 3189000000},
+    {"symbol": "RNDR", "price": 8.45, "volume_24h": 135000000, "market_cap": 3155000000},
+    {"symbol": "HNT", "price": 7.60, "volume_24h": 34000000, "market_cap": 1230000000}
+  ]},
+  {"timestamp": "2026-01-13", "quotes": [
+    {"symbol": "FET", "price": 1.58, "volume_24h": 100000000, "market_cap": 1327000000},
+    {"symbol": "AGIX", "price": 1.02, "volume_24h": 72000000, "market_cap": 1020000000},
+    {"symbol": "OCEAN", "price": 1.12, "volume_24h": 52000000, "market_cap": 717000000},
+    {"symbol": "TAO", "price": 455.00, "volume_24h": 43000000, "market_cap": 3140000000},
+    {"symbol": "RNDR", "price": 8.75, "volume_24h": 140000000, "market_cap": 3267000000},
+    {"symbol": "HNT", "price": 7.85, "volume_24h": 36000000, "market_cap": 1271000000}
+  ]},
+  {"timestamp": "2026-01-16", "quotes": [
+    {"symbol": "FET", "price": 1.55, "volume_24h": 92000000, "market_cap": 1302000000},
+    {"symbol": "AGIX", "price": 0.99, "volume_24h": 68000000, "market_cap": 990000000},
+    {"symbol": "OCEAN", "price": 1.05, "volume_24h": 48000000, "market_cap": 672000000},
+    {"symbol": "TAO", "price": 448.00, "volume_24h": 41000000, "market_cap": 3092000000},
+    {"symbol": "RNDR", "price": 9.10, "volume_24h": 148000000, "market_cap": 3398000000},
+    {"symbol": "HNT", "price": 8.20, "volume_24h": 40000000, "market_cap": 1328000000}
+  ]},
+  {"timestamp": "2026-01-19", "quotes": [
+    {"symbol": "FET", "price": 1.48, "volume_24h": 85000000, "market_cap": 1243000000},
+    {"symbol": "AGIX", "price": 0.94, "volume_24h": 60000000, "market_cap": 940000000},
+    {"symbol": "OCEAN", "price": 0.98, "volume_24h": 42000000, "market_cap": 627000000},
+    {"symbol": "TAO", "price": 435.00, "volume_24h": 38000000, "market_cap": 3002000000},
+    {"symbol": "RNDR", "price": 9.50, "volume_24h": 155000000, "market_cap": 3547000000},
+    {"symbol": "HNT", "price": 8.55, "volume_24h": 44000000, "market_cap": 1385000000}
+  ]},
+  {"timestamp": "2026-01-22", "quotes": [
+    {"symbol": "FET", "price": 1.42, "volume_24h": 78000000, "market_cap": 1193000000},
+    {"symbol": "AGIX", "price": 0.89, "volume_24h": 55000000, "market_cap": 890000000},
+    {"symbol": "OCEAN", "price": 0.92, "volume_24h": 38000000, "market_cap": 589000000},
+    {"symbol": "TAO", "price": 418.00, "volume_24h": 35000000, "market_cap": 2886000000},
+    {"symbol": "RNDR", "price": 9.85, "volume_24h": 162000000, "market_cap": 3678000000},
+    {"symbol": "HNT", "price": 8.90, "volume_24h": 48000000, "market_cap": 1442000000}
+  ]},
+  {"timestamp": "2026-01-25", "quotes": [
+    {"symbol": "FET", "price": 1.38, "volume_24h": 72000000, "market_cap": 1159000000},
+    {"symbol": "AGIX", "price": 0.85, "volume_24h": 50000000, "market_cap": 850000000},
+    {"symbol": "OCEAN", "price": 0.88, "volume_24h": 35000000, "market_cap": 563000000},
+    {"symbol": "TAO", "price": 405.00, "volume_24h": 33000000, "market_cap": 2796000000},
+    {"symbol": "RNDR", "price": 10.20, "volume_24h": 170000000, "market_cap": 3808000000},
+    {"symbol": "HNT", "price": 9.15, "volume_24h": 50000000, "market_cap": 1482000000}
+  ]},
+  {"timestamp": "2026-01-28", "quotes": [
+    {"symbol": "FET", "price": 1.32, "volume_24h": 68000000, "market_cap": 1109000000},
+    {"symbol": "AGIX", "price": 0.81, "volume_24h": 48000000, "market_cap": 810000000},
+    {"symbol": "OCEAN", "price": 0.85, "volume_24h": 32000000, "market_cap": 544000000},
+    {"symbol": "TAO", "price": 392.00, "volume_24h": 30000000, "market_cap": 2706000000},
+    {"symbol": "RNDR", "price": 10.50, "volume_24h": 175000000, "market_cap": 3920000000},
+    {"symbol": "HNT", "price": 9.40, "volume_24h": 52000000, "market_cap": 1523000000}
+  ]},
+  {"timestamp": "2026-01-31", "quotes": [
+    {"symbol": "FET", "price": 1.28, "volume_24h": 65000000, "market_cap": 1075000000},
+    {"symbol": "AGIX", "price": 0.78, "volume_24h": 45000000, "market_cap": 780000000},
+    {"symbol": "OCEAN", "price": 0.82, "volume_24h": 30000000, "market_cap": 525000000},
+    {"symbol": "TAO", "price": 380.00, "volume_24h": 28000000, "market_cap": 2624000000},
+    {"symbol": "RNDR", "price": 10.80, "volume_24h": 180000000, "market_cap": 4032000000},
+    {"symbol": "HNT", "price": 9.65, "volume_24h": 55000000, "market_cap": 1564000000}
+  ]},
+  {"timestamp": "2026-02-03", "quotes": [
+    {"symbol": "FET", "price": 1.22, "volume_24h": 60000000, "market_cap": 1025000000},
+    {"symbol": "AGIX", "price": 0.75, "volume_24h": 42000000, "market_cap": 750000000},
+    {"symbol": "OCEAN", "price": 0.79, "volume_24h": 28000000, "market_cap": 506000000},
+    {"symbol": "TAO", "price": 365.00, "volume_24h": 26000000, "market_cap": 2521000000},
+    {"symbol": "RNDR", "price": 10.50, "volume_24h": 168000000, "market_cap": 3920000000},
+    {"symbol": "HNT", "price": 9.40, "volume_24h": 50000000, "market_cap": 1523000000}
+  ]},
+  {"timestamp": "2026-02-06", "quotes": [
+    {"symbol": "FET", "price": 1.18, "volume_24h": 55000000, "market_cap": 991000000},
+    {"symbol": "AGIX", "price": 0.72, "volume_24h": 40000000, "market_cap": 720000000},
+    {"symbol": "OCEAN", "price": 0.76, "volume_24h": 26000000, "market_cap": 487000000},
+    {"symbol": "TAO", "price": 352.00, "volume_24h": 24000000, "market_cap": 2431000000},
+    {"symbol": "RNDR", "price": 10.20, "volume_24h": 160000000, "market_cap": 3808000000},
+    {"symbol": "HNT", "price": 9.10, "volume_24h": 47000000, "market_cap": 1474000000}
+  ]},
+  {"timestamp": "2026-02-09", "quotes": [
+    {"symbol": "FET", "price": 1.15, "volume_24h": 52000000, "market_cap": 966000000},
+    {"symbol": "AGIX", "price": 0.70, "volume_24h": 38000000, "market_cap": 700000000},
+    {"symbol": "OCEAN", "price": 0.74, "volume_24h": 25000000, "market_cap": 474000000},
+    {"symbol": "TAO", "price": 340.00, "volume_24h": 22000000, "market_cap": 2348000000},
+    {"symbol": "RNDR", "price": 9.85, "volume_24h": 152000000, "market_cap": 3678000000},
+    {"symbol": "HNT", "price": 8.80, "volume_24h": 44000000, "market_cap": 1425000000}
+  ]},
+  {"timestamp": "2026-02-12", "quotes": [
+    {"symbol": "FET", "price": 1.12, "volume_24h": 50000000, "market_cap": 941000000},
+    {"symbol": "AGIX", "price": 0.68, "volume_24h": 36000000, "market_cap": 680000000},
+    {"symbol": "OCEAN", "price": 0.72, "volume_24h": 24000000, "market_cap": 461000000},
+    {"symbol": "TAO", "price": 330.00, "volume_24h": 21000000, "market_cap": 2279000000},
+    {"symbol": "RNDR", "price": 9.50, "volume_24h": 145000000, "market_cap": 3547000000},
+    {"symbol": "HNT", "price": 8.50, "volume_24h": 42000000, "market_cap": 1377000000}
+  ]},
+  {"timestamp": "2026-02-15", "quotes": [
+    {"symbol": "FET", "price": 1.18, "volume_24h": 58000000, "market_cap": 991000000},
+    {"symbol": "AGIX", "price": 0.72, "volume_24h": 42000000, "market_cap": 720000000},
+    {"symbol": "OCEAN", "price": 0.78, "volume_24h": 28000000, "market_cap": 499000000},
+    {"symbol": "TAO", "price": 345.00, "volume_24h": 25000000, "market_cap": 2382000000},
+    {"symbol": "RNDR", "price": 9.20, "volume_24h": 138000000, "market_cap": 3435000000},
+    {"symbol": "HNT", "price": 8.25, "volume_24h": 40000000, "market_cap": 1336000000}
+  ]},
+  {"timestamp": "2026-02-18", "quotes": [
+    {"symbol": "FET", "price": 1.28, "volume_24h": 68000000, "market_cap": 1075000000},
+    {"symbol": "AGIX", "price": 0.78, "volume_24h": 50000000, "market_cap": 780000000},
+    {"symbol": "OCEAN", "price": 0.85, "volume_24h": 35000000, "market_cap": 544000000},
+    {"symbol": "TAO", "price": 365.00, "volume_24h": 30000000, "market_cap": 2521000000},
+    {"symbol": "RNDR", "price": 8.90, "volume_24h": 130000000, "market_cap": 3322000000},
+    {"symbol": "HNT", "price": 8.00, "volume_24h": 38000000, "market_cap": 1296000000}
+  ]},
+  {"timestamp": "2026-02-21", "quotes": [
+    {"symbol": "FET", "price": 1.40, "volume_24h": 80000000, "market_cap": 1176000000},
+    {"symbol": "AGIX", "price": 0.85, "volume_24h": 58000000, "market_cap": 850000000},
+    {"symbol": "OCEAN", "price": 0.92, "volume_24h": 42000000, "market_cap": 589000000},
+    {"symbol": "TAO", "price": 388.00, "volume_24h": 36000000, "market_cap": 2679000000},
+    {"symbol": "RNDR", "price": 8.60, "volume_24h": 122000000, "market_cap": 3210000000},
+    {"symbol": "HNT", "price": 7.75, "volume_24h": 36000000, "market_cap": 1255000000}
+  ]},
+  {"timestamp": "2026-02-24", "quotes": [
+    {"symbol": "FET", "price": 1.55, "volume_24h": 95000000, "market_cap": 1302000000},
+    {"symbol": "AGIX", "price": 0.92, "volume_24h": 68000000, "market_cap": 920000000},
+    {"symbol": "OCEAN", "price": 1.00, "volume_24h": 50000000, "market_cap": 640000000},
+    {"symbol": "TAO", "price": 415.00, "volume_24h": 42000000, "market_cap": 2866000000},
+    {"symbol": "RNDR", "price": 8.30, "volume_24h": 115000000, "market_cap": 3098000000},
+    {"symbol": "HNT", "price": 7.50, "volume_24h": 34000000, "market_cap": 1215000000}
+  ]},
+  {"timestamp": "2026-02-27", "quotes": [
+    {"symbol": "FET", "price": 1.68, "volume_24h": 108000000, "market_cap": 1411000000},
+    {"symbol": "AGIX", "price": 1.00, "volume_24h": 78000000, "market_cap": 1000000000},
+    {"symbol": "OCEAN", "price": 1.08, "volume_24h": 56000000, "market_cap": 691000000},
+    {"symbol": "TAO", "price": 440.00, "volume_24h": 48000000, "market_cap": 3038000000},
+    {"symbol": "RNDR", "price": 8.10, "volume_24h": 110000000, "market_cap": 3024000000},
+    {"symbol": "HNT", "price": 7.30, "volume_24h": 32000000, "market_cap": 1182000000}
+  ]},
+  {"timestamp": "2026-03-02", "quotes": [
+    {"symbol": "FET", "price": 1.78, "volume_24h": 118000000, "market_cap": 1495000000},
+    {"symbol": "AGIX", "price": 1.08, "volume_24h": 85000000, "market_cap": 1080000000},
+    {"symbol": "OCEAN", "price": 1.15, "volume_24h": 62000000, "market_cap": 736000000},
+    {"symbol": "TAO", "price": 465.00, "volume_24h": 52000000, "market_cap": 3210000000},
+    {"symbol": "RNDR", "price": 8.50, "volume_24h": 120000000, "market_cap": 3173000000},
+    {"symbol": "HNT", "price": 7.60, "volume_24h": 35000000, "market_cap": 1230000000}
+  ]},
+  {"timestamp": "2026-03-05", "quotes": [
+    {"symbol": "FET", "price": 1.72, "volume_24h": 112000000, "market_cap": 1445000000},
+    {"symbol": "AGIX", "price": 1.05, "volume_24h": 80000000, "market_cap": 1050000000},
+    {"symbol": "OCEAN", "price": 1.12, "volume_24h": 58000000, "market_cap": 717000000},
+    {"symbol": "TAO", "price": 458.00, "volume_24h": 50000000, "market_cap": 3162000000},
+    {"symbol": "RNDR", "price": 8.80, "volume_24h": 128000000, "market_cap": 3285000000},
+    {"symbol": "HNT", "price": 7.90, "volume_24h": 38000000, "market_cap": 1279000000}
+  ]},
+  {"timestamp": "2026-03-08", "quotes": [
+    {"symbol": "FET", "price": 1.65, "volume_24h": 105000000, "market_cap": 1386000000},
+    {"symbol": "AGIX", "price": 1.00, "volume_24h": 75000000, "market_cap": 1000000000},
+    {"symbol": "OCEAN", "price": 1.08, "volume_24h": 54000000, "market_cap": 691000000},
+    {"symbol": "TAO", "price": 448.00, "volume_24h": 46000000, "market_cap": 3092000000},
+    {"symbol": "RNDR", "price": 9.15, "volume_24h": 135000000, "market_cap": 3416000000},
+    {"symbol": "HNT", "price": 8.20, "volume_24h": 42000000, "market_cap": 1328000000}
+  ]},
+  {"timestamp": "2026-03-11", "quotes": [
+    {"symbol": "FET", "price": 1.58, "volume_24h": 98000000, "market_cap": 1327000000},
+    {"symbol": "AGIX", "price": 0.96, "volume_24h": 70000000, "market_cap": 960000000},
+    {"symbol": "OCEAN", "price": 1.04, "volume_24h": 50000000, "market_cap": 666000000},
+    {"symbol": "TAO", "price": 438.00, "volume_24h": 43000000, "market_cap": 3024000000},
+    {"symbol": "RNDR", "price": 9.45, "volume_24h": 142000000, "market_cap": 3528000000},
+    {"symbol": "HNT", "price": 8.50, "volume_24h": 45000000, "market_cap": 1377000000}
+  ]},
+  {"timestamp": "2026-03-14", "quotes": [
+    {"symbol": "FET", "price": 1.50, "volume_24h": 90000000, "market_cap": 1260000000},
+    {"symbol": "AGIX", "price": 0.92, "volume_24h": 65000000, "market_cap": 920000000},
+    {"symbol": "OCEAN", "price": 0.99, "volume_24h": 46000000, "market_cap": 634000000},
+    {"symbol": "TAO", "price": 425.00, "volume_24h": 40000000, "market_cap": 2935000000},
+    {"symbol": "RNDR", "price": 9.80, "volume_24h": 150000000, "market_cap": 3659000000},
+    {"symbol": "HNT", "price": 8.80, "volume_24h": 48000000, "market_cap": 1425000000}
+  ]},
+  {"timestamp": "2026-03-17", "quotes": [
+    {"symbol": "FET", "price": 1.42, "volume_24h": 82000000, "market_cap": 1193000000},
+    {"symbol": "AGIX", "price": 0.88, "volume_24h": 60000000, "market_cap": 880000000},
+    {"symbol": "OCEAN", "price": 0.94, "volume_24h": 42000000, "market_cap": 602000000},
+    {"symbol": "TAO", "price": 412.00, "volume_24h": 38000000, "market_cap": 2845000000},
+    {"symbol": "RNDR", "price": 10.10, "volume_24h": 158000000, "market_cap": 3770000000},
+    {"symbol": "HNT", "price": 9.10, "volume_24h": 50000000, "market_cap": 1474000000}
+  ]},
+  {"timestamp": "2026-03-20", "quotes": [
+    {"symbol": "FET", "price": 1.35, "volume_24h": 75000000, "market_cap": 1134000000},
+    {"symbol": "AGIX", "price": 0.84, "volume_24h": 55000000, "market_cap": 840000000},
+    {"symbol": "OCEAN", "price": 0.90, "volume_24h": 38000000, "market_cap": 576000000},
+    {"symbol": "TAO", "price": 400.00, "volume_24h": 35000000, "market_cap": 2762000000},
+    {"symbol": "RNDR", "price": 10.40, "volume_24h": 165000000, "market_cap": 3882000000},
+    {"symbol": "HNT", "price": 9.35, "volume_24h": 52000000, "market_cap": 1515000000}
+  ]},
+  {"timestamp": "2026-03-23", "quotes": [
+    {"symbol": "FET", "price": 1.30, "volume_24h": 70000000, "market_cap": 1092000000},
+    {"symbol": "AGIX", "price": 0.80, "volume_24h": 50000000, "market_cap": 800000000},
+    {"symbol": "OCEAN", "price": 0.86, "volume_24h": 35000000, "market_cap": 550000000},
+    {"symbol": "TAO", "price": 390.00, "volume_24h": 32000000, "market_cap": 2693000000},
+    {"symbol": "RNDR", "price": 10.70, "volume_24h": 172000000, "market_cap": 3994000000},
+    {"symbol": "HNT", "price": 9.55, "volume_24h": 54000000, "market_cap": 1547000000}
+  ]},
+  {"timestamp": "2026-03-26", "quotes": [
+    {"symbol": "FET", "price": 1.25, "volume_24h": 65000000, "market_cap": 1050000000},
+    {"symbol": "AGIX", "price": 0.77, "volume_24h": 46000000, "market_cap": 770000000},
+    {"symbol": "OCEAN", "price": 0.83, "volume_24h": 32000000, "market_cap": 531000000},
+    {"symbol": "TAO", "price": 382.00, "volume_24h": 30000000, "market_cap": 2638000000},
+    {"symbol": "RNDR", "price": 10.95, "volume_24h": 178000000, "market_cap": 4088000000},
+    {"symbol": "HNT", "price": 9.75, "volume_24h": 56000000, "market_cap": 1579000000}
+  ]},
+  {"timestamp": "2026-03-29", "quotes": [
+    {"symbol": "FET", "price": 1.30, "volume_24h": 72000000, "market_cap": 1092000000},
+    {"symbol": "AGIX", "price": 0.82, "volume_24h": 52000000, "market_cap": 820000000},
+    {"symbol": "OCEAN", "price": 0.88, "volume_24h": 36000000, "market_cap": 563000000},
+    {"symbol": "TAO", "price": 395.00, "volume_24h": 34000000, "market_cap": 2728000000},
+    {"symbol": "RNDR", "price": 10.60, "volume_24h": 170000000, "market_cap": 3957000000},
+    {"symbol": "HNT", "price": 9.50, "volume_24h": 53000000, "market_cap": 1539000000}
+  ]},
+  {"timestamp": "2026-04-01", "quotes": [
+    {"symbol": "FET", "price": 1.38, "volume_24h": 80000000, "market_cap": 1159000000},
+    {"symbol": "AGIX", "price": 0.88, "volume_24h": 58000000, "market_cap": 880000000},
+    {"symbol": "OCEAN", "price": 0.95, "volume_24h": 42000000, "market_cap": 608000000},
+    {"symbol": "TAO", "price": 410.00, "volume_24h": 40000000, "market_cap": 2831000000},
+    {"symbol": "RNDR", "price": 10.30, "volume_24h": 162000000, "market_cap": 3845000000},
+    {"symbol": "HNT", "price": 9.25, "volume_24h": 50000000, "market_cap": 1498000000}
+  ]}
+]

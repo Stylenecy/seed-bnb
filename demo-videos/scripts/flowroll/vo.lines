@@ -1,0 +1,22 @@
+# flowroll voice-over: scripts/_vo/gen.py flowroll
+# id | rate | pitch | text   (claims from seed-bnb-indo/flowrol/VERIFY-BNB.md: real BSC testnet deploy,
+# 12 contracts, live smoke flow all status 1, MockPool/MockUSDC on testnet, 265/265 forge tests, payday bug fixed)
+voice = en-GB-RyanNeural
+hook    | +12% | +1Hz | Every month, payroll cash sits idle, earning nothing.
+work    | +10% | +1Hz | Flowroll puts that idle payroll to work.
+bnb     | +10% | +2Hz | Now live on BNB Chain testnet.
+deposit | +16% | +0Hz | The employer funds the cycle up front.
+earn    | +18% | +0Hz | An agent parks idle funds in yield.
+advance | +26% | +0Hz | Early pay costs one point five percent, flat.
+real    | +16% | +1Hz | This is the real app, reading live testnet data.
+credit  | +16% | +0Hz | The advance was already repaid. Debt, zero.
+live    | +16% | +0Hz | Every step here is a real testnet transaction.
+net     | +16% | +0Hz | A thousand advanced, nine eighty-five received.
+left    | +14% | +0Hz | Four thousand left.
+stuck   | +16% | +0Hz | Testing caught an old payday bug.
+fixed   | +14% | +1Hz | Now fixed, and tested.
+proof   | +16% | +0Hz | Twelve contracts on BSC testnet.
+mocks   | +22% | +0Hz | Mock pools and USDC, for now.
+fee     | +16% | +0Hz | A thousand early costs fifteen. That's it.
+tests   | +20% | +2Hz | Two sixty-five tests pass!
+outro   | +4%  | +1Hz | Flowroll. Payroll that pays for itself.

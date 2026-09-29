@@ -1,0 +1,1 @@
+[{"goto":"/"},{"wait":4000},{"eval":"[...document.querySelectorAll('button,a')].map(b=>b.tagName+':'+b.innerText.trim()+':'+(b.getAttribute('href')||'')).slice(0,12).join(' | ')"}]

@@ -1,0 +1,20 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.28"
+evm_version = "shanghai"  # conservative target; BSC also supports cancun, kept for identical bytecode
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+]
+
+[rpc_endpoints]
+bsc = "${BSC_RPC_URL}"
+bsc_testnet = "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
+bsc_mainnet = "https://bsc-dataseed.bnbchain.org"
+
+# Etherscan V2 multichain API key (covers BscScan). Needed only for --verify.
+[etherscan]
+bsc_testnet = { key = "${ETHERSCAN_API_KEY}", chain = 97 }
+bsc_mainnet = { key = "${ETHERSCAN_API_KEY}", chain = 56 }

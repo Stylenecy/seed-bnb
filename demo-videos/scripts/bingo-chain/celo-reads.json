@@ -1,0 +1,15 @@
+{
+ "at": "2026-09-25T16:46:20.403Z",
+ "block": 78454018,
+ "version": "\"1.3.0\"",
+ "arenas": 479,
+ "byState": {
+  "cancelled": 1,
+  "settled": 458,
+  "created": 14,
+  "revealing": 5,
+  "committed": 1
+ },
+ "numbersCalled": 8996,
+ "seats": 1438
+}

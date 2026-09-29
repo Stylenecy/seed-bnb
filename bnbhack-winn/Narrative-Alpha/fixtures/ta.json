@@ -1,0 +1,250 @@
+[
+  {"timestamp": "2026-01-01", "signals": [
+    {"symbol": "FET", "rsi_daily": 62.0, "macd": 0.05},
+    {"symbol": "AGIX", "rsi_daily": 58.0, "macd": 0.03},
+    {"symbol": "OCEAN", "rsi_daily": 55.0, "macd": 0.02},
+    {"symbol": "TAO", "rsi_daily": 60.0, "macd": 0.04},
+    {"symbol": "RNDR", "rsi_daily": 64.0, "macd": 0.06},
+    {"symbol": "HNT", "rsi_daily": 56.0, "macd": 0.01}
+  ]},
+  {"timestamp": "2026-01-04", "signals": [
+    {"symbol": "FET", "rsi_daily": 68.0, "macd": 0.08},
+    {"symbol": "AGIX", "rsi_daily": 63.0, "macd": 0.05},
+    {"symbol": "OCEAN", "rsi_daily": 60.0, "macd": 0.04},
+    {"symbol": "TAO", "rsi_daily": 65.0, "macd": 0.06},
+    {"symbol": "RNDR", "rsi_daily": 66.0, "macd": 0.07},
+    {"symbol": "HNT", "rsi_daily": 59.0, "macd": 0.03}
+  ]},
+  {"timestamp": "2026-01-07", "signals": [
+    {"symbol": "FET", "rsi_daily": 72.0, "macd": 0.12},
+    {"symbol": "AGIX", "rsi_daily": 67.0, "macd": 0.08},
+    {"symbol": "OCEAN", "rsi_daily": 63.0, "macd": 0.06},
+    {"symbol": "TAO", "rsi_daily": 69.0, "macd": 0.09},
+    {"symbol": "RNDR", "rsi_daily": 68.0, "macd": 0.08},
+    {"symbol": "HNT", "rsi_daily": 61.0, "macd": 0.04}
+  ]},
+  {"timestamp": "2026-01-10", "signals": [
+    {"symbol": "FET", "rsi_daily": 70.0, "macd": 0.10},
+    {"symbol": "AGIX", "rsi_daily": 66.0, "macd": 0.07},
+    {"symbol": "OCEAN", "rsi_daily": 61.0, "macd": 0.05},
+    {"symbol": "TAO", "rsi_daily": 67.0, "macd": 0.08},
+    {"symbol": "RNDR", "rsi_daily": 70.0, "macd": 0.10},
+    {"symbol": "HNT", "rsi_daily": 63.0, "macd": 0.05}
+  ]},
+  {"timestamp": "2026-01-13", "signals": [
+    {"symbol": "FET", "rsi_daily": 68.0, "macd": 0.08},
+    {"symbol": "AGIX", "rsi_daily": 65.0, "macd": 0.06},
+    {"symbol": "OCEAN", "rsi_daily": 60.0, "macd": 0.04},
+    {"symbol": "TAO", "rsi_daily": 64.0, "macd": 0.06},
+    {"symbol": "RNDR", "rsi_daily": 72.0, "macd": 0.12},
+    {"symbol": "HNT", "rsi_daily": 65.0, "macd": 0.07}
+  ]},
+  {"timestamp": "2026-01-16", "signals": [
+    {"symbol": "FET", "rsi_daily": 64.0, "macd": 0.04},
+    {"symbol": "AGIX", "rsi_daily": 62.0, "macd": 0.03},
+    {"symbol": "OCEAN", "rsi_daily": 57.0, "macd": 0.01},
+    {"symbol": "TAO", "rsi_daily": 61.0, "macd": 0.04},
+    {"symbol": "RNDR", "rsi_daily": 74.0, "macd": 0.14},
+    {"symbol": "HNT", "rsi_daily": 67.0, "macd": 0.09}
+  ]},
+  {"timestamp": "2026-01-19", "signals": [
+    {"symbol": "FET", "rsi_daily": 58.0, "macd": -0.02},
+    {"symbol": "AGIX", "rsi_daily": 56.0, "macd": -0.01},
+    {"symbol": "OCEAN", "rsi_daily": 52.0, "macd": -0.03},
+    {"symbol": "TAO", "rsi_daily": 55.0, "macd": -0.01},
+    {"symbol": "RNDR", "rsi_daily": 76.0, "macd": 0.16},
+    {"symbol": "HNT", "rsi_daily": 70.0, "macd": 0.11}
+  ]},
+  {"timestamp": "2026-01-22", "signals": [
+    {"symbol": "FET", "rsi_daily": 52.0, "macd": -0.06},
+    {"symbol": "AGIX", "rsi_daily": 50.0, "macd": -0.05},
+    {"symbol": "OCEAN", "rsi_daily": 48.0, "macd": -0.07},
+    {"symbol": "TAO", "rsi_daily": 50.0, "macd": -0.04},
+    {"symbol": "RNDR", "rsi_daily": 78.0, "macd": 0.18},
+    {"symbol": "HNT", "rsi_daily": 72.0, "macd": 0.13}
+  ]},
+  {"timestamp": "2026-01-25", "signals": [
+    {"symbol": "FET", "rsi_daily": 48.0, "macd": -0.08},
+    {"symbol": "AGIX", "rsi_daily": 46.0, "macd": -0.07},
+    {"symbol": "OCEAN", "rsi_daily": 44.0, "macd": -0.09},
+    {"symbol": "TAO", "rsi_daily": 46.0, "macd": -0.06},
+    {"symbol": "RNDR", "rsi_daily": 75.0, "macd": 0.15},
+    {"symbol": "HNT", "rsi_daily": 73.0, "macd": 0.14}
+  ]},
+  {"timestamp": "2026-01-28", "signals": [
+    {"symbol": "FET", "rsi_daily": 45.0, "macd": -0.10},
+    {"symbol": "AGIX", "rsi_daily": 43.0, "macd": -0.09},
+    {"symbol": "OCEAN", "rsi_daily": 42.0, "macd": -0.11},
+    {"symbol": "TAO", "rsi_daily": 43.0, "macd": -0.08},
+    {"symbol": "RNDR", "rsi_daily": 76.0, "macd": 0.17},
+    {"symbol": "HNT", "rsi_daily": 74.0, "macd": 0.15}
+  ]},
+  {"timestamp": "2026-01-31", "signals": [
+    {"symbol": "FET", "rsi_daily": 42.0, "macd": -0.12},
+    {"symbol": "AGIX", "rsi_daily": 40.0, "macd": -0.11},
+    {"symbol": "OCEAN", "rsi_daily": 39.0, "macd": -0.13},
+    {"symbol": "TAO", "rsi_daily": 40.0, "macd": -0.10},
+    {"symbol": "RNDR", "rsi_daily": 78.0, "macd": 0.19},
+    {"symbol": "HNT", "rsi_daily": 75.0, "macd": 0.16}
+  ]},
+  {"timestamp": "2026-02-03", "signals": [
+    {"symbol": "FET", "rsi_daily": 40.0, "macd": -0.13},
+    {"symbol": "AGIX", "rsi_daily": 38.0, "macd": -0.12},
+    {"symbol": "OCEAN", "rsi_daily": 37.0, "macd": -0.14},
+    {"symbol": "TAO", "rsi_daily": 38.0, "macd": -0.11},
+    {"symbol": "RNDR", "rsi_daily": 73.0, "macd": 0.13},
+    {"symbol": "HNT", "rsi_daily": 72.0, "macd": 0.12}
+  ]},
+  {"timestamp": "2026-02-06", "signals": [
+    {"symbol": "FET", "rsi_daily": 38.0, "macd": -0.14},
+    {"symbol": "AGIX", "rsi_daily": 36.0, "macd": -0.13},
+    {"symbol": "OCEAN", "rsi_daily": 35.0, "macd": -0.15},
+    {"symbol": "TAO", "rsi_daily": 36.0, "macd": -0.12},
+    {"symbol": "RNDR", "rsi_daily": 70.0, "macd": 0.10},
+    {"symbol": "HNT", "rsi_daily": 69.0, "macd": 0.09}
+  ]},
+  {"timestamp": "2026-02-09", "signals": [
+    {"symbol": "FET", "rsi_daily": 37.0, "macd": -0.13},
+    {"symbol": "AGIX", "rsi_daily": 35.0, "macd": -0.12},
+    {"symbol": "OCEAN", "rsi_daily": 34.0, "macd": -0.14},
+    {"symbol": "TAO", "rsi_daily": 35.0, "macd": -0.11},
+    {"symbol": "RNDR", "rsi_daily": 67.0, "macd": 0.07},
+    {"symbol": "HNT", "rsi_daily": 66.0, "macd": 0.06}
+  ]},
+  {"timestamp": "2026-02-12", "signals": [
+    {"symbol": "FET", "rsi_daily": 36.0, "macd": -0.12},
+    {"symbol": "AGIX", "rsi_daily": 34.0, "macd": -0.11},
+    {"symbol": "OCEAN", "rsi_daily": 33.0, "macd": -0.13},
+    {"symbol": "TAO", "rsi_daily": 34.0, "macd": -0.10},
+    {"symbol": "RNDR", "rsi_daily": 64.0, "macd": 0.04},
+    {"symbol": "HNT", "rsi_daily": 63.0, "macd": 0.03}
+  ]},
+  {"timestamp": "2026-02-15", "signals": [
+    {"symbol": "FET", "rsi_daily": 42.0, "macd": -0.06},
+    {"symbol": "AGIX", "rsi_daily": 40.0, "macd": -0.05},
+    {"symbol": "OCEAN", "rsi_daily": 38.0, "macd": -0.07},
+    {"symbol": "TAO", "rsi_daily": 40.0, "macd": -0.04},
+    {"symbol": "RNDR", "rsi_daily": 60.0, "macd": 0.00},
+    {"symbol": "HNT", "rsi_daily": 59.0, "macd": -0.01}
+  ]},
+  {"timestamp": "2026-02-18", "signals": [
+    {"symbol": "FET", "rsi_daily": 50.0, "macd": 0.02},
+    {"symbol": "AGIX", "rsi_daily": 48.0, "macd": 0.01},
+    {"symbol": "OCEAN", "rsi_daily": 45.0, "macd": -0.01},
+    {"symbol": "TAO", "rsi_daily": 48.0, "macd": 0.02},
+    {"symbol": "RNDR", "rsi_daily": 56.0, "macd": -0.03},
+    {"symbol": "HNT", "rsi_daily": 55.0, "macd": -0.04}
+  ]},
+  {"timestamp": "2026-02-21", "signals": [
+    {"symbol": "FET", "rsi_daily": 58.0, "macd": 0.08},
+    {"symbol": "AGIX", "rsi_daily": 55.0, "macd": 0.06},
+    {"symbol": "OCEAN", "rsi_daily": 52.0, "macd": 0.04},
+    {"symbol": "TAO", "rsi_daily": 56.0, "macd": 0.07},
+    {"symbol": "RNDR", "rsi_daily": 52.0, "macd": -0.06},
+    {"symbol": "HNT", "rsi_daily": 51.0, "macd": -0.07}
+  ]},
+  {"timestamp": "2026-02-24", "signals": [
+    {"symbol": "FET", "rsi_daily": 66.0, "macd": 0.14},
+    {"symbol": "AGIX", "rsi_daily": 62.0, "macd": 0.11},
+    {"symbol": "OCEAN", "rsi_daily": 58.0, "macd": 0.08},
+    {"symbol": "TAO", "rsi_daily": 63.0, "macd": 0.12},
+    {"symbol": "RNDR", "rsi_daily": 48.0, "macd": -0.09},
+    {"symbol": "HNT", "rsi_daily": 47.0, "macd": -0.10}
+  ]},
+  {"timestamp": "2026-02-27", "signals": [
+    {"symbol": "FET", "rsi_daily": 72.0, "macd": 0.18},
+    {"symbol": "AGIX", "rsi_daily": 68.0, "macd": 0.15},
+    {"symbol": "OCEAN", "rsi_daily": 64.0, "macd": 0.12},
+    {"symbol": "TAO", "rsi_daily": 70.0, "macd": 0.16},
+    {"symbol": "RNDR", "rsi_daily": 46.0, "macd": -0.11},
+    {"symbol": "HNT", "rsi_daily": 44.0, "macd": -0.12}
+  ]},
+  {"timestamp": "2026-03-02", "signals": [
+    {"symbol": "FET", "rsi_daily": 76.0, "macd": 0.22},
+    {"symbol": "AGIX", "rsi_daily": 72.0, "macd": 0.18},
+    {"symbol": "OCEAN", "rsi_daily": 68.0, "macd": 0.15},
+    {"symbol": "TAO", "rsi_daily": 74.0, "macd": 0.20},
+    {"symbol": "RNDR", "rsi_daily": 50.0, "macd": -0.05},
+    {"symbol": "HNT", "rsi_daily": 48.0, "macd": -0.06}
+  ]},
+  {"timestamp": "2026-03-05", "signals": [
+    {"symbol": "FET", "rsi_daily": 73.0, "macd": 0.19},
+    {"symbol": "AGIX", "rsi_daily": 70.0, "macd": 0.16},
+    {"symbol": "OCEAN", "rsi_daily": 66.0, "macd": 0.13},
+    {"symbol": "TAO", "rsi_daily": 72.0, "macd": 0.18},
+    {"symbol": "RNDR", "rsi_daily": 54.0, "macd": -0.01},
+    {"symbol": "HNT", "rsi_daily": 52.0, "macd": -0.02}
+  ]},
+  {"timestamp": "2026-03-08", "signals": [
+    {"symbol": "FET", "rsi_daily": 70.0, "macd": 0.15},
+    {"symbol": "AGIX", "rsi_daily": 67.0, "macd": 0.13},
+    {"symbol": "OCEAN", "rsi_daily": 63.0, "macd": 0.10},
+    {"symbol": "TAO", "rsi_daily": 69.0, "macd": 0.14},
+    {"symbol": "RNDR", "rsi_daily": 58.0, "macd": 0.03},
+    {"symbol": "HNT", "rsi_daily": 56.0, "macd": 0.02}
+  ]},
+  {"timestamp": "2026-03-11", "signals": [
+    {"symbol": "FET", "rsi_daily": 66.0, "macd": 0.11},
+    {"symbol": "AGIX", "rsi_daily": 63.0, "macd": 0.09},
+    {"symbol": "OCEAN", "rsi_daily": 60.0, "macd": 0.07},
+    {"symbol": "TAO", "rsi_daily": 65.0, "macd": 0.10},
+    {"symbol": "RNDR", "rsi_daily": 62.0, "macd": 0.07},
+    {"symbol": "HNT", "rsi_daily": 60.0, "macd": 0.05}
+  ]},
+  {"timestamp": "2026-03-14", "signals": [
+    {"symbol": "FET", "rsi_daily": 60.0, "macd": 0.05},
+    {"symbol": "AGIX", "rsi_daily": 58.0, "macd": 0.04},
+    {"symbol": "OCEAN", "rsi_daily": 55.0, "macd": 0.02},
+    {"symbol": "TAO", "rsi_daily": 59.0, "macd": 0.05},
+    {"symbol": "RNDR", "rsi_daily": 66.0, "macd": 0.11},
+    {"symbol": "HNT", "rsi_daily": 64.0, "macd": 0.09}
+  ]},
+  {"timestamp": "2026-03-17", "signals": [
+    {"symbol": "FET", "rsi_daily": 55.0, "macd": 0.00},
+    {"symbol": "AGIX", "rsi_daily": 53.0, "macd": -0.01},
+    {"symbol": "OCEAN", "rsi_daily": 50.0, "macd": -0.03},
+    {"symbol": "TAO", "rsi_daily": 54.0, "macd": 0.01},
+    {"symbol": "RNDR", "rsi_daily": 70.0, "macd": 0.14},
+    {"symbol": "HNT", "rsi_daily": 68.0, "macd": 0.12}
+  ]},
+  {"timestamp": "2026-03-20", "signals": [
+    {"symbol": "FET", "rsi_daily": 50.0, "macd": -0.04},
+    {"symbol": "AGIX", "rsi_daily": 48.0, "macd": -0.05},
+    {"symbol": "OCEAN", "rsi_daily": 46.0, "macd": -0.07},
+    {"symbol": "TAO", "rsi_daily": 49.0, "macd": -0.03},
+    {"symbol": "RNDR", "rsi_daily": 73.0, "macd": 0.17},
+    {"symbol": "HNT", "rsi_daily": 71.0, "macd": 0.15}
+  ]},
+  {"timestamp": "2026-03-23", "signals": [
+    {"symbol": "FET", "rsi_daily": 46.0, "macd": -0.07},
+    {"symbol": "AGIX", "rsi_daily": 44.0, "macd": -0.08},
+    {"symbol": "OCEAN", "rsi_daily": 42.0, "macd": -0.10},
+    {"symbol": "TAO", "rsi_daily": 45.0, "macd": -0.06},
+    {"symbol": "RNDR", "rsi_daily": 75.0, "macd": 0.19},
+    {"symbol": "HNT", "rsi_daily": 73.0, "macd": 0.17}
+  ]},
+  {"timestamp": "2026-03-26", "signals": [
+    {"symbol": "FET", "rsi_daily": 43.0, "macd": -0.09},
+    {"symbol": "AGIX", "rsi_daily": 41.0, "macd": -0.10},
+    {"symbol": "OCEAN", "rsi_daily": 39.0, "macd": -0.12},
+    {"symbol": "TAO", "rsi_daily": 42.0, "macd": -0.08},
+    {"symbol": "RNDR", "rsi_daily": 76.0, "macd": 0.20},
+    {"symbol": "HNT", "rsi_daily": 74.0, "macd": 0.18}
+  ]},
+  {"timestamp": "2026-03-29", "signals": [
+    {"symbol": "FET", "rsi_daily": 46.0, "macd": -0.05},
+    {"symbol": "AGIX", "rsi_daily": 44.0, "macd": -0.06},
+    {"symbol": "OCEAN", "rsi_daily": 43.0, "macd": -0.08},
+    {"symbol": "TAO", "rsi_daily": 45.0, "macd": -0.04},
+    {"symbol": "RNDR", "rsi_daily": 73.0, "macd": 0.16},
+    {"symbol": "HNT", "rsi_daily": 71.0, "macd": 0.14}
+  ]},
+  {"timestamp": "2026-04-01", "signals": [
+    {"symbol": "FET", "rsi_daily": 52.0, "macd": 0.02},
+    {"symbol": "AGIX", "rsi_daily": 50.0, "macd": 0.01},
+    {"symbol": "OCEAN", "rsi_daily": 48.0, "macd": -0.01},
+    {"symbol": "TAO", "rsi_daily": 51.0, "macd": 0.02},
+    {"symbol": "RNDR", "rsi_daily": 70.0, "macd": 0.12},
+    {"symbol": "HNT", "rsi_daily": 68.0, "macd": 0.10}
+  ]}
+]

@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bridgeagent"
+dynamic = ["version"]
+description = "Byreal-bootstrapped, BNB Chain-anchored agentic perps trading CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Yash Jain" },
+]
+keywords = ["bnb", "bsc", "byreal", "hyperliquid", "trading", "agent", "perps", "tui", "defi"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console :: Curses",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "textual>=8.2.0",
+    "textual-plotext",
+    "hyperliquid-python-sdk>=0.23.0",
+    "anthropic>=0.28.0",
+    "boto3",
+    "numpy",
+    "ta",
+    "python-dotenv",
+    "eth-account",
+    "web3>=6.0.0",
+    "httpx",  # used directly by core/hypedexer_client.py; no longer pulled in transitively by anthropic
+]
+
+[project.urls]
+Homepage = "https://github.com/yashj09/bridgeagent"
+Issues = "https://github.com/yashj09/bridgeagent/issues"
+
+[project.scripts]
+bridgeagent = "bridgeagent.app:main"
+
+[tool.hatch.version]
+path = "src/bridgeagent/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bridgeagent"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/bridgeagent",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]

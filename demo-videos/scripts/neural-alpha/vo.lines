@@ -1,0 +1,21 @@
+# neural-alpha voice-over: scripts/_vo/gen.py neural-alpha
+# id | rate | pitch | text   (claims from seed-bnb-indo/bnbhack-winn/VERIFY-BNB.md + scripts/neural-alpha/runs/:
+# PAPER MODE, no real trades, TWAK off, no keys; live Binance Web3 BSC quotes; CMC prices + Fear & Greed
+# simulated (no CMC key); 3/3 slots then "nothing to execute"; 4 real swaps read-only; 15 bad addresses,
+# 11 fixed + 4 removed, 88/88; Narrative-Alpha is a companion tool, NOT wired into the agent)
+voice = en-GB-RyanNeural
+hook    | +16% | +0Hz | Markets never sleep. Bots without guardrails get wrecked.
+logo    | +10% | +1Hz | Neural Alpha trades BNB Smart Chain, with its risk rules in code.
+paper   | +10% | +0Hz | All of it in paper mode.
+ingest  | +14% | +0Hz | Each cycle: live BSC prices in, nine signals scored.
+gate    | +14% | +0Hz | A hard risk gate decides. Fills are simulated.
+real    | +14% | +0Hz | The real agent, on live Binance quotes.
+slots   | +14% | +0Hz | Three slots full, so it stops buying.
+dash    | +14% | +0Hz | The dashboard shows the same run. With no CMC key, its prices and Fear and Greed are simulated.
+scan    | +18% | +0Hz | Its scanner reads real mainnet swaps from BSC.
+match   | +14% | +0Hz | Amounts check out. Read only, nothing signed.
+bad     | +14% | +0Hz | Fifteen addresses pointed at nothing.
+fixed   | +14% | +1Hz | Eleven fixed, four removed.
+narr    | +12% | +0Hz | Narrative-Alpha is a companion strategy tool. It isn't wired into the agent.
+live    | +14% | +0Hz | To go live, it needs a CMC key, a Trust Wallet agent wallet, and USDT.
+outro   | +4%  | +1Hz | Neural Alpha. Risk in code, on BNB Chain.

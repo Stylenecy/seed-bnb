@@ -1,0 +1,113 @@
+-- | NOTE: superseded by `Cermin.Scripts.Demo:demoSetup` as the sandbox
+-- init-script (see `daml.yaml`); kept for test fixtures.
+module Cermin.Scripts.Setup where
+
+import Daml.Script
+import DA.Date (Month(Jan), date)
+import Cermin.Assets
+import Cermin.Oracle
+import Cermin.Credit
+import Cermin.Guard
+
+-- | Demo setup script (formerly the project's `init-script`; `daml start`
+-- now runs `Cermin.Scripts.Demo:demoSetup` instead — this script remains
+-- for test fixtures). Allocates the five Cermin parties — Issuer, Borrower,
+-- PoolOperator, GuardAgent, Oracle — and builds the complete PRE-RESCUE
+-- demo scene exactly per the hackathon demo numbers (see
+-- .superpowers/sdd/global-constraints.md, "Demo numbers"):
+--
+--   * Borrower holds 10,000 mUST-2030 face value (collateral).
+--   * Oracle publishes the initial price of 1.00 -> $10,000 collateral value.
+--   * Pool lends 6,000 mUSD at 500 bps against the locked collateral; the
+--     Loan's initial Health Ratio is ~166%.
+--   * Borrower's private Shadow Vault is funded with 1,500 mUSD.
+--   * A private Guard Policy sets the Guard Trigger at 130% (13000 bps),
+--     restore target at 145% (14500 bps), cap 2,000 mUSD per event.
+--
+-- The scene is left HEALTHY (price 1.00). The Guard Agent lane drops the
+-- price to 0.76 to trigger the auto-repay — the demo narrative — so this
+-- script deliberately does NOT touch the rescue or last-resort paths.
+--
+-- Setup.daml (Task 1) minted no StableCoin, so Task 2 mints the pool
+-- liquidity and the vault funding here, both via the issuer.
+setup : Script ()
+setup = script do
+  issuer <- allocatePartyByHint (PartyIdHint "Issuer")
+  borrower <- allocatePartyByHint (PartyIdHint "Borrower")
+  poolOperator <- allocatePartyByHint (PartyIdHint "PoolOperator")
+  guardAgent <- allocatePartyByHint (PartyIdHint "GuardAgent")
+  oracle <- allocatePartyByHint (PartyIdHint "Oracle")
+
+  issuerId <- validateUserId "issuer"
+  borrowerId <- validateUserId "borrower"
+  poolOperatorId <- validateUserId "poolOperator"
+  guardAgentId <- validateUserId "guardAgent"
+  oracleId <- validateUserId "oracle"
+  createUser (User issuerId (Some issuer)) [CanActAs issuer]
+  createUser (User borrowerId (Some borrower)) [CanActAs borrower]
+  createUser (User poolOperatorId (Some poolOperator)) [CanActAs poolOperator]
+  createUser (User guardAgentId (Some guardAgent)) [CanActAs guardAgent]
+  createUser (User oracleId (Some oracle)) [CanActAs oracle]
+
+  -- Borrower's collateral: 10,000 mUST-2030 face value, 450 bps coupon.
+  collateralCid <- submitMulti [issuer, borrower] [] do
+    createCmd TreasuryToken with
+      issuer
+      owner = borrower
+      instrumentId = "mUST-2030"
+      faceValue = 10000.0
+      couponRateBps = 450
+      maturity = date 2030 Jan 1
+      lockedBy = None
+
+  -- Oracle publishes the initial price: 1.00 -> $10,000 collateral value.
+  _ <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  -- Pool liquidity (via the issuer): 6,000 mUSD held by the pool operator.
+  liquidityCid <- submitMulti [issuer, poolOperator] [] do
+    createCmd StableCoin with issuer, owner = poolOperator, amount = 6000.0
+
+  -- Origination: pool stages the disbursement as a transfer proposal the
+  -- borrower observes, then offers the loan; the borrower accepts by locking
+  -- the collateral and taking delivery of the 6,000 mUSD principal.
+  disbursementProposalCid <- submit poolOperator do
+    exerciseCmd liquidityCid TransferCoin with newOwner = borrower
+
+  offerCid <- submit poolOperator do
+    createCmd LendingPoolOffer with
+      poolOperator
+      borrower
+      guardAgent
+      loanId = "loan-1"
+      principal = 6000.0
+      rateBps = 500
+      collateralInstrumentId = "mUST-2030"
+      collateralAmount = 10000.0
+      disbursementProposalCid
+
+  _ <- submit borrower do
+    exerciseCmd offerCid AcceptOffer with collateralTokenCid = collateralCid
+
+  -- Borrower's private Guard Policy: trigger 130%, restore 145%, cap 2,000.
+  _ <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = False
+
+  -- Borrower's private Shadow Vault, funded with 1,500 mUSD of reserve.
+  _ <- submit borrower do
+    createCmd ShadowVault with
+      borrower
+      guardAgent
+      balance = 1500.0
+
+  pure ()

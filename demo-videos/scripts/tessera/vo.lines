@@ -1,0 +1,25 @@
+# tessera voice-over: scripts/_vo/gen.py tessera
+# id | rate | pitch | text   (claims from seed-bnb-indo/Tessera/VERIFY-BNB.md + scripts/tessera/runs/*: no contracts,
+# read-only live scans of BSC 56 / opBNB 204 / BSC Testnet 97 + 8 EVM chains; Binance hot wallet run (Scroll RPC
+# errored that run); PancakeSwap V3 SmartRouter = Contract on 56/204/97; serve: /api/health 200, 10 MCP tools;
+# BscScan V1 dead -> explorer enrichment needs an Etherscan V2 key; agent runs need an API key (not shown).
+voice = en-GB-RyanNeural
+hook     | +16% | +1Hz | One address, eleven chains, eleven explorers to check by hand.
+intro    | +10% | +0Hz | Tessera scans them all, and an AI agent can call it.
+bnb      | +26% | +1Hz | BNB Chain, op B-N-B and testnet come first.
+paste    | +18% | +0Hz | Paste any address.
+fan      | +26% | +0Hz | Eleven RPCs, in parallel.
+classify | +22% | +0Hz | Get-code tells a contract from a wallet.
+report   | +32% | +0Hz | A table for you, JSON for agents.
+hot      | +14% | +0Hz | A real scan of a Binance hot wallet.
+scroll   | +18% | +0Hz | Scroll's RPC failed this run.
+whale    | +26% | +0Hz | A hundred million USDT, read right.
+router   | +14% | +0Hz | Now PancakeSwap's V3 router.
+flagged  | +14% | +0Hz | A contract on all three BNB networks.
+tools    | +22% | +0Hz | The Go backend exposes ten MCP tools.
+agent    | +28% | +0Hz | Any agent can call scan chain over HTTP.
+real     | +18% | +1Hz | The real web app, BNB Chain first.
+key      | +20% | +0Hz | The agent run needs an API key, so it's not shown.
+limit    | +28% | +0Hz | Explorer data needs an Etherscan V2 key.
+readonly | +14% | +0Hz | Read only: no contracts, no gas spent.
+outro    | +8%  | +1Hz | Tessera. Evidence over narrative, on BNB Chain.

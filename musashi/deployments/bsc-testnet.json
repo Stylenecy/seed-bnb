@@ -1,0 +1,12 @@
+{
+  "chainId": 97,
+  "network": "bsc-testnet",
+  "deployer": "0xb4fDcF406c50a789B125a1C27Fdf9ADDaC333308",
+  "oracle": "0xb4fDcF406c50a789B125a1C27Fdf9ADDaC333308",
+  "deployBlock": 132984099,
+  "contracts": {
+    "ConvictionLog": { "proxy": "0x194CAC98f5B66f203944e2047d168e4624418d49", "impl": "0xFAEF4B46FE4c142328727b80AB0BAB67298DD408" },
+    "MusashiINFT":   { "proxy": "0xF10dBDF8A385a60F97Eb1843BefcF18edFB57ac5", "impl": "0xA589e21A0469ada81D8bF6d108951FE08E475D4B" }
+  },
+  "verified": false
+}

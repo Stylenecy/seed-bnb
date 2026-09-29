@@ -1,0 +1,5 @@
+[{"goto":"/"},{"wait":4000},
+ {"eval":"(()=>{const b=[...document.querySelectorAll('button')].find(b=>/Open dashboard/.test(b.innerText));b&&b.click();return !!b})()"},{"wait":12000},{"eval":"location.pathname"},{"shot":"DASH-top"},
+ {"eval":"window.scrollTo(0, 1150)"},{"wait":2500},{"shot":"DASH-mid"},
+ {"eval":"window.scrollTo(0, 2000)"},{"wait":2500},{"shot":"DASH-low"},
+ {"eval":"document.body.scrollHeight"}]

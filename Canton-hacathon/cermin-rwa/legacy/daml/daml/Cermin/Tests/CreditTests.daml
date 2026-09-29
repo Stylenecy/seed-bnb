@@ -1,0 +1,158 @@
+module Cermin.Tests.CreditTests where
+
+import Daml.Script
+import DA.Assert ((===))
+import DA.Date (Month(Jan), date)
+import DA.Foldable (forA_)
+import DA.List (head)
+import Cermin.Assets
+import Cermin.Credit
+
+-- | The five Cermin parties. Shared with GuardTests.
+data Parties = Parties
+  with
+    issuer : Party
+    borrower : Party
+    poolOperator : Party
+    guardAgent : Party
+    oracle : Party
+
+allocateParties : Script Parties
+allocateParties = script do
+  issuer <- allocatePartyByHint (PartyIdHint "Issuer")
+  borrower <- allocatePartyByHint (PartyIdHint "Borrower")
+  poolOperator <- allocatePartyByHint (PartyIdHint "PoolOperator")
+  guardAgent <- allocatePartyByHint (PartyIdHint "GuardAgent")
+  oracle <- allocatePartyByHint (PartyIdHint "Oracle")
+  pure Parties with ..
+
+-- | Mint a mUST-2030 TreasuryToken of the given face value to `owner`.
+mintToken : Party -> Party -> Decimal -> Script (ContractId TreasuryToken)
+mintToken issuer owner faceValue =
+  submitMulti [issuer, owner] [] do
+    createCmd TreasuryToken with
+      issuer
+      owner
+      instrumentId = "mUST-2030"
+      faceValue
+      couponRateBps = 450
+      maturity = date 2030 Jan 1
+      lockedBy = None
+
+-- | Mint an mUSD StableCoin of the given amount to `owner` (e.g. pool
+-- liquidity, or Shadow Vault funding — Setup.daml mints none, so tests mint
+-- what they need via the issuer).
+mintCoin : Party -> Party -> Decimal -> Script (ContractId StableCoin)
+mintCoin issuer owner amount =
+  submitMulti [issuer, owner] [] do
+    createCmd StableCoin with issuer, owner, amount
+
+-- | Originate the demo loan: pool offers 6,000 mUSD at 500 bps against
+-- 10,000 mUST-2030 face value; borrower accepts by locking the collateral
+-- and taking delivery of the principal. Returns the parties and live Loan.
+-- Shared with GuardTests.
+originateDemoLoan : Script (Parties, ContractId Loan)
+originateDemoLoan = do
+  ps@Parties{..} <- allocateParties
+
+  collateralCid <- mintToken issuer borrower 10000.0
+  liquidityCid <- mintCoin issuer poolOperator 6000.0
+
+  -- pool stages the disbursement as a transfer proposal the borrower observes.
+  disbursementProposalCid <- submit poolOperator do
+    exerciseCmd liquidityCid TransferCoin with newOwner = borrower
+
+  offerCid <- submit poolOperator do
+    createCmd LendingPoolOffer with
+      poolOperator
+      borrower
+      guardAgent
+      loanId = "loan-1"
+      principal = 6000.0
+      rateBps = 500
+      collateralInstrumentId = "mUST-2030"
+      collateralAmount = 10000.0
+      disbursementProposalCid
+
+  (loanCid, _) <- submit borrower do
+    exerciseCmd offerCid AcceptOffer with collateralTokenCid = collateralCid
+
+  pure (ps, loanCid)
+
+-- | Full borrow lifecycle: offer -> accept -> Loan created, collateral
+-- locked to the pool, principal delivered to the borrower. Checks the
+-- privacy boundary: guardAgent observes the loan; an outsider sees nothing.
+test_borrowLifecycle : Script ()
+test_borrowLifecycle = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+  outsider <- allocatePartyByHint (PartyIdHint "Outsider")
+
+  Some loan <- queryContractId borrower loanCid
+  loan.principal === 6000.0
+  loan.outstanding === 6000.0
+  loan.collateralAmount === 10000.0
+  loan.rateBps === 500
+
+  -- collateral is locked to the pool (disclosed via the lock only).
+  poolTokens <- query @TreasuryToken poolOperator
+  let (_, lockedToken) = head poolTokens
+  lockedToken.lockedBy === Some poolOperator
+  lockedToken.faceValue === 10000.0
+
+  -- borrower received the 6,000 mUSD principal.
+  borrowerCoins <- query @StableCoin borrower
+  let (_, coin) = head borrowerCoins
+  coin.amount === 6000.0
+
+  -- guardAgent observes the loan (to compute the Health Ratio); an
+  -- unrelated party sees nothing.
+  Some _ <- queryContractId guardAgent loanCid
+  outsiderView <- queryContractId outsider loanCid
+  outsiderView === None
+
+-- | Manual borrower-initiated paydown.
+test_manualRepay : Script ()
+test_manualRepay = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  reducedCid <- submit borrower do
+    exerciseCmd loanCid Repay with amount = 1000.0
+  Some reduced <- queryContractId borrower reducedCid
+  reduced.outstanding === 5000.0
+
+  -- cannot repay more than outstanding, nor a non-positive amount.
+  submitMustFail borrower do exerciseCmd reducedCid Repay with amount = 999999.0
+  submitMustFail borrower do exerciseCmd reducedCid Repay with amount = 0.0
+
+-- | ApplyRepayment is the delegation primitive: borrower authority reduces
+-- the debt. Crucially, the guardAgent cannot invoke it directly (it holds no
+-- borrower authority outside the Shadow Vault) — the on-ledger proof that the
+-- delegation is narrow.
+test_applyRepaymentIsBorrowerOnly : Script ()
+test_applyRepaymentIsBorrowerOnly = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  -- guardAgent has no path to move the debt on its own.
+  submitMustFail guardAgent do
+    exerciseCmd loanCid ApplyRepayment with repayAmount = 500.0
+
+  -- borrower authority works.
+  reducedCid <- submit borrower do
+    exerciseCmd loanCid ApplyRepayment with repayAmount = 500.0
+  Some reduced <- queryContractId borrower reducedCid
+  reduced.outstanding === 5500.0
+
+-- | TopUpCollateral: borrower pledges a second token, raising collateral.
+test_topUpCollateral : Script ()
+test_topUpCollateral = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  extraCid <- mintToken issuer borrower 5000.0
+  toppedCid <- submit borrower do
+    exerciseCmd loanCid TopUpCollateral with additionalTokenCid = extraCid
+  Some topped <- queryContractId borrower toppedCid
+  topped.collateralAmount === 15000.0
+
+  -- both pledged tokens are now locked to the pool.
+  poolTokens <- query @TreasuryToken poolOperator
+  forA_ poolTokens \(_, t) -> t.lockedBy === Some poolOperator

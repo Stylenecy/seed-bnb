@@ -1,0 +1,9 @@
+{
+  "chainId": 97,
+  "addresses": {
+    "AgentCertificate": "0x4927B51f574035622826d8E703b712Bb5F12bDC8",
+    "ReencryptionOracle": "0x90D159C2d0d247BAafbd865a6FdD664E397eD984",
+    "ZeroArenaINFT": "0x6d0fda52C480E96D2Da3aB0e071d4c6A27Cd263c"
+  },
+  "deployBlock": 132984359
+}

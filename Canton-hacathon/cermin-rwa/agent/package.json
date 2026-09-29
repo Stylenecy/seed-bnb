@@ -1,0 +1,21 @@
+{
+  "name": "@cermin-rwa/agent",
+  "version": "0.1.0",
+  "description": "Cermin-RWA Guard Agent: off-ledger service that watches Health Ratio and auto-repays from the Shadow Vault before liquidation.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "tsx src/index.ts",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2",
+    "viem": "^2.56.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

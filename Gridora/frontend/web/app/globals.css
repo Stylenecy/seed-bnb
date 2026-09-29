@@ -1,0 +1,113 @@
+/* Type system: Outfit for display (lowercase editorial voice), Inter for prose,
+   JetBrains Mono for data/addresses/numbers. One palette, one theme: porcelain + volt. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PORCELAIN + VOLT — one committed palette. Light porcelain base, ink typography,
+   a single loud volt-green accent reserved for wins and brand moments. */
+:root {
+  --bg: 237 238 245;        /* #EDEEF5 porcelain */
+  --surface: 255 255 255;   /* cards */
+  --elevated: 255 255 255;
+  --fg: 26 26 26;           /* #1a1a1a ink — 15:1 on bg */
+  --muted: 107 114 128;     /* secondary text — 4.6:1 */
+  --faint: 156 163 175;     /* hints */
+  --line: 219 221 231;      /* hairlines */
+  --accent: 77 124 15;      /* lime-700 — readable green for links/labels (4.5:1) */
+  --volt: 159 255 0;        /* #9fff00 — FILLS ONLY, always with ink text on top */
+  --pos: 63 98 18;          /* lime-800 — profit text */
+  --neg: 190 18 60;         /* rose-700 — loss text */
+  --grid: 26 26 26;         /* decoration tint */
+  --selection: 159 255 0;
+  color-scheme: light;
+}
+
+*::selection {
+  background-color: rgb(var(--selection) / 0.5);
+  color: rgb(26 26 26);
+}
+
+html {
+  font-feature-settings: "cv01", "cv02", "cv11", "ss01";
+  scroll-behavior: smooth;
+}
+
+html, body {
+  @apply bg-bg text-fg font-sans antialiased;
+}
+
+/* Hairline grid motif — very subtle, fades at the page edges. */
+@media (min-width: 768px) {
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, rgb(var(--grid) / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--grid) / 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--muted) / 0.28); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted) / 0.45); }
+
+/* Quiet underline-on-hover for links. */
+.link-quiet { position: relative; transition: color 150ms ease; }
+.link-quiet::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: currentColor; opacity: 0; transform: scaleX(0.4); transform-origin: left;
+  transition: opacity 200ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-quiet:hover::after { opacity: 0.5; transform: scaleX(1); }
+
+/* CSS-only smooth height transition for disclosure expands. */
+.expand-enter {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.expand-enter > div { overflow: hidden; }
+.expand-enter[data-open="true"] { grid-template-rows: 1fr; }
+
+/* Card surface with real elevation. */
+.surface-card {
+  @apply rounded-2xl border border-line bg-surface;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05), 0 12px 28px -16px rgb(15 23 42 / 0.16);
+}
+.lift { transition: transform 220ms cubic-bezier(0.16,1,0.3,1), border-color 220ms ease, box-shadow 220ms ease; }
+.lift:hover { transform: translateY(-3px); border-color: rgb(var(--accent) / 0.5); }
+
+/* Faint blueprint grid inside a card. */
+.card-grid { background-image:
+  linear-gradient(to right, rgb(var(--grid)/0.04) 1px, transparent 1px),
+  linear-gradient(to bottom, rgb(var(--grid)/0.03) 1px, transparent 1px);
+  background-size: 22px 22px; }
+
+/* Volt chip — the win marker. Always ink-on-volt. */
+.chip-volt {
+  @apply inline-flex items-center rounded-full font-mono font-semibold;
+  background: rgb(var(--volt));
+  color: rgb(26 26 26);
+}
+.chip-neg {
+  @apply inline-flex items-center rounded-full font-mono font-semibold;
+  background: rgb(var(--neg) / 0.09);
+  color: rgb(var(--neg));
+}
+
+/* Staggered rise-in for the page load moment. */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.rise { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+}

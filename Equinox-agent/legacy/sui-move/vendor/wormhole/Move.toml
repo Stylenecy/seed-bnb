@@ -1,0 +1,12 @@
+[package]
+name = "wormhole"
+edition = "2024"
+# Linkage-only stub: Pyth's on-chain package depends on Wormhole, so equinox's
+# dependency closure must include it. We never call Wormhole — this package exists
+# only so `published-at` puts the testnet Wormhole id in the linkage table.
+# Verify the id at docs.pyth.network/.../contract-addresses/sui (it is Pyth
+# testnet's linked Wormhole package).
+published-at = "0xf47329f4344f3bf0f8e436e2f7b485466cff300f12a166563995d3888c296a94"
+
+[addresses]
+wormhole = "0xf47329f4344f3bf0f8e436e2f7b485466cff300f12a166563995d3888c296a94"

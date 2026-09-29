@@ -1,0 +1,19 @@
+# musashi voice-over — scripts/_vo/gen.py musashi
+# id | rate | pitch | text   (claims from musashi/VERIFY-BNB.md: real BSC testnet deploy + smoke flow;
+# token-gate checks are read-only on live BSC mainnet data; 0G Storage writes skipped, placeholder root)
+# Samurai tone: calm, deliberate; slower rates on the explainers.
+voice = en-GB-RyanNeural
+hook     | +2%  | -3Hz | A thousand new tokens. Everyone is shouting.
+intro    | +0%  | -4Hz | Musashi. Conviction-weighted token intelligence.
+bnb      | -2%  | -3Hz | Now on BNB Chain.
+gates    | -6%  | -4Hz | Seven gates. Fail one, and it's cut.
+strike   | -6%  | -4Hz | Bull debates bear. Only real conviction is logged on-chain.
+app      | -4%  | -3Hz | The real dashboard, reading BSC testnet live.
+ledger   | -2%  | -3Hz | Its first strike closed up twenty-five percent.
+aria     | +4%  | -3Hz | Live BSC, read-only. ARIA passes five gates.
+logged   | +0%  | -3Hz | Agent zero strikes, with conviction four.
+proof    | -2%  | -3Hz | Deployed on BSC testnet.
+smoke    | +2%  | -3Hz | Every receipt, status one.
+stack    | -6%  | -3Hz | The Go daemon and the dashboard read the live chain.
+stats    | +2%  | -3Hz | One strike, one win. Zero-G storage skipped.
+outro    | -10% | -5Hz | Musashi. Find early. Strike with conviction.

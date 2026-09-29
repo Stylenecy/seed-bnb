@@ -1,0 +1,31 @@
+{
+  "name": "zero-arena-bacend",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend services for Zero Arena: `transfer-oracle` (ERC-7857 re-encryption proof signer) + `paper` (live PaperEngine daemon).",
+  "bin": {
+    "zero-arena-bacend": "src/index.ts"
+  },
+  "scripts": {
+    "start": "npm run transfer-oracle:serve",
+    "transfer-oracle:serve": "tsx src/index.ts transfer-oracle serve",
+    "paper:start": "tsx src/index.ts paper start",
+    "paper:backfill": "tsx src/index.ts paper backfill",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "eciesjs": "^0.5.0",
+    "ethers": "^6.13.0",
+    "zeroarena": "file:../sdk"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.0"
+  },
+  "overrides": {
+    "axios": ">=1.12.0",
+    "ws": ">=8.20.1"
+  }
+}

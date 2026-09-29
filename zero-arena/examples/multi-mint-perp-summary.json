@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-06-10T00:11:07.642Z",
+  "market": "perp",
+  "leverage": 5,
+  "fixture": "btc-perp-fixture.csv",
+  "records": [
+    {
+      "slug": "rsi-perp-classic",
+      "name": "RSI Perp 30/70",
+      "description": "RSI(14) mean-reversion on perp · 5x lev · 50% size.",
+      "certId": 14,
+      "tokenId": 6,
+      "runHash": "0x9fcf104ede21f68231d3a1a5c1673470ab0ed8169284202dc0eeb141272e4c7a",
+      "datasetHash": "0xac99229cf38d4b5800eae92ea993a3b4b434895e2ff3fc2a147f8b6c31d787e5",
+      "storageRoot": "0x4a9e6d7afef43cbc0ade40ddc21b69e1361ff29fd12ae0258accce40eccce3da",
+      "metadataHash": "0x57cc2235da41641a0dea9c61dc6197ce92830d1746c534a80827bcb4413f301c",
+      "totalReturnBps": -311,
+      "sharpeX1000": -1118,
+      "maxDrawdownBps": 1608,
+      "winRateBps": 5000,
+      "market": "perp",
+      "leverage": 5
+    },
+    {
+      "slug": "rsi-perp-aggressive",
+      "name": "RSI Perp Aggressive 25/75",
+      "description": "Wider RSI bands · 25/75 · 5x lev · 70% size.",
+      "certId": 15,
+      "tokenId": 7,
+      "runHash": "0x65cf84529ff8d9b6f6820eeb53e9cac2146f3d3ad27de0c289d1f0fb369ef75d",
+      "datasetHash": "0xac99229cf38d4b5800eae92ea993a3b4b434895e2ff3fc2a147f8b6c31d787e5",
+      "storageRoot": "0x743df9340106b9620bcec47e3274936270f1ee94e6f97049620356f0650ecf5f",
+      "metadataHash": "0x90f49a381ef818d4c32af833698253fdc68e4ce418dcff8418bd820a478330b6",
+      "totalReturnBps": 1725,
+      "sharpeX1000": 3539,
+      "maxDrawdownBps": 2034,
+      "winRateBps": 10000,
+      "market": "perp",
+      "leverage": 5
+    },
+    {
+      "slug": "ema-perp-crossover",
+      "name": "EMA Perp Crossover 12/26",
+      "description": "EMA(12) > EMA(26) trend-follower · 5x lev · 80% size.",
+      "certId": 16,
+      "tokenId": 8,
+      "runHash": "0xbe23560597a8501d92c179e2b6814ab0691a040f206d40ad38062770487287da",
+      "datasetHash": "0xac99229cf38d4b5800eae92ea993a3b4b434895e2ff3fc2a147f8b6c31d787e5",
+      "storageRoot": "0x0e917ef8bff1987e209e5b448b69e204bfebe7311497ab4a1f1cb038aa40a9a0",
+      "metadataHash": "0x3441886bf3f2cb844b1b95a3dc233421f7249a6a621a12b5ef844167021aa686",
+      "totalReturnBps": 25216,
+      "sharpeX1000": 17226,
+      "maxDrawdownBps": 1673,
+      "winRateBps": 7500,
+      "market": "perp",
+      "leverage": 5
+    }
+  ]
+}

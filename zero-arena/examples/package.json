@@ -1,0 +1,33 @@
+{
+  "name": "zero-arena-examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reference agents for the Zero Arena SDK: rule-based spot, rule-based perp, LLM spot, and an ERC-7857 transfer demo.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "01:run": "tsx 01-rsi-spot-btc/run.ts",
+    "01:backtest": "tsx 01-rsi-spot-btc/run.ts --backtest-only",
+    "02:backtest": "tsx 02-macd-perp-btc/run.ts",
+    "03:run": "tsx 03-llm-spot-0g/run.ts",
+    "04:transfer": "tsx 04-transfer-flow/run.ts",
+    "multi:mint": "tsx multi-mint/run.ts",
+    "multi:backtest": "tsx multi-mint/run.ts --backtest-only",
+    "multi:mint:perp": "tsx multi-mint-perp/run.ts",
+    "season:status": "tsx scripts/season-status.ts",
+    "season:create": "tsx scripts/create-season.ts",
+    "season:enroll-all": "tsx scripts/enroll-all.ts",
+    "season:roster": "tsx scripts/build-roster.ts",
+    "season:backfill-all": "tsx scripts/backfill-all.ts",
+    "admin:set-thresholds": "tsx scripts/set-thresholds.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
+    "ethers": "^6.13.0",
+    "zeroarena": "^0.5.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.0"
+  }
+}

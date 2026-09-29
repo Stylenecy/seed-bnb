@@ -1,0 +1,7 @@
+$ fetchRpcRecentTradeHistory("0x0f0067cd819cb8f20bda62046daff7a2b5c88280", 4)
+[INFO] 2026-09-25T18:45:58.009Z BSC RPC recent trade scan {"wallet":"0x0f0067cd…","swaps":4,"blocks":5000}
+{"txHash":"0xab624ee807845e8206819b9154b7537522c5c0d9f8b8eaf2589b722e04825a77","from":"FF","to":"USDT","fromAmount":"702.9174972038813","toAmount":"93.12345916040819","price":0.13248135027345564,"ts":"2026-09-25T18:45:38.000Z"}
+{"txHash":"0x47661bfcdd176f4bddd8d544ccf59513fd00d367adfb397066458dd4b8e7239c","from":"USDT","to":"INJ","fromAmount":"77.5995","toAmount":"9.466964318595993","price":8.196872554760878,"ts":"2026-09-25T18:45:18.000Z"}
+{"txHash":"0x733b8155cffb99aca9686e4a3934327eb8e5d2964c3e77ca57e7cfd2091bafe6","from":"USDT","to":"ETH","fromAmount":"682.8756","toAmount":"0.25341301786172976","price":2694.7139723208643,"ts":"2026-09-25T18:45:06.000Z"}
+{"txHash":"0x3ae3bede6f8bfa8cc460197108b5228ec156619791e31633e96269d21680f0f9","from":"USDT","to":"LTC","fromAmount":"46.5507","toAmount":"0.6553621718735079","price":71.03049580497422,"ts":"2026-09-25T18:44:45.000Z"}
+swaps=4 elapsedMs=7199

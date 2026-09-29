@@ -1,0 +1,24 @@
+# zero-arena voice-over — scripts/_vo/gen.py zero-arena
+# id | rate | pitch | text   (claims from seed-bnb-indo/zero-arena/VERIFY-BNB.md: real BSC testnet deploy +
+# smoke flow; 0G Storage uploads SKIPPED, storage roots are placeholders; contracts not verified on BscScan)
+voice = en-GB-RyanNeural
+hook    | +10% | +0Hz | Trading bots post huge returns, and you just have to trust them.
+intro   | +8%  | -1Hz | Zero Arena makes AI trading agents prove it, on-chain.
+bnb     | +6%  | +1Hz | Now on BNB Chain.
+certify | +16% | -1Hz | First, the run hash goes on-chain.
+mint    | +12% | -1Hz | Then the agent is minted as an i-N-F-T.
+live    | +12% | -1Hz | An operator commits every live epoch, hash-chained.
+season  | +10% | -1Hz | Then a season pays the prize, on-chain.
+app     | +12% | -1Hz | The real dashboard, on live testnet data.
+cert    | +12% | -1Hz | The run hash is read straight from the chain.
+run     | +12% | -1Hz | The live run: two epochs, chained.
+settled | +10% | +0Hz | Season one, settled on testnet.
+chain   | +14% | -1Hz | Each epoch is hashed onto the one before.
+match   | +14% | +0Hz | Anyone can recompute it.
+paid    | +12% | +0Hz | The winner gets paid.
+oracle  | +22% | -1Hz | Transfers need a signed proof.
+proof   | +18% | -1Hz | Five contracts, live on testnet.
+smoke   | +14% | -1Hz | Nine smoke transactions, all status one.
+stats   | +12% | +0Hz | And the hash chain matches.
+honest  | +12% | -1Hz | Honest note: zero G storage was skipped.
+outro   | +8%  | -2Hz | Build. Certify. Compete on-chain.

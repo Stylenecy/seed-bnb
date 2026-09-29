@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  core:
+    name: Build musashi-core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          # Read the version straight from go.mod so CI can never drift from it.
+          go-version-file: scripts/musashi-core/go.mod
+          cache-dependency-path: scripts/musashi-core/go.sum
+
+      - name: Format check
+        working-directory: scripts/musashi-core
+        run: test -z "$(gofmt -l .)" || (echo "These files need gofmt:"; gofmt -l .; exit 1)
+
+      - name: Vet
+        working-directory: scripts/musashi-core
+        run: go vet ./...
+
+      - name: Build
+        working-directory: scripts/musashi-core
+        run: go build ./cmd/musashi
+
+      - name: Test
+        working-directory: scripts/musashi-core
+        run: go test ./...
+
+  contracts:
+    name: Build & test contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build
+        working-directory: contracts
+        run: forge build
+
+      - name: Test
+        working-directory: contracts
+        run: forge test -vvv
+
+  frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        working-directory: frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        working-directory: frontend
+        run: pnpm lint
+
+      - name: Unit tests
+        working-directory: frontend
+        run: pnpm test
+
+      - name: Build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_CHAIN_ID: "97"
+          NEXT_PUBLIC_CONVICTION_LOG_ADDRESS: "0x0000000000000000000000000000000000000000" # TODO: BSC deploy
+          NEXT_PUBLIC_MUSASHI_INFT_ADDRESS: "0x0000000000000000000000000000000000000000" # TODO: BSC deploy
+        run: pnpm build

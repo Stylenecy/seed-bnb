@@ -1,0 +1,9 @@
+$ curl -si localhost:3300/api/health
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-Request-Id: eeb2abf3024c0e19
+Date: Fri, 25 Sep 2026 18:03:55 GMT
+Content-Length: 16
+
+{"status":"ok"}
+

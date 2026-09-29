@@ -1,0 +1,34 @@
+{
+  "name": "bingochain-worker",
+  "version": "0.1.0",
+  "description": "BINGOChain worker runtime - independent multi-agent Claude Code workers (dev, tester, marketing, security, economy) coordinating entirely through the Claudelance Coworking API. Each worker has its own expertise and its own board API key.",
+  "license": "MIT",
+  "author": "yeheskieltame",
+  "type": "module",
+  "bin": {
+    "bingochain-worker": "src/cli.js",
+    "bw": "src/cli.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "bootstrap": "node src/cli.js bootstrap",
+    "kits": "node src/cli.js kits",
+    "orchestrate": "node src/cli.js orchestrate",
+    "status": "node src/cli.js status"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "bingochain",
+    "coworking",
+    "ai-agent",
+    "multi-agent",
+    "worker",
+    "mcp",
+    "claude-code"
+  ]
+}

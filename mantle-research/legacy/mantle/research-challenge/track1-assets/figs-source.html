@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mantle RWA figures v3</title>
+<style>
+  :root{
+    --bg:#0A1312; --surface:#0F1B1A; --panel:#132320; --panel2:#162926;
+    --teal:#65B3AE; --teal-deep:#2E6B66; --tint:#CCE9E7;
+    --ink:#F4FAF9; --ink2:#AFC4C1; --ink3:#6E8A86;
+    --line:rgba(101,179,174,.16); --line2:rgba(101,179,174,.30);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100vw;height:100vh;background:var(--bg);overflow:hidden;
+    font-family:"GT Walsheim","Avenir Next","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);-webkit-font-smoothing:antialiased}
+  .canvas{position:absolute;inset:26px;background:
+      radial-gradient(1200px 700px at 12% -10%, rgba(101,179,174,.10), transparent 55%),
+      radial-gradient(900px 600px at 105% 115%, rgba(144,133,233,.05), transparent 55%),
+      var(--surface);
+    border:1px solid var(--line);border-radius:30px;padding:52px 58px;overflow:hidden}
+  body.banner .canvas{inset:0;border-radius:0;border:none;padding:56px 84px}
+  .dots{position:absolute;inset:0;border-radius:30px;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(204,233,231,.05) 1.1px, transparent 1.1px);
+    background-size:26px 26px}
+  .hdr{position:relative;display:flex;justify-content:space-between;align-items:center}
+  .kick{display:flex;align-items:center;gap:12px;font-size:13.5px;font-weight:600;
+    letter-spacing:.22em;color:var(--teal);text-transform:uppercase}
+  .kick .sq{width:11px;height:11px;background:var(--teal);border-radius:3px;
+    box-shadow:0 0 14px rgba(101,179,174,.8)}
+  .brand{font-size:13px;letter-spacing:.2em;color:var(--ink3);text-transform:uppercase;font-weight:600}
+  h1{position:relative;font-size:40px;font-weight:700;letter-spacing:-.015em;line-height:1.08;margin-top:20px}
+  h1 .em{color:var(--teal)}
+  .sub{position:relative;font-size:17px;line-height:1.5;color:var(--ink2);margin-top:12px;max-width:1080px}
+  .pillrow{position:absolute;left:58px;right:58px;bottom:40px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pill{font-size:12.5px;color:var(--ink2);border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;background:rgba(19,35,32,.6);letter-spacing:.02em}
+  .pill b{color:var(--tint);font-weight:600}
+  svg text{font-family:inherit}
+  .ax{font-size:13px;fill:var(--ink3)}
+  .axb{font-size:13.5px;fill:var(--ink2);font-weight:600}
+  .dl{font-weight:700;fill:var(--ink)}
+  .chip{font-size:13px;font-weight:600;fill:var(--tint)}
+  .statcard{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    border-radius:20px;padding:22px 24px}
+  .statcard .k{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+  .statcard .v{font-size:46px;font-weight:800;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+  .statcard .d{font-size:14px;color:var(--ink2);margin-top:4px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="canvas" id="canvas"><div class="dots"></div><div id="root" style="position:relative;height:100%"></div></div>
+<script>
+/* Mantle-anchored semantic palette, validated with the dataviz skill's script:
+   TEAL   #65B3AE  distributed / gateway / positive (brand anchor)
+   BLUE   #3987E5  secondary category (existing users, evidence 1, TradFi pool)
+   AMBER  #C98500  the window event / concentrated / warnings
+   CORAL  #E66767  issuer-locked / not adopted / exited / gaps
+   VIOLET #9085E9  tertiary (crypto users, KPI move)
+   CVD worst adjacent pair 35.9 (target >= 12), contrast all >= 3:1 on this surface.
+   Brand teal sits slightly above the reference lightness band; every mark carries
+   a direct label, which is the skill's sanctioned relief. */
+const TEAL="#65B3AE", TEALD="#2E6B66", TINT="#CCE9E7",
+      BLUE="#3987E5", BLUE_T="#7FB3EE",
+      AMBER="#C98500", AMBER_T="#E2A93F",
+      CORAL="#E66767", CORAL_T="#ED8C8C",
+      VIOLET="#9085E9",
+      INK="#F4FAF9", INK2="#AFC4C1", INK3="#6E8A86",
+      SURF="#0F1B1A", LINE="rgba(101,179,174,.16)", GRID="rgba(101,179,174,.10)";
+
+const trend=[["2025-12-01",3,3],["2026-01-19",4,1],["2026-03-02",6,2],["2026-03-23",31,25],
+ ["2026-03-30",34,3],["2026-04-06",45,11],["2026-04-13",397,353],["2026-04-20",653,260],
+ ["2026-04-27",802,150],["2026-05-04",850,53],["2026-05-11",871,23],["2026-05-18",875,4],
+ ["2026-05-25",876,1],["2026-06-01",882,6],["2026-06-08",905,24],["2026-06-15",916,13],
+ ["2026-06-22",925,11],["2026-06-29",926,3]];
+
+function hdr(kick, right){ return `<div class="hdr"><div class="kick"><div class="sq"></div>${kick}</div><div class="brand">${right||"Mantle RWA Research"}</div></div>`; }
+function pills(items){ return `<div class="pillrow">${items.map(t=>`<div class="pill">${t}</div>`).join("")}</div>`; }
+
+const F={};
+
+/* ============ COVER (bento) ============ */
+F.cover=function(){
+  const spark=trend.map(d=>d[1]);
+  const smax=1000, sw=178, sh=54;
+  const sp=spark.map((v,i)=>`${(i/(spark.length-1)*sw).toFixed(1)},${(sh-v/smax*sh).toFixed(1)}`).join(" ");
+  const weekly=trend.map(d=>d[2]);
+  let wbars="";
+  weekly.forEach((v,i)=>{ const h=Math.max(v/380*sh,1.5);
+    const inWin=i>=6&&i<=9;
+    wbars+=`<rect x="${(i*(sw/weekly.length)).toFixed(1)}" y="${(sh-h).toFixed(1)}" width="6.5" height="${h.toFixed(1)}" rx="2.5" fill="${inWin?AMBER_T:'rgba(110,138,134,.5)'}"/>`; });
+  const rr=34, rc=2*Math.PI*rr, roff=rc*(1-0.983);
+  const tile=(span,inner,accent)=>`<div style="grid-column:span ${span};background:linear-gradient(180deg,${accent?accent+'26':'#162926'},${accent?accent+'0d':'#132320'});
+      border:1px solid ${accent?accent+'80':LINE};border-radius:20px;padding:20px 24px;position:relative;overflow:hidden;
+      ${accent?`box-shadow:0 0 36px ${accent}1f;`:''}">${inner}</div>`;
+  const K=(s)=>`<div style="font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:${INK3};font-weight:600">${s}</div>`;
+  const V=(s,c)=>`<div style="font-size:44px;font-weight:800;letter-spacing:-.025em;margin-top:6px;color:${c||INK};font-variant-numeric:tabular-nums">${s}</div>`;
+  const D=(s)=>`<div style="font-size:13px;color:${INK2};margin-top:5px;line-height:1.45">${s}</div>`;
+  return `
+  ${hdr("926 Wallets, One Door","Mantle RWA Research")}
+  <h1 style="font-size:34px;margin-top:16px">The research <span class="em">at a glance</span></h1>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:20px">
+    ${tile(1,`${K("Issued vs distributed")}${V("368 <span style='color:"+INK3+";font-size:30px'>to</span> <span style='color:"+TEAL+"'>1</span>",null)}
+      ${D("tokenized US equities on Mantle; one passes the distribution thresholds")}
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:5px">
+        <div style="height:7px;width:100%;border-radius:4px;background:rgba(110,138,134,.3)"></div>
+        <div style="height:7px;width:4.1%;border-radius:4px;background:${AMBER}"></div>
+        <div style="height:7px;width:1.2%;border-radius:4px;background:${TEAL};box-shadow:0 0 10px rgba(101,179,174,.9)"></div>
+      </div>`)}
+    ${tile(2,`<div style="display:flex;justify-content:space-between;gap:18px">
+      <div>${K("The window")}<div style="font-size:44px;font-weight:800;letter-spacing:-.025em;margin-top:6px;color:${AMBER_T}">88%</div>
+      ${D("of all holders ever arrived in one four-week window, April 13 to May 10, 2026, after Bybit opened xStocks withdrawals to Mantle")}</div>
+      <svg width="${sw}" height="${sh+22}" viewBox="0 0 ${sw} ${sh+22}" style="margin-top:14px;flex:none">${wbars}
+        <text x="${sw/2}" y="${sh+18}" text-anchor="middle" style="font-size:10.5px;fill:${INK3};letter-spacing:.08em">FIRST-TIME HOLDERS PER WEEK</text></svg>
+      </div>`,AMBER)}
+    ${tile(1,`${K("Retention")}
+      <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
+        <svg width="84" height="84" viewBox="0 0 84 84" style="flex:none">
+          <circle cx="42" cy="42" r="${rr}" fill="none" stroke="rgba(230,103,103,.35)" stroke-width="9"/>
+          <circle cx="42" cy="42" r="${rr}" fill="none" stroke="${TEAL}" stroke-width="9" stroke-linecap="round"
+            stroke-dasharray="${rc.toFixed(1)}" stroke-dashoffset="${roff.toFixed(1)}" transform="rotate(-90 42 42)"/>
+        </svg>
+        <div><div style="font-size:30px;font-weight:800;color:${TEAL}">98.3%</div>
+        <div style="font-size:12.5px;color:${INK2};line-height:1.4;margin-top:2px">of the cohort still holds, 8 weeks later</div></div>
+      </div>`)}
+    ${tile(1,`${K("Holders today")}${V("926")}
+      <svg width="${sw}" height="${sh}" viewBox="0 0 ${sw} ${sh}" style="margin-top:10px">
+        <polyline points="${sp}" fill="none" stroke="${TEAL}" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="${sw}" cy="${(sh-926/smax*sh).toFixed(1)}" r="3.5" fill="${TINT}"/></svg>
+      ${D("wallets holding any xStock, from 6 in mid-March")}`)}
+    ${tile(1,`${K("New users")}${V("421",BLUE_T)}
+      ${D("wallets arrived on Mantle <b style='color:${INK}'>with their first xStock</b>: 45.6% of all holders. The other half are 459-day veterans")}`)}
+    ${tile(1,`${K("The door")}
+      <div style="display:flex;gap:16px;align-items:center;margin-top:10px">
+        <svg width="56" height="86" viewBox="0 0 56 86" style="flex:none">
+          <rect x="6" y="4" width="44" height="78" rx="10" fill="none" stroke="rgba(204,233,231,.4)" stroke-width="1.5"/>
+          <rect x="24" y="10" width="7" height="66" rx="3.5" fill="${TEAL}" style="filter:drop-shadow(0 0 8px rgba(101,179,174,.9))"/>
+        </svg>
+        <div><div style="font-size:19px;font-weight:800;line-height:1.2">Apr 10, 2026</div>
+        <div style="font-size:12.5px;color:${INK2};line-height:1.45;margin-top:4px">Bybit enables xStocks deposits and withdrawals on Mantle</div></div>
+      </div>`)}
+    ${tile(1,`${K("Measurement gap")}<div style="font-size:44px;font-weight:800;letter-spacing:-.025em;margin-top:6px;color:${CORAL_T}">NULL</div>
+      ${D("what <b style='color:${INK}'>amount_usd</b> returns for every xStock DEX trade; Fluxion is not indexed at all")}`)}
+  </div>
+  ${pills([
+    "By <b>Yeheskiel Yunus Tame</b> (@YeheskielTame), UKDW Blockchain Club",
+    "13 public queries: <b>dune.com/yeheskiel/mantle-rwa-distribution-tracker</b>",
+    "Snapshot <b>2026-07-02</b>"])}`;
+};
+
+/* ============ TREND (Figure 1) ============ */
+F.trend=function(){
+  const PL=64,PR=830,PT=90,PB=300;
+  const t0=Date.parse("2025-11-24"), t1=Date.parse("2026-07-08");
+  const X=iso=>PL+(Date.parse(iso)-t0)/(t1-t0)*(PR-PL);
+  const Y=v=>PT+(1-v/1000)*(PB-PT);
+  const annX=X("2026-04-10"), wA=X("2026-04-13"), wB=X("2026-05-11");
+  const pts=trend.map(d=>[X(d[0]),Y(d[1])]);
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=line+` L ${pts[pts.length-1][0].toFixed(1)} ${Y(0)} L ${pts[0][0].toFixed(1)} ${Y(0)} Z`;
+  let grid="", yl="";
+  for(const v of [250,500,750,1000]){
+    grid+=`<line x1="${PL}" x2="${PR}" y1="${Y(v)}" y2="${Y(v)}" stroke="${GRID}" stroke-width="1"/>`;
+    yl+=`<text x="${PL-12}" y="${Y(v)+4}" text-anchor="end" class="ax">${v}</text>`;
+  }
+  const BT=352,BB=462;
+  const YB=v=>BT+(1-v/380)*(BB-BT);
+  let bars="";
+  for(const d of trend){
+    const inWin=Date.parse(d[0])>=Date.parse("2026-04-13")&&Date.parse(d[0])<Date.parse("2026-05-11");
+    bars+=`<rect x="${(X(d[0])-6).toFixed(1)}" y="${YB(d[2]).toFixed(1)}" width="12" height="${Math.max(BB-YB(d[2]),2).toFixed(1)}" rx="4"
+      fill="${inWin?AMBER_T:'rgba(110,138,134,.45)'}"/>`;
+  }
+  let months="";
+  for(const [iso,l] of [["2025-12-01","DEC"],["2026-01-01","JAN"],["2026-02-01","FEB"],["2026-03-01","MAR"],["2026-04-01","APR"],["2026-05-01","MAY"],["2026-06-01","JUN"],["2026-07-01","JUL"]])
+    months+=`<text x="${X(iso)}" y="${BB+30}" class="ax" text-anchor="middle" style="letter-spacing:.08em">${l}</text>`;
+  return `
+  ${hdr("Figure 1, holder growth")}
+  <h1>One four-week window created <span style="color:${AMBER_T}">88%</span> of all holders</h1>
+  <div class="sub">Distinct wallets holding any of the 368 xStocks on Mantle, December 2025 to July 2026. Exact end-of-week balances, issuer excluded. The teal line is total holders; amber bars are the window's weekly arrivals.</div>
+  <div style="display:flex;gap:26px;margin-top:6px">
+    <svg width="880" height="510" viewBox="0 0 880 510">
+      <defs>
+        <linearGradient id="af" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="${TEAL}" stop-opacity=".38"/><stop offset="1" stop-color="${TEAL}" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="wband" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="${AMBER}" stop-opacity=".16"/><stop offset="1" stop-color="${AMBER}" stop-opacity=".03"/>
+        </linearGradient>
+        <filter id="lineglow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect x="${wA}" y="${PT-26}" width="${wB-wA}" height="${BB-PT+26}" fill="url(#wband)" rx="10"/>
+      <line x1="${wA}" x2="${wA}" y1="${PT-26}" y2="${BB}" stroke="${AMBER_T}" stroke-width="1" opacity=".5"/>
+      <line x1="${wB}" x2="${wB}" y1="${PT-26}" y2="${BB}" stroke="${AMBER_T}" stroke-width="1" opacity=".5"/>
+      <text x="${(wA+wB)/2}" y="${PT-38}" text-anchor="middle" style="font-size:13px;font-weight:600;fill:${AMBER_T};letter-spacing:.1em">THE BYBIT WINDOW</text>
+      <text x="${(wA+wB)/2}" y="${PT-8}" text-anchor="middle" style="font-size:12px;fill:${INK3}">APR 13 TO MAY 10</text>
+      ${grid}${yl}
+      <line x1="${annX}" x2="${annX}" y1="${PT+6}" y2="${BB}" stroke="${TINT}" stroke-width="1.4" stroke-dasharray="2 6" opacity=".8"/>
+      <path d="M ${annX} ${PT+2} l -5 -9 l 10 0 Z" fill="${TINT}"/>
+      <path d="${area}" fill="url(#af)"/>
+      <path d="${line}" fill="none" stroke="${TEAL}" stroke-width="3" stroke-linejoin="round" filter="url(#lineglow)"/>
+      <circle cx="${pts[17][0]}" cy="${pts[17][1]}" r="5.5" fill="${TINT}" stroke="${SURF}" stroke-width="2.5"/>
+      <text x="${pts[17][0]}" y="${pts[17][1]-16}" text-anchor="end" class="dl" style="font-size:22px">926</text>
+      <text x="${X("2026-01-26")}" y="${Y(0)-58}" text-anchor="middle" style="font-size:13.5px;fill:${INK2}">first 3.5 months:</text>
+      <text x="${X("2026-01-26")}" y="${Y(0)-38}" text-anchor="middle" style="font-size:13.5px;fill:${INK2}">only 6 holders</text>
+      <text x="${PL}" y="${BT-12}" class="axb">First-time holders per week</text>
+      <line x1="${PL}" x2="${PR}" y1="${BB}" y2="${BB}" stroke="${GRID}" stroke-width="1"/>
+      ${bars}
+      <text x="${X("2026-04-13")}" y="${YB(353)-10}" text-anchor="middle" style="font-size:15px;font-weight:700;fill:${AMBER_T}">353</text>
+      ${months}
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:16px;width:330px;margin-top:26px">
+      <div class="statcard"><div class="k">Holders today</div><div class="v">926</div><div class="d">wallets holding any xStock</div></div>
+      <div class="statcard" style="border-color:rgba(201,133,0,.5);background:linear-gradient(180deg,rgba(201,133,0,.13),rgba(201,133,0,.04))">
+        <div class="k" style="color:${AMBER_T}">The window</div><div class="v" style="color:${AMBER_T}">+816</div><div class="d">new holders in 4 weeks, 88% of all time</div></div>
+      <div class="statcard"><div class="k">Since May 18</div><div class="v">1 to 11</div><div class="d">new holders per week</div></div>
+    </div>
+  </div>
+  ${pills(["Source: Dune query <b>7865851</b>","Raw <b>mantle.logs</b>, decimal(38,0)","Announcement: <b>Bybit, Apr 10, 2026</b>"])}`;
+};
+
+/* ============ FUNNEL (Figure 2) ============ */
+F.funnel=function(){
+  const rows=[
+    {n:"368",label:"Tokenized US equities issued on Mantle",d:"Backed's xStocks family, live since December 2025",w:1,col:"#5A7A76",num:INK},
+    {n:"15",label:"Have at least ten holders",d:"4.1% of everything issued",w:15/368,col:AMBER,num:AMBER_T},
+    {n:"1",label:"Genuinely distributed: NVDAx",d:"612 holders, top wallet 74.55%, crossed both thresholds in the Bybit window",w:1/368,col:TEAL,num:TEAL,hot:true},
+  ];
+  const cards=rows.map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:34px;background:linear-gradient(180deg,${r.hot?'rgba(101,179,174,.14)':'#162926'},${r.hot?'rgba(101,179,174,.05)':'#132320'});
+        border:1px solid ${r.hot?'rgba(101,179,174,.5)':LINE};border-radius:20px;padding:16px 32px;
+        ${r.hot?'box-shadow:0 0 40px rgba(101,179,174,.15);':''}">
+      <div style="font-size:58px;font-weight:800;letter-spacing:-.03em;width:150px;text-align:right;
+        color:${r.num};font-variant-numeric:tabular-nums">${r.n}</div>
+      <div style="width:1px;align-self:stretch;background:${LINE}"></div>
+      <div style="flex:1">
+        <div style="font-size:19px;font-weight:700">${r.label}</div>
+        <div style="font-size:15px;color:${INK2};margin-top:5px">${r.d}</div>
+        <div style="margin-top:11px;height:9px;border-radius:6px;background:rgba(110,138,134,.18);position:relative">
+          <div style="position:absolute;inset:0;width:${Math.max(r.w*100,0.8)}%;border-radius:6px;
+            background:${r.col};${r.hot?'box-shadow:0 0 18px rgba(101,179,174,.7);':''}"></div>
+        </div>
+      </div>
+    </div>
+    ${i<2?`<div style="text-align:center;color:${INK3};font-size:18px;line-height:.55;margin:5px 0">&#8595;</div>`:""}`).join("");
+  return `
+  ${hdr("Figure 2, the adoption funnel")}
+  <h1><span class="em">368</span> issued, <span class="em">1</span> distributed</h1>
+  <div class="sub">Thresholds set in advance: a token counts as distributed when it has more than 500 holders and its top wallet holds less than 75% of supply. Bars are proportional to token count.</div>
+  <div style="margin-top:24px;display:flex;flex-direction:column">${cards}</div>
+  ${pills(["Source: Dune <b>7863671</b> (league)","Dune <b>7863679</b> (summary)","Exact decimal(38,0) balances","Snapshot <b>2026-07-02</b>"])}`;
+};
+
+/* ============ LEAGUE (Figure 3) ============ */
+F.league=function(){
+  const V={D:{c:TEAL,t:"DISTRIBUTED",tc:TEAL},C:{c:AMBER,t:"CONCENTRATED",tc:AMBER_T},I:{c:CORAL,t:"ISSUED, NOT ADOPTED",tc:CORAL_T}};
+  const rows=[
+    ["NVDAx",612,74.6,"D"],["TSLAx",328,82.0,"C"],["CRCLx",318,90.8,"I"],["GOOGLx",89,86.8,"C"],
+    ["COINx",35,85.0,"C"],["SPCXx",26,99.2,"I"],["AAPLx",25,90.9,"I"],["HOODx",21,96.2,"I"],
+    ["METAx",19,95.2,"I"],["wNVDAx",14,90.7,"I"],
+  ];
+  const PL=150,PW=530,RH=36,GAP=8;
+  let bars="";
+  rows.forEach((r,i)=>{
+    const y=30+i*(RH+GAP);
+    const w=Math.max(r[1]/612*PW,4);
+    const v=V[r[3]], hot=r[3]==="D";
+    bars+=`
+      <text x="${PL-16}" y="${y+RH/2+5}" text-anchor="end" style="font-size:16px;font-weight:700;fill:${hot?TEAL:INK}">${r[0]}</text>
+      <rect x="${PL}" y="${y}" width="${w.toFixed(1)}" height="${RH}" rx="8" fill="${v.c}" opacity="${hot?1:.6}" ${hot?'filter="url(#lgl)"':''}/>
+      <text x="${PL+w+12}" y="${y+RH/2+5}" style="font-size:15px;font-weight:700;fill:${INK}">${r[1]}</text>
+      <text x="${PL+PW+185}" y="${y+RH/2+5}" text-anchor="end" style="font-size:14px;fill:${INK2};font-variant-numeric:tabular-nums">${r[2].toFixed(1)}%</text>
+      <rect x="${PL+PW+215}" y="${y+5}" width="210" height="${RH-10}" rx="12" fill="${v.c}1f" stroke="${v.c}66"/>
+      <text x="${PL+PW+320}" y="${y+RH/2+4.5}" text-anchor="middle" style="font-size:11px;letter-spacing:.08em;font-weight:600;fill:${v.tc}">${v.t}</text>`;
+  });
+  const H=30+rows.length*(RH+GAP)+8;
+  return `
+  ${hdr("Figure 3, the league")}
+  <h1>Ten xStocks have real holders. <span style="color:${CORAL_T}">358 do not.</span></h1>
+  <div class="sub">The top ten of 368 tokenized equities on Mantle, ranked by exact holder count. Color is the verdict: teal passes the distribution thresholds, amber is concentrated, coral is issued but not adopted.</div>
+  <svg width="1220" height="${H}" viewBox="0 0 1220 ${H}" style="margin-top:14px">
+    <defs><filter id="lgl" x="-30%" y="-60%" width="160%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter></defs>
+    <text x="${PL}" y="14" class="ax" style="letter-spacing:.12em">HOLDERS (EXACT)</text>
+    <text x="${PL+PW+185}" y="14" text-anchor="end" class="ax" style="letter-spacing:.12em">TOP WALLET</text>
+    <text x="${PL+PW+320}" y="14" text-anchor="middle" class="ax" style="letter-spacing:.12em">VERDICT</text>
+    ${bars}
+  </svg>
+  ${pills(["The other <b>358 xStocks</b> have fewer than 15 holders each","Source: Dune <b>7863671</b>","Snapshot <b>2026-07-02</b>"])}`;
+};
+
+/* ============ GATEWAY (Figure 4) ============ */
+F.gateway=function(){
+  const d0=Date.parse("2026-04-01"), wA=Date.parse("2026-04-13"), wB=Date.parse("2026-05-10");
+  let cells="";
+  const CW=17.4, CH=30, X0=16, Y0=34;
+  for(let i=0;i<54;i++){
+    const d=d0+i*86400000;
+    const on=d>=wA&&d<=wB;
+    cells+=`<rect x="${(X0+i*CW).toFixed(1)}" y="${Y0}" width="${CW-3}" height="${CH}" rx="5"
+      fill="${on?TEAL:'rgba(110,138,134,.13)'}" ${on?'':'stroke="rgba(110,138,134,.18)"'}/>`;
+  }
+  const annI=(Date.parse("2026-04-10")-d0)/86400000;
+  const lab=(iso,txt)=>`<text x="${(X0+((Date.parse(iso)-d0)/86400000)*CW).toFixed(1)}" y="${Y0+CH+24}" class="ax">${txt}</text>`;
+  const card=(k,tt,dd,c)=>`
+    <div style="flex:1;background:linear-gradient(180deg,#162926,#132320);border:1px solid ${LINE};border-radius:18px;padding:20px 22px">
+      <div style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:${c};font-weight:700">${k}</div>
+      <div style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">${tt}</div>
+      <div style="font-size:13.5px;color:${INK2};margin-top:6px;line-height:1.55">${dd}</div>
+    </div>`;
+  return `
+  ${hdr("Figure 4, the attribution")}
+  <h1>Three independent lines of evidence, <span class="em">one door</span></h1>
+  <div class="sub">How the April cohort's first xStocks arrived, who sent them, and what was announced three days before the wave began.</div>
+  <div style="display:flex;gap:16px;margin-top:22px">
+    ${card("1. The fingerprint","Third-party direct token.transfer() calls","The receiving wallets did not initiate the transactions, and amounts vary widely. That is a CEX-withdrawal pattern, not DEX swaps and not an airdrop. Dune 7866292.",BLUE_T)}
+    ${card("2. The wallet","0x5888...836c, in Bybit's Proof-of-Reserves","Delivered first xStocks to 462 of the 816 cohort wallets across 7 tickers, 1,078 transfers, 2.76M lifetime transactions on Mantle. Dune 7866312.",AMBER_T)}
+    ${card("3. The date","April 10, 2026: Bybit enables xStocks on Mantle","Mantle, Bybit and Backed announce deposits and withdrawals on the Mantle network. The on-chain wave starts the first Monday after.",TEAL)}
+  </div>
+  <div style="margin-top:26px;background:linear-gradient(180deg,#162926,#132320);border:1px solid rgba(101,179,174,.35);border-radius:18px;padding:18px 24px 6px">
+    <div style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:${INK2};font-weight:600">The hot wallet's delivery days</div>
+    <svg width="990" height="112" viewBox="0 0 990 112">
+      <g transform="translate(0,6)">
+      ${cells}
+      <path d="M ${(X0+annI*CW+7).toFixed(1)} ${Y0-6} l -5 -9 l 10 0 Z" fill="${AMBER_T}"/>
+      <text x="${(X0+annI*CW+7).toFixed(1)}" y="${Y0-20}" text-anchor="middle" style="font-size:11.5px;fill:${AMBER_T};font-weight:600">APR 10</text>
+      ${lab("2026-04-01","APR 1")}${lab("2026-04-13","APR 13")}${lab("2026-05-10","MAY 10")}${lab("2026-05-22","MAY 22")}
+      <text x="${(X0+((Date.parse("2026-04-26")-d0)/86400000)*CW).toFixed(1)}" y="18" class="chip">active every single day of the window</text>
+      <text x="${(X0+((Date.parse("2026-05-14")-d0)/86400000)*CW+60).toFixed(1)}" y="18" style="font-size:13px;fill:${INK3}">then it stopped</text>
+      </g>
+    </svg>
+  </div>
+  ${pills(["Sources: Dune <b>7866292</b>, <b>7866312</b>","<b>Bybit PoR</b> (Mantle wallets)","Announcement: <b>Bybit, The Block, Apr 10, 2026</b>"])}`;
+};
+
+/* ============ RETENTION (Figure 5) ============ */
+F.retention=function(){
+  const cx=215,cy=220,R=148;
+  const pct=98.3, gapDeg=360*(1-pct/100);
+  const start=-90+gapDeg/2, end=270-gapDeg/2;
+  const P=(ang,rad)=>[cx+rad*Math.cos(ang*Math.PI/180),cy+rad*Math.sin(ang*Math.PI/180)];
+  const [sx,sy]=P(start,R),[ex,ey]=P(end,R);
+  return `
+  ${hdr("Figure 5, demand quality")}
+  <h1>The gateway users <span class="em">stayed</span>. The flagship never left the issuer.</h1>
+  <div class="sub">Left: wallets that received their first xStock in the Bybit window, eight weeks later. Right: tokenized SpaceX three weeks after launch, with a 100,000 MNT liquidity campaign live. Coral marks supply locked with the issuer.</div>
+  <div style="display:flex;gap:24px;margin-top:22px">
+    <div style="flex:1.05;background:linear-gradient(180deg,#162926,#132320);border:1px solid rgba(101,179,174,.4);border-radius:24px;padding:26px 30px;display:flex;gap:8px;box-shadow:0 0 44px rgba(101,179,174,.10)">
+      <svg width="440" height="420" viewBox="0 0 440 420" style="flex:none">
+        <defs><filter id="rglow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter></defs>
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(230,103,103,.3)" stroke-width="26"/>
+        <path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${R} ${R} 0 1 1 ${ex.toFixed(1)} ${ey.toFixed(1)}"
+          fill="none" stroke="${TEAL}" stroke-width="26" stroke-linecap="round" filter="url(#rglow)"/>
+        <text x="${cx}" y="${cy-10}" text-anchor="middle" style="font-size:64px;font-weight:800;fill:${INK};letter-spacing:-.02em">98.3%</text>
+        <text x="${cx}" y="${cy+26}" text-anchor="middle" style="font-size:14.5px;fill:${INK2}">still holding</text>
+        <text x="${cx}" y="${cy+72}" text-anchor="middle" style="font-size:13px;fill:${INK3}">802 of 816 wallets</text>
+        <text x="${cx}" y="${cy+190}" text-anchor="middle" style="font-size:14px;fill:${INK2}">buy-and-hold demand, not farming</text>
+        <path d="M ${cx} ${cy-R-13} l -6 -12 l 12 0 Z" fill="${CORAL_T}"/>
+        <text x="${cx}" y="${cy-R-34}" text-anchor="middle" style="font-size:12.5px;fill:${CORAL_T};font-weight:600">14 wallets exited</text>
+      </svg>
+    </div>
+    <div style="flex:1;background:linear-gradient(180deg,#162926,#132320);border:1px solid ${LINE};border-radius:24px;padding:26px 30px">
+      <div style="font-size:15px;font-weight:700;letter-spacing:.04em;color:${INK2}">SPCXx, TOKENIZED SPACEX</div>
+      <div style="display:flex;gap:30px;margin-top:18px;align-items:flex-end">
+        <svg width="150" height="330" viewBox="0 0 150 330" style="flex:none">
+          <defs><filter id="tglow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter></defs>
+          <rect x="30" y="8" width="90" height="312" rx="18" fill="rgba(110,138,134,.14)" stroke="${LINE}"/>
+          <rect x="30" y="19.5" width="90" height="300.5" rx="16" fill="${CORAL}" opacity=".38"/>
+          <rect x="30" y="8" width="90" height="8.5" rx="4" fill="${TEAL}" filter="url(#tglow)"/>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px">
+          <div>
+            <div style="font-size:40px;font-weight:800;color:${CORAL_T};letter-spacing:-.02em">99.2%</div>
+            <div style="font-size:13.5px;color:${INK2};margin-top:2px">of supply still in the issuer wallet</div>
+          </div>
+          <div>
+            <div style="font-size:28px;font-weight:800;color:${TEAL}">0.8%</div>
+            <div style="font-size:13.5px;color:${INK2};margin-top:2px">external float after 3 weeks</div>
+          </div>
+          <div style="border-top:1px solid ${LINE};padding-top:14px;font-size:13.5px;color:${INK2};line-height:1.65">
+            26 holders<br>one mint (150k), one burn (120k)<br>5,686 transfers, max 19 receivers a day<br>
+            <span style="color:${INK3}">churn, not adoption</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  ${pills(["Dune <b>7866325</b> (retention)","Dune <b>7863618</b>, <b>7863661</b>, <b>7863657</b> (SPCXx)","Project X: <b>Chainwire, Jun 12, 2026</b>"])}`;
+};
+
+/* ============ ORIGIN (Figure 6) ============ */
+F.origin=function(){
+  const segs=[
+    {v:45.6,n:421,label:"Arrived on Mantle with their first xStock",d:"the RWA acquired them",col:TEAL,tc:TEAL,glow:true},
+    {v:49.6,n:458,label:"Existing Mantle users",d:"median wallet age 459 days",col:BLUE,tc:BLUE_T},
+    {v:3.3,n:30,label:"Contracts",d:"DEX pools and vaults",col:AMBER,tc:AMBER_T},
+    {v:1.5,n:14,label:"Passive receivers",d:"never initiated a transaction",col:"#5A6664",tc:INK2},
+  ];
+  const cx=250,cy=250,R=178,r=118;
+  let a=-90, arcs="";
+  const P=(ang,rad)=>[cx+rad*Math.cos(ang*Math.PI/180),cy+rad*Math.sin(ang*Math.PI/180)];
+  for(const s of segs){
+    const a2=a+s.v*3.6-1.2;
+    const large=(a2-a)>180?1:0;
+    const [x1,y1]=P(a,R),[x2,y2]=P(a2,R),[x3,y3]=P(a2,r),[x4,y4]=P(a,r);
+    arcs+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}
+      L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${r} ${r} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z"
+      fill="${s.col}" ${s.glow?`filter="url(#dglow)"`:`opacity=".82"`}/>`;
+    a=a2+1.2;
+  }
+  const legend=segs.map(s=>`
+    <div style="display:flex;gap:16px;align-items:flex-start;background:linear-gradient(180deg,#162926,#132320);
+        border:1px solid ${s.glow?'rgba(101,179,174,.45)':LINE};border-radius:18px;padding:16px 20px">
+      <div style="width:16px;height:16px;border-radius:5px;background:${s.col};margin-top:4px;
+        ${s.glow?'box-shadow:0 0 12px rgba(101,179,174,.8);':''}"></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div style="font-size:16.5px;font-weight:700">${s.label}</div>
+          <div style="font-size:22px;font-weight:800;color:${s.tc};font-variant-numeric:tabular-nums">${s.v}%</div>
+        </div>
+        <div style="font-size:13.5px;color:${INK2};margin-top:2px">${s.n} wallets, ${s.d}</div>
+      </div>
+    </div>`).join("");
+  return `
+  ${hdr("Figure 6, where the holders came from")}
+  <h1>Nearly half came to Mantle <span class="em">for the stocks</span></h1>
+  <div class="sub">All 923 current external holder wallets, classified by full on-chain history: the first transaction each wallet ever initiated on Mantle versus the day it received its first xStock.</div>
+  <div style="display:flex;gap:44px;align-items:center;margin-top:8px">
+    <svg width="500" height="500" viewBox="0 0 500 500" style="flex:none">
+      <defs><filter id="dglow" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter></defs>
+      ${arcs}
+      <text x="${cx}" y="${cy-8}" text-anchor="middle" style="font-size:52px;font-weight:800;fill:${INK};letter-spacing:-.02em">923</text>
+      <text x="${cx}" y="${cy+24}" text-anchor="middle" style="font-size:14px;fill:${INK3};letter-spacing:.12em">HOLDER WALLETS</text>
+    </svg>
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">${legend}</div>
+  </div>
+  ${pills(["Source: Dune <b>7865842</b>","Coverage from Mantle genesis <b>2023-07-02</b>","Contracts flagged via <b>creation_traces</b>"])}`;
+};
+
+/* ============ PLAYBOOK (Figure 7) ============ */
+F.playbook=function(){
+  const card=(n,tt,why,ev,evd,c)=>`
+    <div style="background:linear-gradient(180deg,#162926,#132320);border:1px solid ${LINE};border-radius:18px;padding:15px 24px;display:flex;gap:20px;align-items:flex-start">
+      <div style="width:44px;height:44px;flex:none;border-radius:13px;background:${c}22;border:1px solid ${c}80;
+        display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:${c}">${n}</div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:700">${tt}</div>
+        <div style="font-size:14.5px;color:${INK2};margin-top:5px;line-height:1.5">${why}</div>
+      </div>
+      <div style="width:225px;flex:none;text-align:right">
+        <div style="font-size:27px;font-weight:800;color:${c};letter-spacing:-.02em">${ev}</div>
+        <div style="font-size:12.5px;color:${INK3};margin-top:2px;line-height:1.4">${evd}</div>
+      </div>
+    </div>`;
+  return `
+  ${hdr("Figure 7, the playbook")}
+  <h1>What Mantle should do <span class="em">next</span></h1>
+  <div class="sub">Four moves, each backed by a number this research measured on-chain.</div>
+  <div style="display:flex;flex-direction:column;gap:11px;margin-top:18px">
+    ${card("1","Make the CEX gateway always-on, not launch-day","The only funnel that ever produced holders at scale ran for four weeks and stopped. Recurring, localized gateway campaigns compound it.","200 to 350","sticky holders per active gateway week",TEAL)}
+    ${card("2","Fund first-holder acquisition, not just liquidity","Gateway users cost no incentives and stayed; the 100,000 MNT LP campaign bought churn, not holders.","98.3%","cohort retention vs near-zero new holders from LP rewards",AMBER_T)}
+    ${card("3","Fix the measurement stack","Fluxion is unindexed and xStocks are unpriced in dex.trades, so RWA liquidity cannot be quoted in USD.","NULL","what amount_usd returns for every xStock trade today",CORAL_T)}
+    ${card("4","Track external float and holders, not TVL","Supply is an issuer decision (one mint, one burn). Distribution is the market's verdict, and it is falsifiable.","1 of 368","tokens that pass the distribution thresholds",VIOLET)}
+  </div>
+  ${pills(["Evidence: Dune <b>7865851</b>, <b>7866325</b>, <b>7863658</b>, <b>7863671</b>","Full reasoning in the article and <b>FINDINGS.md</b>"])}`;
+};
+
+/* ============ INDONESIA (Figure 8) ============ */
+F.indonesia=function(){
+  const cx1=330,cy=300,R1=200;
+  const R2=R1*Math.sqrt(21.7/26.7);
+  const R3=Math.max(R1*Math.sqrt(0.000926/26.7),2.6);
+  const stat=(v,l,d,c)=>`
+    <div style="border-left:2px solid ${c};padding:2px 0 2px 18px">
+      <div style="font-size:38px;font-weight:800;letter-spacing:-.02em;color:${c}">${v}</div>
+      <div style="font-size:15px;font-weight:700;color:${TINT};margin-top:2px">${l}</div>
+      <div style="font-size:13.5px;color:${INK2};margin-top:3px;line-height:1.5">${d}</div>
+    </div>`;
+  return `
+  ${hdr("Figure 8, the next wave")}
+  <h1>The demand pool <span class="em">next door</span></h1>
+  <div class="sub">Mantle's entire tokenized-stock holder base against Indonesia's retail investor population. Circles are proportional to people.</div>
+  <div style="display:flex;gap:20px;align-items:center;margin-top:10px">
+    <svg width="660" height="560" viewBox="0 0 660 600">
+      <circle cx="${cx1}" cy="${cy}" r="${R1}" fill="rgba(57,135,229,.09)" stroke="${BLUE_T}" stroke-width="1.6" stroke-opacity=".75"/>
+      <circle cx="${cx1}" cy="${cy+R1-R2}" r="${R2.toFixed(1)}" fill="rgba(144,133,233,.10)" stroke="${VIOLET}" stroke-width="1.4" stroke-dasharray="4 5" stroke-opacity=".85"/>
+      <circle cx="${cx1}" cy="${cy+R1-8}" r="${R3.toFixed(1)}" fill="${TEAL}" style="filter:drop-shadow(0 0 6px rgba(101,179,174,.9))"/>
+      <line x1="${cx1+6}" y1="${cy+R1-10}" x2="${cx1+170}" y2="${cy+R1-66}" stroke="rgba(204,233,231,.5)" stroke-width="1"/>
+      <text x="${cx1+178}" y="${cy+R1-70}" style="font-size:14px;font-weight:700;fill:${TEAL}">926 wallets</text>
+      <text x="${cx1+178}" y="${cy+R1-51}" style="font-size:12.5px;fill:${INK3}">every xStock holder on Mantle today</text>
+      <text x="${cx1}" y="${cy-R1+46}" text-anchor="middle" style="font-size:16px;font-weight:700;fill:${BLUE_T}">26.7M capital-market investors</text>
+      <text x="${cx1}" y="${cy-R1+66}" text-anchor="middle" style="font-size:12.5px;fill:${INK3}">Indonesia, OJK, May 2026</text>
+      <text x="${cx1}" y="${(cy+R1-2*R2+cy+R1)/2-24}" text-anchor="middle" style="font-size:15px;font-weight:700;fill:${VIOLET}">21.7M registered</text>
+      <text x="${cx1}" y="${(cy+R1-2*R2+cy+R1)/2-4}" text-anchor="middle" style="font-size:15px;font-weight:700;fill:${VIOLET}">crypto users</text>
+    </svg>
+    <div style="flex:1;display:flex;flex-direction:column;gap:26px">
+      ${stat("54%","of investors are under 30","KSEI: 54.69% of retail investors are 30 or younger; about 80% of new entrants are under 30.",BLUE_T)}
+      ${stat("21.7M","registered crypto users","For millions, the crypto account came before the brokerage account. Regulated under OJK since January 2025.",VIOLET)}
+      ${stat("1","gateway already connects them","Bybit operates in Indonesia and already moves xStocks to Mantle. The pipe exists; the localized push does not.",TEAL)}
+    </div>
+  </div>
+  ${pills(["Sources: <b>OJK</b> via Bareksa, May 2026","<b>KSEI</b> via Databoks, Feb 2026","<b>OJK</b> via Viva, Apr 2026","Holders: Dune <b>7865851</b>"])}`;
+};
+
+/* ============ BANNER (X article cover) ============ */
+F.banner=function(){
+  let stream="";
+  const N=52;
+  for(let i=0;i<N;i++){
+    const t=i/(N-1);
+    const x=6+t*332;
+    const y=196+Math.sin(t*Math.PI*0.9+0.3)*95*(1-t*0.55)+t*24;
+    const r=2.4+3.4*t;
+    const op=(0.22+0.78*t).toFixed(2);
+    const col=i>=N-7?TINT:TEAL;
+    stream+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${col}" opacity="${op}"/>`;
+  }
+  return `
+  <div style="display:flex;height:100%;align-items:center;gap:24px">
+    <div style="flex:1.25">
+      <div class="kick"><div class="sq"></div>Mantle RWA Research, on-chain forensics</div>
+      <div style="font-size:104px;font-weight:800;letter-spacing:-.03em;line-height:.98;margin-top:26px">926 Wallets,<br><span style="color:${TEAL}">One Door</span></div>
+      <div class="sub" style="font-size:23px;margin-top:24px;max-width:660px">Where Mantle's tokenized-stock holders actually came from, and why they stayed.</div>
+      <div style="display:flex;gap:12px;margin-top:30px">
+        <div class="pill" style="font-size:14px;border-color:rgba(101,179,174,.45)"><b>@YeheskielTame</b></div>
+        <div class="pill" style="font-size:14px">dune.com/yeheskiel/<b>mantle-rwa-distribution-tracker</b></div>
+      </div>
+    </div>
+    <div style="flex:.75;position:relative;height:100%">
+      <svg width="540" height="100%" viewBox="0 0 540 520" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="door" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="${TINT}"/><stop offset=".45" stop-color="${TEAL}"/><stop offset="1" stop-color="${TEALD}"/>
+          </linearGradient>
+          <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="16" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        ${stream}
+        <g filter="url(#glow)"><rect x="396" y="96" width="10" height="272" rx="5" fill="url(#door)"/></g>
+        <rect x="356" y="76" width="84" height="312" rx="14" fill="none" stroke="rgba(204,233,231,.35)" stroke-width="1.6"/>
+        <text x="398" y="428" text-anchor="middle" class="chip" style="letter-spacing:.14em">THE GATEWAY</text>
+        <text x="398" y="450" text-anchor="middle" style="font-size:12.5px;fill:${INK3};letter-spacing:.06em">BYBIT TO MANTLE, APR 10, 2026</text>
+      </svg>
+    </div>
+  </div>`;
+};
+
+const key=new URLSearchParams(location.search).get("fig")||"cover";
+if(key==="banner") document.body.classList.add("banner");
+document.getElementById("root").innerHTML=(F[key]||(()=>"<h1>?</h1>"))();
+document.title="fig "+key;
+</script>
+</body>
+</html>

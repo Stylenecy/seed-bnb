@@ -1,0 +1,34 @@
+module Cermin.Oracle where
+
+-- | PriceFeed: the mock oracle's published price for a given instrument
+-- (e.g. "mUST-2030").
+--
+-- Who sees what and why: signed by `oracle` alone (only the oracle can
+-- publish or update a price). Observers are exactly the parties who need
+-- the price to compute a Health Ratio or otherwise act on it —
+-- `subscribers` (borrower, guardAgent, poolOperator) — and nobody else.
+-- Crucially, the price itself carries no information about any specific
+-- position or party: the oracle publishes one contract per instrument and
+-- learns nothing about who holds it or what their Health Ratio is.
+template PriceFeed
+  with
+    oracle : Party
+    instrumentId : Text
+    price : Decimal
+    subscribers : [Party]
+  where
+    signatory oracle
+    observer subscribers
+
+    ensure price > 0.0
+
+    -- | Oracle publishes a new price for this instrument. Consuming choice:
+    -- archives the old PriceFeed and recreates it with the updated price,
+    -- keeping exactly one live contract per instrument.
+    choice UpdatePrice : ContractId PriceFeed
+      with
+        newPrice : Decimal
+      controller oracle
+      do
+        assertMsg "price must be positive" (newPrice > 0.0)
+        create this with price = newPrice

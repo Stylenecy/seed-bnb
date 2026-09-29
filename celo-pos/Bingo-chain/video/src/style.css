@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens: copied verbatim from apps/web/app/globals.css ───────────── */
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    /* Cinematic space palette (matches the landing): deep navy + cream + neon */
+    --background: 226 96% 8%; /* #010828 navy */
+    --foreground: 220 100% 96%; /* #EFF4FF cream */
+    --card: 226 58% 12%;
+    --card-foreground: 220 100% 96%;
+    --popover: 226 56% 13%;
+    --popover-foreground: 220 100% 96%;
+
+    /* Neon green accent (replaces the old gold) */
+    --primary: 94 100% 50%; /* #6FFF00 neon */
+    --primary-foreground: 226 96% 8%; /* navy text on neon */
+
+    --secondary: 226 45% 16%;
+    --secondary-foreground: 220 60% 92%;
+    --muted: 226 40% 18%;
+    --muted-foreground: 220 26% 74%;
+    --accent: 226 45% 20%;
+    --accent-foreground: 220 100% 96%;
+    --destructive: 6 70% 60%;
+    --destructive-foreground: 220 100% 96%;
+
+    --border: 226 40% 22%;
+    --border-strong: 226 35% 32%;
+    --input: 226 42% 18%;
+    --ring: 94 100% 50%;
+    --radius: 0.85rem;
+
+    /* Accent scale — gold → neon green */
+    --gold-300: 94 100% 74%;
+    --gold-400: 94 100% 50%;
+    --gold-500: 96 92% 42%;
+    --gold-600: 98 82% 32%;
+
+    /* Game-state tones, tuned to sit on navy */
+    --state-open: 94 90% 52%;
+    --state-full: 40 90% 58%;
+    --state-playing: 200 82% 64%;
+    --state-revealing: 264 62% 74%;
+    --state-settled: 220 16% 64%;
+    --state-cancelled: 6 66% 64%;
+
+    /* Font families are injected at runtime by fonts.ts (Remotion google-fonts),
+       which sets these vars on the demo root so font-anton/font-sans/etc resolve. */
+    --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+    --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --font-anton: "Anton", system-ui, sans-serif;
+    --font-condiment: "Condiment", cursive;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  /* Tabular, slashed-zero numerals wherever we render on-chain numbers */
+  .font-mono {
+    font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply border border-white/[0.06] bg-card/60 bg-glass backdrop-blur-xl;
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+      0 8px 32px -12px rgb(0 0 0 / 0.6);
+  }
+  .glass-hover {
+    @apply transition-colors duration-200 hover:border-gold-400/30;
+  }
+  .text-gradient-gold {
+    @apply bg-gold-sheen bg-clip-text text-transparent;
+  }
+}
+
+/* Liquid-glass surface (navbar, cards, icon buttons, overlay bars). */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Reusable fractal-noise texture (no positioning). */
+.noise-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Full-screen grain overlay. */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: lighten;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}

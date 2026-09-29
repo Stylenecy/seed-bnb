@@ -1,0 +1,21 @@
+{
+  "network": "celo-mainnet",
+  "chainId": 42220,
+  "version": "1.0.0",
+  "contracts": {
+    "LanceHubProxy": "0xb70c9Cd73428Afe51eEEA832C49E8840D3f85cA2",
+    "LanceHubImplementation": "0x659acad7005c8E45f8590eecDF2ad928884A6Eb7"
+  },
+  "token": { "name": "Lance", "symbol": "LANCE", "decimals": 18 },
+  "asset": { "CELO": "0x471EcE3750Da237f93B8E339c536989b8978a438" },
+  "init": { "owner": "0xe9Fc48f315fD4E989637fAcC29AaF2717E19f7F0", "redeemFeeBps": 100 },
+  "seed": { "celo": "20000000000000000000", "lanceMinted": "20000000000000000000000", "rate": 1000, "initialNavCelo": "0.001" },
+  "deployer": "0x77c4a1cD22005b67Eb9CcEaE7E9577188d7Bca82",
+  "verified": true,
+  "explorer": {
+    "proxy": "https://celoscan.io/address/0xb70c9Cd73428Afe51eEEA832C49E8840D3f85cA2#code",
+    "implementation": "https://celoscan.io/address/0x659acad7005c8E45f8590eecDF2ad928884A6Eb7#code"
+  },
+  "supersedes": "0x1A21f48194Bd68491901811805dC1098582786aE (cUSD-backed 1:1, 21-dec, abandoned — too expensive; supply 0, unused)",
+  "notes": "Cheap CELO-backed ERC-4626 vault: asset = CELO, share = $LANCE, 1 CELO = 1000 LANCE (NAV starts 0.001 CELO/LANCE ≈ $0.0003). seed() one-shot sets the rate + mints distributable supply + neutralizes inflation attack; deposits gated until seeded. Redeem fee 1% stays in pool. fundPool() = revenue/backing intake. Owner = operator Safe (upgrades + fee + pause). Burn lever deferred (UUPS upgrade). Token (proxy) is what BingoChain + Claudelance allowToken() against — RE-WHITELIST needed (old address was whitelisted)."
+}

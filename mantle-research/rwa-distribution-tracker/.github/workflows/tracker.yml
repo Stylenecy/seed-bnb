@@ -1,0 +1,49 @@
+name: RWA Distribution Tracker
+
+# Weekly markdown digest (Mondays) + daily threshold-alert check, committed back to the repo.
+# Secrets (repo Settings > Secrets and variables > Actions):
+#   ETHERSCAN_API_KEY: Etherscan API v2 key, used for BscScan (chainid=56) holder snapshots
+#   ALERT_WEBHOOK_URL (optional): Discord/Slack webhook for alerts
+#   DUNE_API_KEY (optional): enables the Dune-vs-live cross-check (free tier works)
+
+on:
+  schedule:
+    - cron: "0 1 * * *"    # daily 01:00 UTC (08:00 WIB); Monday = full digest, other days = alert check
+  workflow_dispatch: {}     # manual "Run workflow" button, always a full digest
+
+permissions:
+  contents: write            # allow committing the digest + state back to the repo
+
+concurrency:
+  group: rwa-tracker
+  cancel-in-progress: false
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run agent (Monday or manual = full digest; otherwise alerts only)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+        run: |
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python3 agent/tracker_agent.py
+          else
+            python3 agent/tracker_agent.py --alerts-only
+          fi
+
+      - name: Commit digest + state
+        run: |
+          git config user.name "rwa-tracker-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add agent/reports agent/state.json || true
+          git diff --cached --quiet || git commit -m "tracker: $(date -u +%F) run"
+          git push

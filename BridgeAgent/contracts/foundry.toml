@@ -1,0 +1,21 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+
+[rpc_endpoints]
+bsc_testnet = "${BSC_TESTNET_RPC_URL}"
+bsc = "${BSC_RPC_URL}"
+
+[etherscan]
+bsc_testnet = { key = "${BSCSCAN_API_KEY}", chain = 97, url = "https://api-testnet.bscscan.com/api" }
+bsc = { key = "${BSCSCAN_API_KEY}", chain = 56, url = "https://api.bscscan.com/api" }

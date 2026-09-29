@@ -1,0 +1,254 @@
+module Cermin.Scripts.Demo where
+
+import Daml.Script
+import DA.Assert ((===))
+import DA.Date (Month(Jan), date)
+import DA.List (head)
+import DA.Text (isPrefixOf)
+import Cermin.Assets
+import Cermin.Oracle
+import Cermin.Credit
+import Cermin.Guard
+import Cermin.Coupon (payCoupon)
+
+-- | Everything the demo (and Task 8's integration) needs a handle on: the
+-- five Cermin parties plus the live cids of the pre-rescue scene. Returned
+-- by `demoSetup` so `demoRescue` — and any later demo/integration script —
+-- can act on the scene without re-querying the ledger from scratch.
+data DemoScene = DemoScene
+  with
+    issuer : Party
+    borrower : Party
+    poolOperator : Party
+    guardAgent : Party
+    oracle : Party
+    collateralCid : ContractId TreasuryToken
+    loanCid : ContractId Loan
+    feedCid : ContractId PriceFeed
+    policyCid : ContractId GuardPolicy
+    vaultCid : ContractId ShadowVault
+  deriving (Eq, Show)
+
+-- | `demoSetup`: the demo's init-script (see daml.yaml). Allocates the five
+-- Cermin parties and builds the complete PRE-RESCUE demo scene exactly per
+-- the hackathon demo numbers (global-constraints.md, "Demo numbers"):
+--
+--   * Borrower holds 10,000 mUST-2030 face value (collateral).
+--   * Oracle publishes the initial price of 1.00 -> $10,000 collateral value.
+--   * Pool lends 6,000 mUSD at 500 bps against the locked collateral; the
+--     Loan's initial Health Ratio is ~166%.
+--   * Borrower's private Guard Policy: trigger 130% (13000 bps), restore
+--     target 145% (14500 bps), cap 2,000 mUSD per event, Coupon Sweep ON
+--     (the full demo narrative — docs/04-scope.md step 4 — sweeps the
+--     borrower's quarterly coupon into the loan).
+--   * Borrower's private Shadow Vault is funded with 1,500 mUSD.
+--
+-- This mirrors Cermin.Scripts.Setup's `setup` (Task 2) with the same demo
+-- numbers, kept as its own self-contained script here (each Cermin script
+-- module builds its own scene rather than importing another's, matching the
+-- existing convention in Cermin.Tests.CreditTests/GuardTests) — the one
+-- deliberate difference is `couponSweep = True`, since Setup.daml predates
+-- the Coupon Sweep feature and this is the scene the FULL demo (rescue +
+-- coupon sweep) runs against. The scene is left HEALTHY (price 1.00): the
+-- Guard Agent lane / `demoRescue` drops the price to trigger the rescue.
+demoSetup : Script DemoScene
+demoSetup = script do
+  issuer <- allocatePartyByHint (PartyIdHint "Issuer")
+  borrower <- allocatePartyByHint (PartyIdHint "Borrower")
+  poolOperator <- allocatePartyByHint (PartyIdHint "PoolOperator")
+  guardAgent <- allocatePartyByHint (PartyIdHint "GuardAgent")
+  oracle <- allocatePartyByHint (PartyIdHint "Oracle")
+
+  issuerId <- validateUserId "issuer"
+  borrowerId <- validateUserId "borrower"
+  poolOperatorId <- validateUserId "poolOperator"
+  guardAgentId <- validateUserId "guardAgent"
+  oracleId <- validateUserId "oracle"
+  createUser (User issuerId (Some issuer)) [CanActAs issuer]
+  createUser (User borrowerId (Some borrower)) [CanActAs borrower]
+  createUser (User poolOperatorId (Some poolOperator)) [CanActAs poolOperator]
+  createUser (User guardAgentId (Some guardAgent)) [CanActAs guardAgent]
+  createUser (User oracleId (Some oracle)) [CanActAs oracle]
+
+  -- Borrower's collateral: 10,000 mUST-2030 face value, 450 bps coupon.
+  mintedCollateralCid <- submitMulti [issuer, borrower] [] do
+    createCmd TreasuryToken with
+      issuer
+      owner = borrower
+      instrumentId = "mUST-2030"
+      faceValue = 10000.0
+      couponRateBps = 450
+      maturity = date 2030 Jan 1
+      lockedBy = None
+
+  -- Oracle publishes the initial price: 1.00 -> $10,000 collateral value.
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  -- Pool liquidity (via the issuer): 6,000 mUSD held by the pool operator.
+  liquidityCid <- submitMulti [issuer, poolOperator] [] do
+    createCmd StableCoin with issuer, owner = poolOperator, amount = 6000.0
+
+  -- Origination: pool stages the disbursement as a transfer proposal the
+  -- borrower observes, then offers the loan; the borrower accepts by locking
+  -- the collateral and taking delivery of the 6,000 mUSD principal.
+  disbursementProposalCid <- submit poolOperator do
+    exerciseCmd liquidityCid TransferCoin with newOwner = borrower
+
+  offerCid <- submit poolOperator do
+    createCmd LendingPoolOffer with
+      poolOperator
+      borrower
+      guardAgent
+      loanId = "loan-1"
+      principal = 6000.0
+      rateBps = 500
+      collateralInstrumentId = "mUST-2030"
+      collateralAmount = 10000.0
+      disbursementProposalCid
+
+  (loanCid, _) <- submit borrower do
+    exerciseCmd offerCid AcceptOffer with collateralTokenCid = mintedCollateralCid
+
+  -- Borrower's private Guard Policy: trigger 130%, restore 145%, cap 2,000,
+  -- Coupon Sweep on.
+  policyCid <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = True
+
+  -- Borrower's private Shadow Vault, funded with 1,500 mUSD of reserve.
+  vaultCid <- submit borrower do
+    createCmd ShadowVault with
+      borrower
+      guardAgent
+      balance = 1500.0
+
+  -- AcceptOffer's Lock exercise archived the pre-lock collateral cid and
+  -- created a new (locked) one; rediscover it so DemoScene carries the LIVE
+  -- collateral cid.
+  lockedTokens <- query @TreasuryToken borrower
+  let (lockedCollateralCid, _) = head lockedTokens
+
+  pure DemoScene with
+    issuer
+    borrower
+    poolOperator
+    guardAgent
+    oracle
+    collateralCid = lockedCollateralCid
+    loanCid
+    feedCid
+    policyCid
+    vaultCid
+
+-- | `demoRescue`: the 20-second demo moment. Drops the oracle price
+-- 1.00 -> 0.76 (Health Ratio falls to 12667 bps, below the 130% Guard
+-- Trigger) and has the Guard Agent exercise `GuardRepay` — proving, on
+-- ledger, that the auto-repay fires and restores the Health Ratio to target
+-- WITHOUT the pool operator ever being involved. Chains `demoSetup` so this
+-- script is self-contained: `daml test` runs every top-level Script
+-- independently, so `demoRescue` builds its own fresh scene rather than
+-- depending on a previous script run's ledger state. (For the live demo
+-- against a persistent LocalNet sandbox, `demoSetup` is the `daml start`
+-- init-script — seeding the ledger once — and the rescue moment is
+-- triggered live by the Guard Agent service, not by re-running this script.)
+demoRescue : Script ()
+demoRescue = script do
+  DemoScene{..} <- demoSetup
+
+  droppedFeedCid <- submit oracle do
+    exerciseCmd feedCid UpdatePrice with newPrice = 0.76
+
+  result <- submit guardAgent do
+    exerciseCmd vaultCid GuardRepay with
+      priceFeedCid = droppedFeedCid
+      loanCid
+      policyCid
+
+  Some rescuedLoan <- queryContractId borrower result.loan
+  assert (rescuedLoan.outstanding < 6000.0)
+
+  Some rescue <- queryContractId borrower result.rescue
+  rescue.healthBefore === 12667
+  assert (rescue.healthAfter >= 14500)
+
+  -- the pool never sees the rescue — the intervention is invisible to it.
+  poolView <- queryContractId poolOperator result.rescue
+  poolView === None
+
+  pure ()
+
+-- | Exact-or-boundary match of an allocation `PartyIdHint` against a party-ID
+-- text. A party allocated with `allocatePartyByHint (PartyIdHint hint)` shows
+-- up as either the bare hint (the `daml test` in-memory ledger) or as
+-- `hint::<namespace-fingerprint>` (a real Canton participant), so this
+-- accepts exactly those two shapes and nothing else. A bare `isPrefixOf`
+-- would be WRONG here: "Borrower" must not match "Borrower2::..." — and
+-- hints that are prefixes of other hints really do coexist on a persistent
+-- ledger once the test scripts have run (Borrower2 in GuardTests,
+-- OtherBorrower in CouponTests).
+matchesPartyHint : Text -> Text -> Bool
+matchesPartyHint hint partyText =
+  partyText == hint || isPrefixOf (hint <> "::") partyText
+
+-- | `payDemoCoupon`: issues one quarterly coupon (112.50 mUSD on the demo
+-- numbers) for the EXISTING demo borrower on a running ledger, so the Guard
+-- Agent's Coupon Sweep can pick it up and shrink the loan. Used by Task 8's
+-- integration run and the demo runbook via
+-- `daml script --script-name Cermin.Scripts.Demo:payDemoCoupon --ledger-host ...`.
+--
+-- SDK 3.x/LF2 note: `PartyDetails` no longer carries a display name (Canton 3
+-- dropped party display names entirely — parties are identified purely by
+-- party ID). So this looks the demo parties up by matching `partyToText`
+-- against the `PartyIdHint` each was allocated with in `demoSetup`
+-- (`allocatePartyByHint (PartyIdHint "Issuer")` etc.) via `matchesPartyHint`
+-- — exact hint or `hint::<fingerprint>` boundary, never a bare prefix (see
+-- that function's doc comment for why). When run on a ledger with no such
+-- parties — e.g. an isolated `daml test` run — it is a deliberate no-op, so
+-- it never fails the test suite.
+payDemoCoupon : Script ()
+payDemoCoupon = script do
+  parties <- listKnownParties
+  let named hint = [ pd.party | pd <- parties, matchesPartyHint hint (partyToText pd.party) ]
+  case (named "Issuer", named "Borrower", named "GuardAgent") of
+    (issuer :: _, borrower :: _, guardAgent :: _) -> do
+      _ <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+      pure ()
+    _ ->
+      pure () -- no demo parties on this ledger (e.g. `daml test`) — no-op
+
+-- | Focused check for the party lookup above, covering the wrong-party
+-- collision the bare-prefix version had. Pure cases pin both accepted shapes
+-- (bare hint, hint::fingerprint) and reject the prefix-collision shapes
+-- ("Borrower" vs Borrower2/OtherBorrower); the ledger case allocates the
+-- colliding hints for real and asserts the lookup resolves exactly the
+-- intended party. (The `daml test` ledger renders party IDs as bare hints —
+-- no `::fingerprint` — so the boundary branch is covered by the pure cases;
+-- a live-Canton end-to-end check of that branch lands with Task 12.)
+test_matchesPartyHintIsExact : Script ()
+test_matchesPartyHintIsExact = script do
+  -- accepted: exactly the two shapes an allocated hint can take.
+  assert (matchesPartyHint "Borrower" "Borrower")
+  assert (matchesPartyHint "Borrower" "Borrower::122054ffde")
+  -- rejected: hint-prefix collisions, on both ledger shapes.
+  assert (not (matchesPartyHint "Borrower" "Borrower2"))
+  assert (not (matchesPartyHint "Borrower" "Borrower2::122054ffde"))
+  assert (not (matchesPartyHint "Other" "OtherBorrower::122054ffde"))
+
+  -- on-ledger: with Borrower AND Borrower2 both allocated, the lookup
+  -- resolves exactly the right party for each hint.
+  borrower <- allocatePartyByHint (PartyIdHint "Borrower")
+  borrower2 <- allocatePartyByHint (PartyIdHint "Borrower2")
+  parties <- listKnownParties
+  let named hint = [ pd.party | pd <- parties, matchesPartyHint hint (partyToText pd.party) ]
+  named "Borrower" === [borrower]
+  named "Borrower2" === [borrower2]

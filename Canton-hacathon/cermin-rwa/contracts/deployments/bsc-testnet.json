@@ -1,0 +1,13 @@
+{
+  "chainId": 97,
+  "network": "bsc-testnet",
+  "deployBlock": 132984577,
+  "operator": "0x486a0a8A3Da3a2d752697BE8270976FCC3d36B7d",
+  "guardAgent": "0x5be38f0754454e7fbD93EB6615E33cE009070130",
+  "contracts": {
+    "CerminRWA": "0x8651515462D17b6f4E7AEDe854E4C872C9eB64F2",
+    "mUST": "0x3cf630d564b7ebEf6ff89D1aDACBA05CE9C03fC4",
+    "mUSD": "0x11a430cf299dA0962783cB9851a81BB3Af20Ef50",
+    "RwaPriceFeed": "0x76B6F4b25216CD5e234d3D59A0e11fCA6790177E"
+  }
+}

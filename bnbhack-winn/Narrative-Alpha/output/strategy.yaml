@@ -1,0 +1,29 @@
+strategy:
+  narrative: Memecoins
+  velocity: 9.4
+  acceleration: 0.5
+  rank: 1
+  basket:
+  - symbol: RNDR
+    weight: 0.4
+    market_cap: 3845000000
+  - symbol: TAO
+    weight: 0.3209
+    market_cap: 2831000000
+  - symbol: HNT
+    weight: 0.1737
+    market_cap: 1498000000
+  - symbol: AGIX
+    weight: 0.1054
+    market_cap: 880000000
+  entry_rule: 'Enter when narrative velocity > 7.0 (current: 9.4)'
+  exit_rule: Exit when narrative velocity < 3.0 or narrative rank drops below top-3
+  position_sizing: Market-cap weighted, max 40% per token, proportional to narrative
+    velocity
+  invalidation: Hard stop at -15% portfolio drawdown
+  config:
+    velocity_entry: 7.0
+    velocity_exit: 3.0
+    basket_size: 4
+    max_weight: 0.4
+    max_drawdown_stop: -0.15

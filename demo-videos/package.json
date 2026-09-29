@@ -1,0 +1,31 @@
+{
+  "name": "seed-bnb-indo-demo-videos",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared Remotion workspace for the seed-bnb-indo BNB Chain demo videos (one composition per project).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "typecheck": "tsc --noEmit",
+    "still": "remotion still",
+    "render": "remotion render",
+    "stills": "node scripts/stills.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.489",
+    "@remotion/cli": "4.0.489",
+    "@remotion/google-fonts": "4.0.489",
+    "@remotion/media-utils": "4.0.489",
+    "@remotion/renderer": "4.0.489",
+    "@remotion/transitions": "4.0.489",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.489"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "puppeteer-core": "23.11.1",
+    "typescript": "5.6.3"
+  }
+}

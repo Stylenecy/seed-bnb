@@ -1,0 +1,36 @@
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "../lib/cn";
+
+/** Copied from apps/web/components/ui/button.tsx (Radix Slot / asChild dropped —
+ *  the demo only needs static buttons + link-styled spans). */
+export const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow-glow hover:bg-gold-500",
+        secondary: "glass glass-hover text-foreground",
+        outline: "border border-border-strong bg-transparent hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        link: "text-gold-300 underline-offset-4 hover:underline",
+      },
+      size: {
+        sm: "h-10 px-3.5",
+        default: "h-11 px-5",
+        lg: "h-12 px-7 text-base",
+        icon: "size-11",
+      },
+    },
+    defaultVariants: { variant: "default", size: "default" },
+  },
+);
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {}
+
+export function Button({ className, variant, size, ...props }: ButtonProps) {
+  return <button className={cn(buttonVariants({ variant, size }), className)} {...props} />;
+}

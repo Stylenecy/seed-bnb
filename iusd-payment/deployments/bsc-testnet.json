@@ -1,0 +1,15 @@
+{
+  "chainId": 97,
+  "network": "bsc-testnet",
+  "deployedAt": "2026-09-25",
+  "deployer": "0x4f00eD30da63A09F58235914Af1B6466B3c628cE",
+  "token": "0x4DC7AaB064D301711573c636b08c2B7F7BD2133E",
+  "IPayPool": "0xa2AeEaA76FCE9D4B0dE56CF58449403cA5DFA34F",
+  "IPayGiftPool": "0xe17b45A76a7013cE1a0Ff9960287A7b076C02aD3",
+  "relayer": "0xA23C8C58e9Fe85Aa4b7D0398A49cf2b59b54C46A",
+  "treasury": "0x4f00eD30da63A09F58235914Af1B6466B3c628cE",
+  "payFeeBps": 50,
+  "payFeeCap": "5000000000000000000",
+  "giftBoxesRegistered": 24,
+  "broadcast": "packages/contracts/foundry/broadcast/Deploy.s.sol/97/run-latest.json"
+}

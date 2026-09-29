@@ -1,0 +1,157 @@
+[
+  {"timestamp": "2026-01-01", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.2, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 6.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 3.1, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-04", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 6.8, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 2.9, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-07", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 7.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 2.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-10", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.3, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 7.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 2.2, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-13", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 8.7, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 7.9, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.8, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-16", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 7.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 8.3, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-19", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 6.2, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 8.8, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.2, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-22", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 4.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 5.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-25", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 3.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.4, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 7.2, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-28", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 2.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.6, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 8.1, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-01-31", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 2.3, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.2, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 8.8, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-03", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 1.9, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 8.0, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 9.3, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-06", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 1.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 7.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 9.7, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-09", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 1.2, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 6.3, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 9.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-12", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 1.0, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 5.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 9.1, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-15", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 3.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 4.2, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 8.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-18", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 5.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 3.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 7.2, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-21", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 7.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 2.4, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 5.8, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-24", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 8.9, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 1.8, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 4.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-02-27", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 1.3, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 3.8, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-02", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 4.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 2.9, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-05", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 9.4, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 5.8, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 2.2, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-08", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 8.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 6.9, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.7, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-11", "narratives": [
+    {"name": "AI Agents", "rank": 1, "velocity": 8.1, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 2, "velocity": 7.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.3, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-14", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 6.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 8.2, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 1.0, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-17", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 5.2, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 8.9, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 0.8, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-20", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 3.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.3, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 4.5, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-23", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 2.5, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.6, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 6.1, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-26", "narratives": [
+    {"name": "AI Agents", "rank": 3, "velocity": 1.8, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 9.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 2, "velocity": 7.4, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-03-29", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 4.2, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 1, "velocity": 8.5, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 3, "velocity": 8.9, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]},
+  {"timestamp": "2026-04-01", "narratives": [
+    {"name": "AI Agents", "rank": 2, "velocity": 5.9, "tokens": ["FET", "AGIX", "OCEAN", "TAO"]},
+    {"name": "DePIN", "rank": 3, "velocity": 7.1, "tokens": ["RNDR", "HNT"]},
+    {"name": "Memecoins", "rank": 1, "velocity": 9.4, "tokens": ["TAO", "AGIX", "RNDR", "HNT"]}
+  ]}
+]

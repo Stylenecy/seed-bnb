@@ -1,0 +1,17 @@
+HTTP/2 301 
+date: Fri, 25 Sep 2026 18:04:07 GMT
+content-type: text/html; charset=UTF-8
+location: https://docs.etherscan.io/v2-migration
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=vXy12Vklif%2BqwZYXg7ouKwP%2FsgUAcmhwvB6OZ4MQtE%2Fkh8rerT6FCq7hGEhE6BxCxY33J7ymfCj6U7IJwcd%2FgRLYsIogKDaWhiIaV5kMrpgPPbYERBdrI0g4cwEvZ7Pmkw%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a40bf3124de1ce76-SIN
+alt-svc: h3=":443"; ma=86400
+
+<html>
+<head><title>301 Moved Permanently</title></head>
+<body>
+<center><h1>301 Moved Permanently</h1></center>
+<hr><center>cloudflare</center>
+</body>
+</html>

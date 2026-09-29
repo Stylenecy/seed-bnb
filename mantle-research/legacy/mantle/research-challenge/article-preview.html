@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview: 926 Wallets, One Door</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<style>
+  :root{
+    --bg:#0A1312; --surface:#0F1B1A; --teal:#65B3AE; --tint:#CCE9E7;
+    --ink:#EDF6F5; --ink2:#AFC4C1; --ink3:#6E8A86; --line:rgba(101,179,174,.18);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"GT Walsheim","Avenir Next","Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .banner{position:sticky;top:0;z-index:5;background:rgba(10,19,18,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:10px 20px;font-size:12.5px;color:var(--ink3);
+    letter-spacing:.14em;text-transform:uppercase;display:flex;gap:14px;align-items:center}
+  .banner .sq{width:9px;height:9px;background:var(--teal);border-radius:2.5px;box-shadow:0 0 10px rgba(101,179,174,.8)}
+  .banner b{color:var(--teal);font-weight:600}
+  article{max-width:780px;margin:0 auto;padding:56px 24px 120px}
+  h1{font-size:42px;line-height:1.12;letter-spacing:-.015em;margin:0 0 10px}
+  h2{font-size:27px;letter-spacing:-.01em;margin:52px 0 14px;line-height:1.2}
+  h2::before{content:"";display:inline-block;width:10px;height:10px;background:var(--teal);
+    border-radius:3px;margin-right:12px;box-shadow:0 0 10px rgba(101,179,174,.7)}
+  h3{font-size:20px;margin:34px 0 10px}
+  p,li{font-size:17.5px;line-height:1.72;color:var(--ink2)}
+  article > p:first-of-type{font-size:20px;color:var(--tint);line-height:1.6}
+  strong{color:var(--ink)}
+  a{color:var(--teal);text-decoration:none;border-bottom:1px solid rgba(101,179,174,.35)}
+  em{color:var(--ink3);font-style:italic}
+  img{width:100%;border-radius:18px;border:1px solid var(--line);margin:26px 0 6px;display:block;
+    box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  img + em, p:has(img) + p em{display:block;font-size:14px;line-height:1.55;margin-top:2px}
+  hr{border:none;border-top:1px solid var(--line);margin:48px 0}
+  blockquote{margin:0;padding:4px 22px;border-left:3px solid var(--teal);color:var(--tint)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:20px 0}
+  th{color:var(--ink3);text-transform:uppercase;font-size:12px;letter-spacing:.1em;text-align:left}
+  th,td{padding:11px 12px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top}
+  td a{white-space:nowrap}
+  code{background:rgba(101,179,174,.1);border:1px solid var(--line);border-radius:6px;
+    padding:1.5px 6px;font-size:.86em;color:var(--tint);font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="banner"><div class="sq"></div>Preview <b>track1-article.md</b> as it will read on X, images inline. Not the published page.</div>
+<article id="a">Loading the article...</article>
+<script>
+fetch(new URLSearchParams(location.search).get("doc")||"track1-article.md").then(r=>r.text()).then(md=>{
+  document.getElementById("a").innerHTML = marked.parse(md);
+});
+</script>
+</body>
+</html>

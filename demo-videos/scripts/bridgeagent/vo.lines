@@ -1,0 +1,24 @@
+# bridgeagent voice-over — scripts/_vo/gen.py bridgeagent
+# id | rate | pitch | text   (claims from BridgeAgent/VERIFY-BNB.md: real BSC testnet (chain 97)
+# contracts + agent #1 + 2 journal writes; trade #2 is a synthetic settled trade fed through the
+# real RiskManager mirror path; ExtraDataLengthError fix; 13/13 forge tests; 0.000258 tBNB total;
+# not BscScan-verified; Hyperliquid live trading NOT tested).
+voice = en-GB-RyanNeural
+hook     | +12% | +0Hz | Bots flex big gains. No name, no receipts.
+intro    | +14% | -1Hz | Meet BridgeAgent: an autonomous perps trader.
+register | +14% | -1Hz | The agent gets an ERC-8004 identity.
+trade    | +14% | -1Hz | It trades locally, and journals every settled trade.
+verify   | +14% | -1Hz | Anyone can read it.
+page     | +14% | -1Hz | The real status page, live from BSC testnet.
+ledger   | +12% | -1Hz | Two trades, append-only.
+bps      | +14% | -1Hz | One fifty basis points.
+smoke    | +14% | -1Hz | Live: agent one registers, trade one lands.
+synth    | +24% | -1Hz | Trade two: synthetic, real mirror path.
+bug      | +24% | -1Hz | BSC blocks broke web3.
+fix      | +12% | -1Hz | Middleware fixed it.
+txs      | +12% | -1Hz | Five transactions, all status one.
+unverif  | +18% | -1Hz | Not yet verified on BscScan.
+cast     | +12% | -1Hz | One cast call reads it back.
+stats    | +12% | +0Hz | Two trades. Thirteen tests pass.
+honest   | +16% | -1Hz | Hyperliquid trading: not tested.
+outro    | -2%  | -2Hz | BridgeAgent. Receipts included.

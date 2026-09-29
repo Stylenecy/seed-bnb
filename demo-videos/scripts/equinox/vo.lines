@@ -1,0 +1,23 @@
+# equinox voice-over — scripts/_vo/gen.py equinox
+# id | rate | pitch | text   (claims from Equinox-agent/VERIFY-BNB.md: contracts live on BSC testnet,
+# UI = mock-data preview, Venus = BSC mainnet FORK test only, backend not built)
+voice = en-GB-RyanNeural
+hook     | +10% | -1Hz | BNB crashes while you sleep.
+intro    | +6%  | +0Hz | Meet Equinox Agent.
+bnb      | +8%  | +1Hz | Now on BNB Chain.
+deposit  | +10% | -1Hz | Deposit BNB as collateral.
+skim     | +12% | -1Hz | The agent borrows USDT.
+shadow   | +14% | -1Hz | That cash waits in a shadow wallet.
+defend   | +12% | -1Hz | Anyone can trigger the defense.
+mock     | +10% | -1Hz | This is the real frontend, running on mock data for now.
+dash     | +12% | -1Hz | Collateral, debt and health factor, at a glance.
+feed     | +10% | -1Hz | Every defense lands in the activity feed.
+withdraw | +10% | -1Hz | And the shadow wallet is yours to withdraw.
+live     | +10% | -1Hz | Vault one, live on BSC testnet.
+borrowed | +16% | +0Hz | Fourteen hundred borrowed. Health factor two.
+back     | +10% | +1Hz | Anyone can defend it: back to one point five.
+venus    | +12% | -1Hz | Venus is tested on a mainnet fork, not deployed yet.
+deployed | +14% | -1Hz | Eight contracts, live on BSC testnet.
+gas      | +12% | -1Hz | All of it cost under a thousandth of a test BNB.
+tests    | +12% | +0Hz | All fifteen unit tests pass.
+outro    | -2%  | -2Hz | Equinox Agent. Deposit once, and the agent keeps watch.

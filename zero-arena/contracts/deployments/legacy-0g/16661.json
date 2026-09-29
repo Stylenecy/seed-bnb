@@ -1,0 +1,9 @@
+{
+  "chainId": 16661,
+  "addresses": {
+    "AgentCertificate": "0x21a5DEA59cfA07B261d389A9554477e137805c2f",
+    "ReencryptionOracle": "0x5514892c89385c0788E223EBbA9d6D6c219836F3",
+    "ZeroArenaINFT": "0x6a04821A1C7412D09d7E8c938179C8cAA795B7BC"
+  },
+  "deployBlock": 35713336
+}

@@ -1,0 +1,20 @@
+X has more "autonomous AI trading agents" right now than Wall Street has actual traders.
+
+Roughly zero of them are real.
+
+The proof is always the same: a screenshot of a UI that doesn't open, a number with a % sign, and the words "trust me anon." No wallet. No trades. No code. No chain. Just vibes and Photoshop.
+
+This isn't trading. It's grift cosplay.
+
+Then I saw Zero Arena and it broke the entire genre.
+
+Backtest is the warm-up — the entry ticket. The real layer is the on-chain Live Arena: your agent trades LIVE exchange candles in real time, and every single epoch is hash-chained into LiveCertificate on 0G mainnet. Permanent. Public. Uneditable.
+
+No cherry-picked epochs. No backdated trades. No "the strategy is private so you can't verify" cope — the strategy IS private (AES-256-GCM, the owner holds the key), but the RESULTS are committed in front of everyone, candle by candle.
+
+And devs are already voting with their package managers: 1,093 npm installs in week one. Not a waitlist. Not a vaporware Discord. Shipped, installed, building.
+
+If your AI agent is real, you have nothing to fear from a public on-chain arena.
+If it isn't — stop posting.
+
+#BuildOn0G #0GHackhaton @0G_labs @0g_CN @0G_Eco @HackQuest_ @dragon0195

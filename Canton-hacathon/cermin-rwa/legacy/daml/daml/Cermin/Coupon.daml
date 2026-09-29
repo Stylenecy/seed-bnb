@@ -1,0 +1,126 @@
+module Cermin.Coupon where
+
+import Daml.Script
+import Cermin.Assets
+import Cermin.Oracle
+import Cermin.Credit
+import Cermin.Guard
+
+-- | Quarterly coupon amount for a face-value / coupon-rate pair:
+-- faceValue * couponRateBps / 10000 / 4. On the demo numbers (10,000 face
+-- value, 450 bps annual coupon) this is exactly 112.50 mUSD per quarter.
+quarterlyCouponAmount : Decimal -> Int -> Decimal
+quarterlyCouponAmount faceValue couponRateBps =
+  faceValue * intToDecimal couponRateBps / 10000.0 / 4.0
+
+-- | CouponDistribution: one quarterly coupon payment on a borrower's
+-- TreasuryToken, issued by the same `issuer` who minted the collateral.
+--
+-- Who sees what and why: signed by `issuer` and `owner` (both genuine
+-- parties to the payment) with `guardAgent` as the ONLY additional observer
+-- (global-constraints.md Amendment 2) — the borrower's delegate must see
+-- that a coupon exists in order to sweep it into loan repayment, but the
+-- pool operator and every other party learn nothing about it. It is disposed
+-- of by exactly one of two consuming choices: `ClaimCoupon` (controller
+-- `owner`) pays the coupon out as a real StableCoin for the borrower to keep
+-- or spend manually; `SweepToLoan` (controller `guardAgent`) routes the full
+-- amount directly into the loan's `outstanding` via `Loan.ApplyRepayment`,
+-- atomically, with no cash ever changing hands. Per Amendment 2, the Guard
+-- Agent only ever exercises `SweepToLoan` — never `ClaimCoupon` — so manual
+-- claim remains exclusively the borrower's own decision.
+template CouponDistribution
+  with
+    issuer : Party
+    owner : Party
+    guardAgent : Party
+    instrumentId : Text
+    amount : Decimal
+  where
+    signatory issuer, owner
+    observer guardAgent
+
+    ensure amount > 0.0
+
+    -- | Borrower's manual claim: pays the coupon out as a real StableCoin
+    -- holding. Issuer authority comes from this template's own signatory set
+    -- (issuer co-signed CouponDistribution), so no separate mint step is
+    -- needed.
+    choice ClaimCoupon : ContractId StableCoin
+      controller owner
+      do
+        create StableCoin with issuer, owner, amount
+
+    -- | The Guard Agent's coupon-sweep path (Amendment 2, binding): routes
+    -- the FULL coupon amount directly into loan repayment via
+    -- `Loan.ApplyRepayment`, atomically in this single choice body (no
+    -- StableCoin is ever minted for a swept coupon), and records a
+    -- RescueEvent-style feed entry ("Coupon swept..."). Requires a live
+    -- GuardPolicy for this owner/guardAgent pair with `couponSweep = True`,
+    -- and a live Loan for the same borrower/guardAgent — every fetched cid
+    -- is pinned to the right parties/instrument exactly like GuardRepay pins
+    -- its witnesses: policy.borrower/loan.borrower must be this coupon's
+    -- `owner`, policy.guardAgent/loan.guardAgent must be this `guardAgent`,
+    -- and the coupon's own `instrumentId` must match the loan's collateral
+    -- instrument. Authority: this choice runs on a contract signed by
+    -- issuer+owner with controller guardAgent, so its body carries
+    -- {issuer, owner, guardAgent} — precisely enough to exercise the
+    -- borrower-controlled ApplyRepayment and co-sign the new RescueEvent,
+    -- without the Guard Agent ever holding borrower authority anywhere
+    -- outside this narrow, policy-gated path. A live PriceFeed is fetched
+    -- ONLY to record an honest healthBefore/healthAfter on the feed entry —
+    -- unlike GuardRepay, NO health threshold is asserted here, because
+    -- sweeping a coupon is a proactive paydown, not a breach response.
+    choice SweepToLoan : (ContractId Loan, ContractId RescueEvent)
+      with
+        priceFeedCid : ContractId PriceFeed
+        loanCid : ContractId Loan
+        policyCid : ContractId GuardPolicy
+      controller guardAgent
+      do
+        policy <- fetch policyCid
+        loan <- fetch loanCid
+        feed <- fetch priceFeedCid
+        assertMsg "policy belongs to a different borrower" (policy.borrower == owner)
+        assertMsg "guard agent mismatch on policy" (policy.guardAgent == guardAgent)
+        assertMsg "coupon sweep is not enabled on this policy" policy.couponSweep
+        assertMsg "loan belongs to a different borrower" (loan.borrower == owner)
+        assertMsg "guard agent mismatch on loan" (loan.guardAgent == guardAgent)
+        assertMsg "price feed is for a different instrument" (feed.instrumentId == loan.collateralInstrumentId)
+        assertMsg "coupon instrument does not match the loan's collateral instrument"
+          (instrumentId == loan.collateralInstrumentId)
+
+        let healthBefore = healthRatioBps loan.collateralAmount feed.price loan.outstanding
+        now <- getTime
+        newLoanCid <- exercise loanCid ApplyRepayment with repayAmount = amount
+        let newOutstanding = loan.outstanding - amount
+        let healthAfter = healthRatioBps loan.collateralAmount feed.price newOutstanding
+
+        rescueCid <- create RescueEvent with
+          guardAgent
+          borrower = owner
+          loanId = loan.loanId
+          description = "Coupon swept into loan repayment"
+          amount
+          healthBefore
+          healthAfter
+          at = now
+
+        pure (newLoanCid, rescueCid)
+
+-- | Issuer script helper — "PayCoupon": computes the quarterly coupon
+-- (faceValue * couponRateBps / 10000 / 4) and creates the CouponDistribution
+-- for `owner`, naming `guardAgent` as its observer. A plain script function
+-- rather than a Daml choice: CouponDistribution does not exist yet to host a
+-- choice, and issuance is not a state transition on the TreasuryToken itself
+-- (Task 1's Assets.daml is left untouched), so the issuer's authority to
+-- mint a coupon is exercised directly via `submitMulti`, exactly like Task
+-- 2's `mintToken`/`mintCoin` script helpers mint collateral and cash.
+payCoupon : Party -> Party -> Party -> Text -> Decimal -> Int -> Script (ContractId CouponDistribution)
+payCoupon issuer owner guardAgent instrumentId faceValue couponRateBps =
+  submitMulti [issuer, owner] [] do
+    createCmd CouponDistribution with
+      issuer
+      owner
+      guardAgent
+      instrumentId
+      amount = quarterlyCouponAmount faceValue couponRateBps

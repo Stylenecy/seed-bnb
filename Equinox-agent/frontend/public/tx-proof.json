@@ -1,0 +1,145 @@
+{
+  "network": {
+    "endpoint": "wss://drip-node-production.up.railway.app",
+    "chainName": "Development",
+    "ss58Prefix": 42,
+    "tokenSymbol": "POT",
+    "tokenDecimals": 12
+  },
+  "participants": {
+    "alice": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+    "bob": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+    "charlie": "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
+    "dave": "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy",
+    "multisig": "5DjYJStmdZ2rcqXbXGX7TW85JsrW6uG4y9MUcLq2BoPMpRA7"
+  },
+  "config": {
+    "depositPerMember": "100 POT",
+    "threshold": "2-of-3"
+  },
+  "transactions": [
+    {
+      "step": 1,
+      "description": "Alice deposits to multisig",
+      "signer": "Alice",
+      "txHash": "0x7060bd5e001f61acad123b700ecae9f3287bacb35055bf15c541b4c44f088bce",
+      "blockHash": "0xc1e3eb70fc2ab1a7e02b2a80fbf522a8c524d399792f9e7efba0334c8e23b4be",
+      "blockNumber": 50605,
+      "events": [
+        {
+          "section": "balances",
+          "method": "Transfer"
+        },
+        {
+          "section": "treasury",
+          "method": "Deposit"
+        },
+        {
+          "section": "system",
+          "method": "ExtrinsicSuccess"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "description": "Bob deposits to multisig",
+      "signer": "Bob",
+      "txHash": "0xed2cb84dad2bd2ce5c0bddff21fc1e5957985af8ff20b007bf62c771ef3f3acd",
+      "blockHash": "0x188488affc37ad4ff099378176fda06605006c7c74201b37de2ea248b993fbfa",
+      "blockNumber": 50606,
+      "events": [
+        {
+          "section": "balances",
+          "method": "Transfer"
+        },
+        {
+          "section": "treasury",
+          "method": "Deposit"
+        },
+        {
+          "section": "system",
+          "method": "ExtrinsicSuccess"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "description": "Charlie deposits to multisig",
+      "signer": "Charlie",
+      "txHash": "0x4bb1dd89e8774cb40b59fd5b2f02657f448c2ff8c13779d5670d433393df3ebb",
+      "blockHash": "0x87d678c6d6baa22a991c2ec5d34cedde2598f07a79bd0604ffd7a671c71afa93",
+      "blockNumber": 50607,
+      "events": [
+        {
+          "section": "balances",
+          "method": "Transfer"
+        },
+        {
+          "section": "treasury",
+          "method": "Deposit"
+        },
+        {
+          "section": "system",
+          "method": "ExtrinsicSuccess"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "description": "Alice proposes withdrawal via multisig (from prior run — timepoint reused)",
+      "signer": "Alice",
+      "txHash": "0xfdf2293e845c5ab1cee45833584ddab5812e312d58232dfb60bd4ca2725cc0bf",
+      "blockHash": "(see block #50551 on Portaldot dev node)",
+      "blockNumber": 50551,
+      "events": [
+        {
+          "section": "multisig",
+          "method": "NewMultisig"
+        },
+        {
+          "section": "balances",
+          "method": "Reserved"
+        },
+        {
+          "section": "system",
+          "method": "ExtrinsicSuccess"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "description": "Bob approves, multisig auto-executes payout",
+      "signer": "Bob",
+      "txHash": "0xe26e5822fdef1bd84e7107489c0866117e43ddfff70b525f7729aa019f78cf2a",
+      "blockHash": "0x4b6ad91f8d063df519f925f650e2fd59809b26cb1582bcfc78162a11dfde82e2",
+      "blockNumber": 50608,
+      "events": [
+        {
+          "section": "balances",
+          "method": "Unreserved"
+        },
+        {
+          "section": "balances",
+          "method": "Transfer"
+        },
+        {
+          "section": "multisig",
+          "method": "MultisigExecuted"
+        },
+        {
+          "section": "treasury",
+          "method": "Deposit"
+        },
+        {
+          "section": "system",
+          "method": "ExtrinsicSuccess"
+        }
+      ]
+    }
+  ],
+  "finalBalances": {
+    "multisig": "600 POT",
+    "dave": "5000300 POT"
+  },
+  "generatedAt": "2026-05-20T02:04:25.356Z"
+}

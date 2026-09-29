@@ -1,0 +1,77 @@
+// Tiny zero-dependency .env loader. We don't pull in `dotenv` because the
+// CLI is supposed to be installable and run with `npx zeroarena …` and the
+// dependency surface is already small.
+
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+export function loadEnv(path = resolve(process.cwd(), '.env')): void {
+  if (!existsSync(path)) return;
+  const text = readFileSync(path, 'utf8');
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq < 0) continue;
+    const key = line.slice(0, eq).trim();
+    let val = line.slice(eq + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+export interface ResolvedConfig {
+  rpc: string;
+  indexer: string;
+  storageRpc: string;
+  privateKey: string;
+  addresses: {
+    AgentCertificate: string;
+    ZeroArenaINFT: string;
+    ReencryptionOracle: string;
+  };
+  keysDir?: string;
+}
+
+/**
+ * Build the SDK config from environment variables.
+ *
+ * Note: this loader intentionally does NOT read any oracle private key. The
+ * oracle is a service the SDK calls; configure `ZeroArenaConfig.oracle` at
+ * the call site with an `HttpOracleClient` (pointing at a deployed oracle
+ * service) or a `LocalOracleClient` if you operate the oracle yourself.
+ */
+export function configFromEnv(): ResolvedConfig {
+  // Contracts: BNB Smart Chain testnet (chainId 97) by default; set
+  // ZA_RPC=https://bsc-dataseed.bnbchain.org for BSC mainnet (56).
+  const rpc = required('ZA_RPC', 'https://data-seed-prebsc-1-s1.bnbchain.org:8545');
+  // Blob storage: 0G Storage (fees on 0G Chain via ZA_STORAGE_RPC).
+  const indexer = required('ZA_INDEXER', 'https://indexer-storage-turbo.0g.ai');
+  const storageRpc = required('ZA_STORAGE_RPC', 'https://evmrpc.0g.ai');
+  const privateKey = required('PRIVATE_KEY');
+
+  const cfg: ResolvedConfig = {
+    rpc,
+    indexer,
+    storageRpc,
+    privateKey,
+    addresses: {
+      AgentCertificate: required('ZA_ADDR_CERT'),
+      ZeroArenaINFT: required('ZA_ADDR_INFT'),
+      ReencryptionOracle: required('ZA_ADDR_ORACLE'),
+    },
+  };
+  if (process.env.ZA_KEYS_DIR) cfg.keysDir = process.env.ZA_KEYS_DIR;
+  return cfg;
+}
+
+function required(name: string, fallback?: string): string {
+  const v = process.env[name];
+  if (v && v.length > 0) return v;
+  if (fallback !== undefined) return fallback;
+  throw new Error(
+    `${name} is required (set it in .env or your shell).`,
+  );
+}

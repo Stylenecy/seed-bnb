@@ -1,0 +1,12 @@
+# Foundry artifacts
+out/
+cache/
+broadcast/*/31337/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS noise
+.DS_Store

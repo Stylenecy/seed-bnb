@@ -1,0 +1,27 @@
+{
+  "name": "cermin-rwa-video",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Cermin-RWA launch video (Remotion).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "placeholders": "node scripts/placeholders.mjs",
+    "dev": "remotion studio",
+    "render": "remotion render Main out/cermin-demo.mp4 --codec h264",
+    "still": "remotion still Main",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.489",
+    "@remotion/google-fonts": "4.0.489",
+    "@remotion/transitions": "4.0.489",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.489"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "5.6.3"
+  }
+}

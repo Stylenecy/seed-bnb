@@ -1,0 +1,5 @@
+[package]
+name = "testcoins"
+edition = "2024"
+# Testnet-only faucet coins for end-to-end demos (TUSD debt, TBTC/TETH collateral
+# markers priced by Pyth BTC/ETH feeds). Not part of the equinox protocol.

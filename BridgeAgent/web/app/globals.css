@@ -1,0 +1,110 @@
+/* Fonts: JetBrains Mono Variable for body/data, Instrument Serif for the
+   single italic accent in the hero. Both free, both load fast from Google. */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Instrument+Serif:ital@0;1&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  /* Custom selection that matches the moss accent. */
+  --selection: rgba(105, 147, 120, 0.35);
+}
+
+*::selection {
+  background-color: var(--selection);
+}
+
+html {
+  font-feature-settings: "ss01", "cv01", "cv02", "cv11";
+}
+
+html,
+body {
+  @apply bg-moss-950 text-moss-50 font-mono antialiased;
+  font-variation-settings: "wght" 400;
+}
+
+/* Subtle film-grain noise overlay across the whole page. Pure SVG, no
+   image asset, near-imperceptible but lifts the dark fields off "flat black"
+   into something that feels printed. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Hairline grid that fades in at the page edges. Only visible on wider
+   viewports — sets the institutional/blueprint tone without dominating. */
+@media (min-width: 768px) {
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, rgba(146, 178, 156, 0.04) 1px, transparent 1px);
+    background-size: 64px 100%;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+  }
+}
+
+/* Hide scrollbar in webkit browsers but keep functional. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(146, 178, 156, 0.18);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(146, 178, 156, 0.28);
+}
+
+/* Anchor utility: a subtle underline-on-hover that matches the moss accent
+   without the link looking like a marketing CTA. */
+.link-quiet {
+  position: relative;
+  transition: color 150ms ease;
+}
+.link-quiet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: left;
+  transition: opacity 200ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-quiet:hover::after {
+  opacity: 0.4;
+  transform: scaleX(1);
+}
+
+/* Reusable disclosure animation for the trade-row expand. */
+.expand-enter {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.expand-enter > div {
+  overflow: hidden;
+}
+.expand-enter[data-open="true"] {
+  grid-template-rows: 1fr;
+}

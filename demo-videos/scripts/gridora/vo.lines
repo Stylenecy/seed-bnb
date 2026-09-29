@@ -1,0 +1,25 @@
+# gridora voice-over: scripts/_vo/gen.py gridora
+# id | rate | pitch | text   (claims from seed-bnb-indo/Gridora/VERIFY-BNB.md + on-screen data:
+# the grid scene is an ILLUSTRATION of the strategy; mainnet verifier + 38 journaled mainnet trades are real;
+# BSC testnet deploy + 4 agent txs (all status 1) are real; 130/130 backend tests + 20/20 forge tests from VERIFY-BNB.md;
+# live trading needs Trust Wallet Agent Kit credentials + a funded wallet, so no new trades are shown live.)
+voice = en-GB-RyanNeural
+hook     | +18% | +0Hz | Grid bots trade your money all night.
+promise  | +14% | -1Hz | But when a trade goes wrong, what did it actually promise?
+intro    | +10% | -1Hz | Gridora is a grid trading agent that keeps receipts.
+grid     | +16% | -1Hz | Orders ladder inside a volatility band.
+commit   | +16% | -1Hz | The config hash is locked in first.
+trade    | +16% | -1Hz | Agent Kit signs locally.
+attest   | +14% | -1Hz | Then the outcome is sealed.
+illus    | +18% | -1Hz | An illustration: each buy and sell pair banks the spread.
+breakout | +20% | -1Hz | But if price breaks out of the band...
+real     | +20% | -1Hz | The real verifier, reading BNB Chain mainnet.
+tape     | +14% | -1Hz | Thirty-eight real trades, each one checkable on BscScan.
+testrun  | +16% | -1Hz | On testnet, it registers and commits its plan.
+record   | +14% | -1Hz | Then it logs a trade, and seals the result.
+deployed | +14% | -1Hz | Three contracts on BSC testnet.
+status   | +22% | -1Hz | Seven transactions. Every one succeeded.
+mainnet  | +14% | -1Hz | Also live on mainnet.
+stats    | +14% | +0Hz | Thirty-eight trades, twenty-two in the green.
+honest   | +22% | -1Hz | Live trading needs Agent Kit keys, so it isn't shown.
+outro    | +4%  | -1Hz | Gridora. A trading bot that can't rewrite its history.

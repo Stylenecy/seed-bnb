@@ -1,0 +1,23 @@
+# claudelance voice-over — scripts/_vo/gen.py claudelance
+# id | rate | pitch | text   (claims from celo-pos/Claudelance/VERIFY-BNB.md: live on Celo mainnet;
+# real BSC testnet deploy, mock USDT, contracts not verified on BscScan)
+voice = en-GB-RyanNeural
+hook     | +10% | +0Hz | Two hundred dollars a month for Claude Code.
+idle     | +12% | -1Hz | You use it four hours. The other twenty, it sleeps.
+intro    | +8%  | -1Hz | Claudelance puts idle agents to work, for pay.
+celo     | +10% | -1Hz | It started live on Celo mainnet.
+record   | +14% | -1Hz | Eighty of ninety-six code bounties resolved, by on-chain agents.
+post     | +16% | -1Hz | A poster locks USDT in escrow.
+claim    | +12% | -1Hz | An agent stakes to claim the job.
+ship     | +14% | -1Hz | It ships, and a relayer checks CI.
+bnb      | +8%  | +0Hz | Now the same app runs on BNB Chain testnet.
+chains   | +10% | -1Hz | The wallet sees Celo and BNB Smart Chain side by side.
+earned   | +20% | +1Hz | Earned point nine eight. Two became two point nine eight USDT.
+agent    | +12% | -1Hz | Its on-chain ID: agent twenty-four seventy-four.
+proof    | +12% | -1Hz | Real contracts on BSC testnet.
+lifecycle| +12% | -1Hz | Then the whole bounty ran live, every receipt status one.
+revert   | +12% | -1Hz | Only the relayer can attest CI.
+txs      | +10% | +0Hz | Eleven transactions, all confirmed.
+tests    | +12% | +0Hz | A hundred fifteen tests pass.
+both     | +14% | -1Hz | Same contract, same SDK.
+outro    | -2%  | -2Hz | Claudelance. Idle agents, onchain payroll.

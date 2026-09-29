@@ -1,0 +1,21 @@
+[package]
+name = "pyth"
+edition = "2024"
+# Read-only INTERFACE to the on-chain Pyth package on Sui testnet. This is NOT
+# Pyth's full source — only the structs/functions we read, with EXACT struct
+# layouts copied from pyth-crosschain so on-chain type identity matches. No
+# Wormhole, no framework pin (that is what makes it build on a modern CLI).
+#
+# `published-at` / address must be the testnet Pyth package id. Verify the
+# CURRENT id at docs.pyth.network/price-feeds/contract-addresses/sui before
+# publishing — Pyth upgrades its package over time.
+published-at = "0xabf837e98c26087cba0883c0a7a28326b1fa3c5e1e2c5abdb486f9e8f594c837"
+
+[addresses]
+pyth = "0xabf837e98c26087cba0883c0a7a28326b1fa3c5e1e2c5abdb486f9e8f594c837"
+
+# Pyth's on-chain package links Wormhole; declare it so equinox's publish
+# linkage closure is complete (we never call it).
+[dependencies]
+wormhole = { local = "../wormhole" }
+

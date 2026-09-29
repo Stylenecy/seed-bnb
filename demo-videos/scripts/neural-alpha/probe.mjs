@@ -1,0 +1,11 @@
+import puppeteer from "puppeteer-core";
+const browser = await puppeteer.launch({ executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: "new", args: ["--hide-scrollbars"] });
+const page = await browser.newPage();
+await page.setViewport({ width: 1600, height: 1000, deviceScaleFactor: 1 });
+await page.goto("http://localhost:3321/", { waitUntil: "domcontentloaded" });
+await new Promise(r=>setTimeout(r,8000));
+await page.screenshot({ path: process.argv[2], fullPage: true });
+const h = await page.evaluate(()=>document.body.scrollHeight);
+const heads = await page.evaluate(()=>[...document.querySelectorAll("h1,h2,h3,button")].map(e=>e.textContent.trim().slice(0,40)+"@"+Math.round(e.getBoundingClientRect().top)).slice(0,80));
+console.log(h, JSON.stringify(heads));
+await browser.close();

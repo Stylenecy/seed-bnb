@@ -1,0 +1,217 @@
+module Cermin.Credit where
+
+import DA.Time (addRelTime, hours)
+import Cermin.Assets
+
+-- | Health Ratio in basis points (13000 = 130%): collateral value over debt.
+--
+--   Health Ratio = (collateralAmount * price) / outstanding
+--
+-- Carried as an `Int` of basis points (per global-constraints.md). The
+-- Decimal is converted with round-to-nearest (`round`, half away from zero)
+-- so the demo price drop 1.00 -> 0.76 yields 12667 bps, still under the
+-- 13000 Guard Trigger. NEVER divide when `outstanding` is 0 — callers only
+-- evaluate this on live loans with positive outstanding.
+healthRatioBps : Decimal -> Decimal -> Decimal -> Int
+healthRatioBps collateralAmount price outstanding =
+  round (collateralAmount * price * 10000.0 / outstanding)
+
+-- | Repayment (in mUSD) that would lift a loan's Health Ratio back to
+-- `targetBps`. Solve (collateralAmount*price) / newOutstanding = targetBps/10000
+-- for newOutstanding, then amount = outstanding - newOutstanding. Positive
+-- exactly when the current ratio is below the target.
+amountToReachTarget : Decimal -> Decimal -> Decimal -> Int -> Decimal
+amountToReachTarget collateralAmount price outstanding targetBps =
+  outstanding - (collateralAmount * price * 10000.0 / intToDecimal targetBps)
+
+-- | Loan: a borrower's stablecoin debt to the lending pool, collateralised
+-- by a locked TreasuryToken.
+--
+-- Who sees what and why: signed by `borrower` and `poolOperator` — both are
+-- genuine parties to the debt (the pool legitimately sees its own loan). The
+-- `guardAgent` is an OBSERVER only: it must read `outstanding`,
+-- `collateralAmount` and `collateralInstrumentId` to compute the Health
+-- Ratio, but it never signs the loan and cannot alter it directly. The pool
+-- never learns anything about the borrower's private Shadow Vault or Guard
+-- Policy from this contract — those are separate templates it cannot see.
+--
+-- The delegation hinge lives here: `ApplyRepayment` is controlled by the
+-- borrower, but because the borrower and pool co-signed this Loan, the choice
+-- body carries the pool's authority for the archive+recreate. That lets the
+-- borrower (or a delegate acting with borrower authority, i.e. the Shadow
+-- Vault's GuardRepay) reduce `outstanding` without a fresh pool signature —
+-- the pool consented once, when it agreed to this template's choices.
+template Loan
+  with
+    borrower : Party
+    poolOperator : Party
+    guardAgent : Party
+    loanId : Text
+    principal : Decimal
+    outstanding : Decimal
+    rateBps : Int
+    collateralInstrumentId : Text
+    collateralAmount : Decimal
+  where
+    signatory borrower, poolOperator
+    observer guardAgent
+
+    ensure principal > 0.0 && outstanding >= 0.0
+        && collateralAmount > 0.0 && rateBps >= 0
+
+    -- | Borrower's manual, self-service paydown: reduces `outstanding` by
+    -- `amount`. (Cash side is abstracted as a Decimal ledger entry — see the
+    -- money-model note in the Task 2 report.)
+    choice Repay : ContractId Loan
+      with
+        amount : Decimal
+      controller borrower
+      do
+        assertMsg "repayment must be positive" (amount > 0.0)
+        assertMsg "cannot repay more than outstanding" (amount <= outstanding)
+        create this with outstanding = outstanding - amount
+
+    -- | The delegation primitive. Identical effect to `Repay`, but named
+    -- distinctly because it is invoked WITH borrower authority from inside
+    -- ShadowVault.GuardRepay (and, in Task 3, the Coupon Sweep) rather than
+    -- by the borrower directly. The guardAgent can only ever reach this
+    -- through the trigger-checked GuardRepay path — never on its own, since
+    -- it holds no borrower authority outside the vault.
+    choice ApplyRepayment : ContractId Loan
+      with
+        repayAmount : Decimal
+      controller borrower
+      do
+        assertMsg "repayment must be positive" (repayAmount > 0.0)
+        assertMsg "cannot repay more than outstanding" (repayAmount <= outstanding)
+        create this with outstanding = outstanding - repayAmount
+
+    -- | Borrower pledges an additional TreasuryToken as collateral, raising
+    -- the Health Ratio. The new token is locked to the pool (disclosing only
+    -- that lock, nothing else the borrower holds) and its face value is added
+    -- to `collateralAmount`.
+    choice TopUpCollateral : ContractId Loan
+      with
+        additionalTokenCid : ContractId TreasuryToken
+      controller borrower
+      do
+        token <- fetch additionalTokenCid
+        assertMsg "collateral must be the same instrument" (token.instrumentId == collateralInstrumentId)
+        assertMsg "collateral must be owned by the borrower" (token.owner == borrower)
+        _ <- exercise additionalTokenCid Lock with lockHolder = poolOperator
+        create this with collateralAmount = collateralAmount + token.faceValue
+
+    -- | Last-resort default. Exists so the pool is not defenceless, but the
+    -- Cermin demo NEVER exercises it — the Guard Agent prevents liquidation.
+    -- Requires an EXPIRED GracePeriod for this exact loan/borrower, so the
+    -- pool cannot liquidate without first having given (and outwaited) grace.
+    -- Consuming: the loan is closed on the pool's books; any real-world
+    -- collateral seizure is an off-ledger process (the pool cannot move the
+    -- borrower's issuer-signed token unilaterally).
+    choice LastResortDefault : ()
+      with
+        gracePeriodCid : ContractId GracePeriod
+      controller poolOperator
+      do
+        grace <- fetch gracePeriodCid
+        assertMsg "grace period is for a different loan" (grace.loanId == loanId)
+        assertMsg "grace period is for a different borrower" (grace.borrower == borrower)
+        now <- getTime
+        assertMsg "grace period has not expired yet" (now > grace.expiresAt)
+        pure ()
+
+-- | LendingPoolOffer: the pool's origination offer to a specific borrower.
+--
+-- Who sees what and why: signed by `poolOperator` (the pool commits its own
+-- terms) with `borrower` as the only observer — the offer is a private,
+-- bilateral proposal; no other borrower and not even the guardAgent needs to
+-- see it. On acceptance it produces the Loan (which then discloses to the
+-- guardAgent as observer). The principal is disbursed via a pre-created
+-- StableCoin transfer proposal addressed to the borrower (who observes it),
+-- so acceptance can take delivery of the cash without the borrower ever
+-- needing to read the pool's other holdings.
+template LendingPoolOffer
+  with
+    poolOperator : Party
+    borrower : Party
+    guardAgent : Party
+    loanId : Text
+    principal : Decimal
+    rateBps : Int
+    collateralInstrumentId : Text
+    collateralAmount : Decimal
+    disbursementProposalCid : ContractId StableCoinTransferProposal
+  where
+    signatory poolOperator
+    observer borrower
+
+    ensure principal > 0.0 && collateralAmount > 0.0 && rateBps >= 0
+
+    -- | Borrower accepts by pledging (locking) their TreasuryToken to the
+    -- pool and taking delivery of the disbursed principal, atomically with
+    -- the Loan being created. Authority: this choice carries poolOperator
+    -- (offer signatory) + borrower (controller), which is exactly what is
+    -- needed to lock the borrower's token, accept the pool's disbursement
+    -- proposal, and co-sign the Loan.
+    choice AcceptOffer : (ContractId Loan, ContractId StableCoin)
+      with
+        collateralTokenCid : ContractId TreasuryToken
+      controller borrower
+      do
+        token <- fetch collateralTokenCid
+        assertMsg "collateral must be the offered instrument" (token.instrumentId == collateralInstrumentId)
+        assertMsg "collateral face value must match the offer" (token.faceValue == collateralAmount)
+        assertMsg "collateral must be owned by the borrower" (token.owner == borrower)
+        proposal <- fetch disbursementProposalCid
+        assertMsg "disbursement must equal the principal" (proposal.amount == principal)
+        assertMsg "disbursement must be addressed to the borrower" (proposal.proposedOwner == borrower)
+        -- pledge: lock the collateral to the pool (discloses only the lock).
+        _ <- exercise collateralTokenCid Lock with lockHolder = poolOperator
+        -- disburse: take delivery of the pool's stablecoin.
+        coinCid <- exercise disbursementProposalCid AcceptCoin
+        loanCid <- create Loan with
+          borrower
+          poolOperator
+          guardAgent
+          loanId
+          principal
+          outstanding = principal
+          rateBps
+          collateralInstrumentId
+          collateralAmount
+        pure (loanCid, coinCid)
+
+    -- | Pool withdraws an un-accepted offer.
+    choice WithdrawOffer : ()
+      controller poolOperator
+      do
+        pure ()
+
+-- | GracePeriod: opened by the Guard Agent when the Shadow Vault cannot
+-- cover a breach. It is the ONE place the pool is told the position is in
+-- trouble (docs/02 failure path).
+--
+-- Who sees what and why: signed by `borrower` and `guardAgent` (the vault's
+-- StartGracePeriod creates it with both authorities) and observed by
+-- `poolOperator` — the pool must know grace has started and when it expires,
+-- because only after expiry may it exercise Loan.LastResortDefault. It
+-- deliberately lives in Cermin.Credit (not Cermin.Guard) so that
+-- Loan.LastResortDefault can reference it without a circular module import;
+-- see the Task 2 report.
+template GracePeriod
+  with
+    borrower : Party
+    guardAgent : Party
+    poolOperator : Party
+    loanId : Text
+    startedAt : Time
+    expiresAt : Time
+  where
+    signatory borrower, guardAgent
+    observer poolOperator
+
+    ensure expiresAt > startedAt
+
+-- | Standard grace window: 72 hours from when the Guard Agent opens it.
+graceWindow : Time -> Time
+graceWindow now = addRelTime now (hours 72)

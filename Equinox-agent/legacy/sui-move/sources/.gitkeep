@@ -1,0 +1,3 @@
+# Move module sources live here (one .move file per module).
+# Planned: vault, orderbook, agent, defense, shadow, registry.
+# Architecture / implementation comes after this scaffold.

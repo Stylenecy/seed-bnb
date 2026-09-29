@@ -1,0 +1,21 @@
+# iusd-pay voice-over — scripts/_vo/gen.py iusd-pay
+# id | rate | pitch | text      (claims from iusd-payment/VERIFY-BNB.md: live BSC testnet, test USDT)
+voice = en-GB-RyanNeural
+hook    | +8%  | +0Hz | Paying a friend in USDT should be easy.
+gas     | +14% | -1Hz | But you both need BNB for gas, even to claim.
+intro   | +10% | -1Hz | Meet i-USD Pay: stablecoin payments and gifts.
+bnb     | +6%  | +1Hz | Now on BNB Chain.
+pool    | +12% | -2Hz | Your USDT waits in a pool, sealed to your friend's key.
+relayer | +12% | -1Hz | Then a relayer claims it for them, and pays the gas.
+app     | +8%  | -1Hz | The real app, live on BSC testnet.
+card    | +10% | +0Hz | Friends pay your card, not a hex address.
+send    | +12% | -1Hz | Ten USDT to a nickname, with the fee shown up front.
+auto    | +12% | -1Hz | With auto-claim, it lands in about sixteen seconds.
+gifts   | +6%  | +2Hz | Or wrap it in a gift.
+designs | +8%  | +0Hz | Twenty-four designs, registered on-chain.
+proof   | +12% | -1Hz | Real contracts on BSC testnet, with a test USDT.
+smoke   | +8%  | -1Hz | And a real payment ran end to end.
+nogas   | +10% | -1Hz | The relayer paid the gas. The recipient held none.
+received| +8%  | +1Hz | Nine point nine five received.
+tests   | +12% | +0Hz | Zero gas held, and eighteen of eighteen contract tests pass.
+outro   | -2%  | -2Hz | i-USD Pay. Send USDT like a text.

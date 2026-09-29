@@ -1,0 +1,26 @@
+# golda voice-over — scripts/_vo/gen.py golda
+# id | rate | pitch | text   (claims from seed-bnb-indo/monad-Golda-finance/VERIFY-BNB.md: the vault UI is a
+# CONCEPT UI (no FE in repo) replaying the real BSC-testnet smoke run; LI.FI rebalance + TWAP ran on an anvil
+# BSC MAINNET FORK only (no real-network writes); PAXG has no liquidity on BSC, so WBNB stood in for gold.
+# "TWAP" spoken "tee-wap"; ERC-4626 not spoken.
+voice = en-GB-RyanNeural
+hook     | +12% | +0Hz | All dollars, then the market turns.
+intro    | +8%  | -1Hz | Golda is a vault that hedges dollars into gold.
+bnb      | +10% | -1Hz | Now on BNB Chain.
+deposit  | +12% | -1Hz | Deposit USDT, get vault shares.
+decide   | +14% | -1Hz | An agent reads the market and sets a gold target.
+swap     | +18% | -1Hz | It swaps via LI.FI, whitelisted calls only.
+guard    | +14% | -1Hz | Gold's priced off a five-minute average.
+concept  | +21% | -1Hz | Concept UI, real testnet numbers.
+minted   | +12% | -1Hz | A thousand in, a thousand shares out.
+redeem   | +14% | -1Hz | Redeem four hundred. Six hundred stay put.
+swapped  | +22% | -1Hz | Mainnet fork, not live: a thousand USDT became one point two seven seven wrapped BNB.
+twap     | +14% | -1Hz | Wrapped BNB stands in for gold here.
+honest   | +14% | -1Hz | PAXG has no liquidity on BSC today.
+bug      | +16% | -1Hz | The fork caught a bug: those selectors don't exist on BSC.
+fixed    | +14% | -1Hz | Twenty-four tests pass.
+deploy   | +14% | -1Hz | Real testnet deploy: seven transactions, all status one.
+smoke    | +12% | -1Hz | Then deposit and redeem, live.
+stats    | +14% | -1Hz | Shares track deposits, one to one.
+blocker  | +20% | -1Hz | Mainnet waits for a liquid PAXG pool on BSC.
+outro    | -2%  | -2Hz | Golda. A treasury that hedges itself.

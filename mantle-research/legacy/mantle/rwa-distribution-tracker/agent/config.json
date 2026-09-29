@@ -1,0 +1,57 @@
+{
+  "chain_id": 5000,
+  "dashboard_url": "https://dune.com/yeheskiel/mantle-rwa-distribution-tracker",
+  "tokens": {
+    "NVDAx": {
+      "address": "0xc845b2894dbddd03858fd2d643b4ef725fe0849d",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "TSLAx": {
+      "address": "0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "CRCLx": {
+      "address": "0xfebded1b0986a8ee107f5ab1a1c5a813491deceb",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "GOOGLx": {
+      "address": "0xe92f673ca36c5e2efd2de7628f815f84807e803f",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "COINx": {
+      "address": "0x364f210f430ec2448fc68a49203040f6124096f0",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "SPCXx": {
+      "address": "0x68fa48b1c2fe52b3d776e1953e0e782b5044ce28",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    },
+    "AAPLx": {
+      "address": "0x9d275685dc284c8eb1c79f6aba7a63dc75ec890a",
+      "issuer_wallet": "0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD"
+    }
+  },
+  "thresholds": {
+    "holders_target": 500,
+    "top1_pct_target": 75.0,
+    "alert_on_top1_drop_pts": 1.0,
+    "alert_on_holder_jump": 25
+  },
+  "dune": {
+    "enabled": true,
+    "query_ids": {
+      "concentration": 7863618,
+      "external_float_over_time": 7863645,
+      "holders_over_time": 7863651,
+      "daily_activity": 7863657,
+      "dex_volume": 7863658,
+      "xstock_league": 7863671,
+      "ecosystem_summary": 7863679
+    },
+    "max_divergence_pts": 2.0,
+    "note": "sync-check needs DUNE_API_KEY env; without it the agent silently uses Routescan only"
+  },
+  "webhook_env_var": "ALERT_WEBHOOK_URL",
+  "state_file": "state.json",
+  "reports_dir": "reports"
+}

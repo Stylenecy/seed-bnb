@@ -1,0 +1,23 @@
+{
+  "name": "cermin-rwa-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin REST bridge between the Cermin-RWA frontend and the Daml ledger JSON API.",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "node --env-file-if-exists=.env --watch src/index.ts",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "tsx": "^4.19.2",
+    "viem": "^2.56.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.5",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,226 @@
+module Cermin.Tests.CouponTests where
+
+import Daml.Script
+import DA.Assert ((===))
+import DA.List (head)
+import Cermin.Assets
+import Cermin.Oracle
+import Cermin.Credit
+import Cermin.Guard
+import Cermin.Coupon
+import Cermin.Tests.CreditTests (Parties(..), originateDemoLoan)
+
+-- | Coupon sweep shrinks the loan by exactly the quarterly coupon (112.50 on
+-- the demo numbers) in ONE transaction: SweepToLoan's body calls
+-- Loan.ApplyRepayment and creates the RescueEvent-style feed entry inside a
+-- single choice exercise, so either both happen or neither does. Also checks
+-- the CouponDistribution is consumed (no double-sweep, no leftover cash).
+test_couponSweepShrinksLoanAtomically : Script ()
+test_couponSweepShrinksLoanAtomically = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  policyCid <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = True
+
+  couponCid <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+
+  (newLoanCid, rescueCid) <- submit guardAgent do
+    exerciseCmd couponCid SweepToLoan with
+      priceFeedCid = feedCid
+      loanCid
+      policyCid
+
+  Some newLoan <- queryContractId borrower newLoanCid
+  newLoan.outstanding === 5887.50
+
+  Some rescue <- queryContractId borrower rescueCid
+  rescue.amount === 112.50
+  rescue.loanId === "loan-1"
+  rescue.healthBefore === 16667
+  rescue.healthAfter === 16985
+
+  -- PRIVACY: the sweep's feed entry is invisible to the pool operator —
+  -- the pool never learns the coupon was routed into the loan.
+  poolRescueView <- queryContractId poolOperator rescueCid
+  poolRescueView === None
+
+  -- the coupon is consumed: it cannot be claimed or swept again.
+  consumedCoupon <- queryContractId borrower couponCid
+  consumedCoupon === None
+  submitMustFail guardAgent do
+    exerciseCmd couponCid SweepToLoan with priceFeedCid = feedCid, loanCid = newLoanCid, policyCid
+  submitMustFail borrower do
+    exerciseCmd couponCid ClaimCoupon
+
+-- | When Coupon Sweep is OFF, the Guard Agent has no path to the coupon: the
+-- borrower must claim it manually, receiving real StableCoin.
+test_couponSweepOffPaysStableCoin : Script ()
+test_couponSweepOffPaysStableCoin = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  policyCid <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = False
+
+  couponCid <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+
+  -- Guard Agent is refused: this policy does not enable Coupon Sweep.
+  submitMustFail guardAgent do
+    exerciseCmd couponCid SweepToLoan with priceFeedCid = feedCid, loanCid, policyCid
+
+  -- borrower claims manually and receives real StableCoin.
+  coinCid <- submit borrower do
+    exerciseCmd couponCid ClaimCoupon
+  Some coin <- queryContractId borrower coinCid
+  coin.owner === borrower
+  coin.amount === 112.50
+
+  -- the loan is untouched: coupon claim never routes to the loan when swept off.
+  Some loan <- queryContractId borrower loanCid
+  loan.outstanding === 6000.0
+
+-- | The Guard Agent cannot sweep using a GuardPolicy that does not belong to
+-- this coupon's owner — even though that policy has couponSweep = True. This
+-- proves the delegation is narrow to THIS borrower's own consent, not just
+-- "any couponSweep policy the guard agent can find."
+test_guardAgentCannotSweepWithMismatchedPolicy : Script ()
+test_guardAgentCannotSweepWithMismatchedPolicy = script do
+  (Parties{..}, loanCid) <- originateDemoLoan
+  otherBorrower <- allocatePartyByHint (PartyIdHint "OtherBorrower")
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  -- a policy for a DIFFERENT borrower, with couponSweep enabled.
+  otherPolicyCid <- submit otherBorrower do
+    createCmd GuardPolicy with
+      borrower = otherBorrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = True
+
+  couponCid <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+
+  submitMustFail guardAgent do
+    exerciseCmd couponCid SweepToLoan with
+      priceFeedCid = feedCid
+      loanCid
+      policyCid = otherPolicyCid
+
+-- | PRIVACY: the pool operator never sees a CouponDistribution — only the
+-- borrower (owner) and the Guard Agent (observer) can.
+test_poolCannotSeeCouponDistribution : Script ()
+test_poolCannotSeeCouponDistribution = script do
+  (Parties{..}, _) <- originateDemoLoan
+
+  couponCid <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+
+  Some _ <- queryContractId borrower couponCid
+  Some _ <- queryContractId guardAgent couponCid
+
+  poolView <- queryContractId poolOperator couponCid
+  poolView === None
+
+-- | Full lifecycle, end to end: fund the vault -> borrow -> price drop ->
+-- auto-repay from the Shadow Vault -> coupon sweep -> manual repay to zero
+-- -> unlock the collateral. This is the whole happy-path story the demo
+-- narrates, proven on-ledger in one script.
+test_fullLifecycle : Script ()
+test_fullLifecycle = script do
+  -- borrow: originate the demo loan (10,000 mUST-2030 collateral, 6,000 mUSD
+  -- principal at 500 bps).
+  (Parties{..}, loanCid) <- originateDemoLoan
+
+  feedCid <- submit oracle do
+    createCmd PriceFeed with
+      oracle
+      instrumentId = "mUST-2030"
+      price = 1.0
+      subscribers = [borrower, guardAgent, poolOperator]
+
+  policyCid <- submit borrower do
+    createCmd GuardPolicy with
+      borrower
+      guardAgent
+      triggerRatioBps = 13000
+      targetRatioBps = 14500
+      maxRepayPerEvent = 2000.0
+      couponSweep = True
+
+  -- fund: the borrower's private Shadow Vault, 1,500 mUSD reserve.
+  vaultCid <- submit borrower do
+    createCmd ShadowVault with borrower, guardAgent, balance = 1500.0
+
+  -- drop: price falls 1.00 -> 0.76, Health Ratio breaches the 130% trigger.
+  droppedFeedCid <- submit oracle do
+    exerciseCmd feedCid UpdatePrice with newPrice = 0.76
+
+  -- auto-repay: the Guard Agent's GuardRepay restores the ratio to target.
+  rescueResult <- submit guardAgent do
+    exerciseCmd vaultCid GuardRepay with
+      priceFeedCid = droppedFeedCid
+      loanCid
+      policyCid
+
+  Some loanAfterRescue <- queryContractId borrower rescueResult.loan
+  assert (loanAfterRescue.outstanding > 5241.0 && loanAfterRescue.outstanding < 5242.0)
+
+  -- coupon: the issuer pays the quarterly coupon and the Guard Agent sweeps
+  -- it straight into the loan.
+  couponCid <- payCoupon issuer borrower guardAgent "mUST-2030" 10000.0 450
+  (loanAfterSweepCid, _) <- submit guardAgent do
+    exerciseCmd couponCid SweepToLoan with
+      priceFeedCid = droppedFeedCid
+      loanCid = rescueResult.loan
+      policyCid
+
+  Some loanAfterSweep <- queryContractId borrower loanAfterSweepCid
+  assert (loanAfterSweep.outstanding > 5128.0 && loanAfterSweep.outstanding < 5129.0)
+
+  -- manual repay to zero: the borrower pays off whatever remains.
+  finalLoanCid <- submit borrower do
+    exerciseCmd loanAfterSweepCid Repay with amount = loanAfterSweep.outstanding
+  Some finalLoan <- queryContractId borrower finalLoanCid
+  finalLoan.outstanding === 0.0
+
+  -- unlock collateral: with the loan fully repaid, the borrower reclaims
+  -- sole visibility over their TreasuryToken.
+  lockedTokens <- query @TreasuryToken borrower
+  let (lockedCid, lockedToken) = head lockedTokens
+  lockedToken.lockedBy === Some poolOperator
+
+  unlockedCid <- submit borrower do
+    exerciseCmd lockedCid Unlock
+  Some unlockedToken <- queryContractId borrower unlockedCid
+  unlockedToken.lockedBy === None

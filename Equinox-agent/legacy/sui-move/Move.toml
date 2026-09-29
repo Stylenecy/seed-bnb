@@ -1,0 +1,27 @@
+[package]
+name = "equinox"
+edition = "2024"
+# license = "MIT"
+# authors = ["Equinox Agent"]
+
+[dependencies]
+# Read-only interface to the on-chain Pyth package (testnet). See vendor/pyth.
+pyth = { local = "vendor/pyth" }
+
+# NOTE (Sui CLI v1.63+): the Sui framework and MoveStdlib are resolved
+# automatically — do NOT add a `Sui = { git = ... }` line, it is the legacy
+# format and will error. Only declare third-party / local packages below.
+#
+# Dependencies the protocol will pull in as modules land (kept commented so the
+# package builds clean today; uncomment when wiring the matching module):
+#
+# [dependencies]
+#   # Pyth price feeds — read by defense.move to compute health factor.
+#   Pyth = { r.mvr = "@pyth/pyth" }
+#
+# (Resolving an `r.mvr` dependency requires the `mvr` CLI: `suiup install mvr`.)
+#
+# NOTE: do NOT add an [environments] section for `testnet`/`mainnet` — on Sui CLI
+# 1.73.x these are built-in *system* environments and redefining them errors with
+# "Cannot override default environments". Target them directly via the CLI
+# (`sui client switch --env testnet`); no Move.toml entry is needed.
