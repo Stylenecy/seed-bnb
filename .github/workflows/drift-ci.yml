@@ -34,8 +34,11 @@ jobs:
       - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1
         with:
           version: v1.5.1
-      - name: Install forge-std (not vendored in this repo)
-        run: git clone --depth 1 --branch v1.16.2 https://github.com/foundry-rs/forge-std lib/forge-std
+      - name: Install forge-std (not vendored; pinned to the commit the tests were run with)
+        run: |
+          git init -q lib/forge-std
+          git -C lib/forge-std fetch -q --depth 1 https://github.com/foundry-rs/forge-std 6764d4a42fcdff8e9f6999ab94fb74c1752a0445
+          git -C lib/forge-std checkout -q FETCH_HEAD
       - name: Unit, fuzz and invariant tests
         run: forge test -vv
       - name: Coverage of MacroGuard.sol
