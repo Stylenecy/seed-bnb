@@ -1,0 +1,82 @@
+name: drift-ci
+
+# Runs DRIFT's three test layers on every change under drift/.
+on:
+  push:
+    paths:
+      - "drift/**"
+      - ".github/workflows/drift-ci.yml"
+  pull_request:
+    paths:
+      - "drift/**"
+      - ".github/workflows/drift-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: drift-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    name: contracts · forge test + coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: drift/contracts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: drift
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.5.1
+      - name: Install forge-std (not vendored in this repo)
+        run: git clone --depth 1 --branch v1.16.2 https://github.com/foundry-rs/forge-std lib/forge-std
+      - name: Unit, fuzz and invariant tests
+        run: forge test -vv
+      - name: Coverage of MacroGuard.sol
+        run: forge coverage --report summary --no-match-coverage "(script|test)"
+
+  engine:
+    name: engine · pytest (offline)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: drift/apps/trader
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: drift
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: drift/apps/trader/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Tests (no network, no .env)
+        run: python -m pytest
+
+  web:
+    name: web · lint + node test + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: drift
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: drift
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: drift/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test --workspace @drift/web
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_BUILD_SHA: ${{ github.sha }}
