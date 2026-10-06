@@ -1,3 +1,5 @@
+> **DRIFT now lives in its own repository: [github.com/Stylenecy/drift](https://github.com/Stylenecy/drift)** (split on 6 Oct 2026 with every commit kept). This copy stays for the links that already point here.
+
 <div align="center">
 
 # DRIFT
